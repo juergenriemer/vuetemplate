@@ -1,0 +1,2 @@
+const models = { "Post": { "schema": { "title": "String", "description": "String", "prio": "Boolean", "year": "Number" } }, "Machine": { "schema": { "title": "String", "description": "String", "ip": "String", "port": "Number", "type": "String" } } };
+export default models;
