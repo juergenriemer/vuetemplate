@@ -9,8 +9,7 @@ export default {
 		, data () {
 				return {
 						filterName : "todo"
-						, xxx : "TodoFilter"
-						, xxfilter : {
+						, filter : {
 								query : {
 										title : "as"	
 									}
@@ -22,11 +21,6 @@ export default {
 										skip : 0
 										, limit : 3
 								}
-						}
-						, filter : {
-								query : {
-										title : "as"	
-									}
 						}
 				}
 		}

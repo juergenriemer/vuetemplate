@@ -31,9 +31,7 @@ const Filter = {
 				}
 		}
 		, analyse( comp ) {
-				console.log( "ANALZYE: " + comp.xxx );
 				this.getHashFilter( comp );
-				console.log( this );
 				if( comp.filter ) {
 						if( ! this.filterString ) {
 								this.update( comp );
@@ -41,7 +39,6 @@ const Filter = {
 				}
 				if( this.filter ) {
 						if( ! comp.filter || JSON.stringify( comp.filter) != this.filterString ) {
-								console.log( "hash changed, update filter and call callback (repl w. watch)" );
 								comp.filter = this.filter;
 								comp.onFilterChange();
 						}
@@ -76,35 +73,32 @@ const Filter = {
 				return [ query, sort, slice, fields ];
 		}
 		, hashObservers : {}
-		, listen( comp ){
+		, register( comp ){
 				this.hashObservers[ comp._uid ] = () => Filter.analyse( comp );
 				Filter.analyse( comp );
 		}
-		, unlisten( comp ) {
+		, unregister( comp ) {
 				delete this.hashObservers[ comp._uid ];
 		}
 };
 
-let hashObservers = {};
 window.onhashchange = () => {
-
 		console.warn( "callacks: " + Object.keys( Filter.hashObservers ).length );
 		for( const observer in Filter.hashObservers ) {
-				console.log( Filter.hashObservers[ observer ] );
 				Filter.hashObservers[ observer ]();
 		}
 }
 /* Filter Mixin */
 export default { 
 		created() {
-				Filter.listen( this );
+				Filter.register( this );
 		}
 		, destroyed() {
-				Filter.unlisten( this );
+				Filter.unregister( this );
 		}
 		, methods: {
 				onFilterChange(){
-						// empty stub to be overridden
+						// empty stub to be overridden by comp
 				}
 				, updateFilter(){
 						Filter.update( this );

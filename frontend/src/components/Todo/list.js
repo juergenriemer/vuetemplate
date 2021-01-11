@@ -7,13 +7,11 @@ export default {
 		, data() {
 				return {
 						filterName : "todo"
-		,xxx: 'TodoList'
 						, items : []
 				}
 		}
 		, methods: {
 				onFilterChange(){
-						console.log( this.filter );
 						this.fetch();	
 				}
 				, async fetch() {

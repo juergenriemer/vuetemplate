@@ -7,20 +7,6 @@ export default {
 		, data () {
 				return {
 						filterName : "post"
-		, xxx: 'PostFilter'
-						, xxfilter : {
-								query : {
-										title : "as"	
-									}
-								, sort : {
-										field : "title" 
-										, dir : 1
-								} 
-								, slice : {
-										skip : 0
-										, limit : 3
-								}
-						}
 						, filter : {
 								query : {
 										title : "as"	
