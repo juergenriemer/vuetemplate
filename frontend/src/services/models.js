@@ -54,6 +54,27 @@ const models = {
                 "prio": null
             }
         }
+    },
+    "TodoItem": {
+        "Model": {
+            "title": {
+                "type": "String",
+                "required": true,
+                "display": "Todo",
+                "minlength": 3,
+                "maxlength": 20
+            },
+            "done": {
+                "type": "Boolean",
+                "display": "done!"
+            }
+        },
+        "aggregates": {
+            "empty": {
+                "title": null,
+                "done": null
+            }
+        }
     }
 }
 export default models;

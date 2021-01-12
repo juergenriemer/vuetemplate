@@ -4,27 +4,23 @@
     <div v-if="items.length > 0" class="table-wrap">
       <table>
         <tr>
-          <td>ID</td>
           <td>Title</td>
-          <td width="550">Description</td>
           <td>Prio</td>
         </tr>
         <tr v-for="item in items" v-bind:key="item._id">
-          <td>{{ item._id}}</td>
           <td>{{ item.title }}</td>
           <td>{{ item.description }}</td>
           <td align="center">
-            <router-link v-bind:to="{ name: 'PostEdit', params: { id: item._id } }">Edit</router-link> |
-            <a href="#" @click="deletePost(item._id)">Delete</a>
+            <router-link v-bind:to="{ name: 'TodoEdit', params: { id: item._id } }">Edit</router-link> |
+            <a href="#" @click="remove(item._id)">Delete</a>
           </td>
         </tr>
       </table>
-      <router-link v-bind:to="{ name: 'PostNew' }" class="add_item_link">PostNew</router-link>
+      <router-link v-bind:to="{ name: 'TodoNew' }" class="add_item_link">TodoNew</router-link>
     </div>
     <div v-else>
       There are no posts.. Lets add one now <br /><br />
-      <router-link v-bind:to="{ name: 'PostNew' }" class="add_item_link">PostNew</router-link>
-      <router-link v-bind:to="{ name: 'xxx' }" class="add_item_link">Home</router-link>
+      <router-link v-bind:to="{ name: 'TodoNew' }" class="add_item_link">TodoNew</router-link>
     </div>
   </div>
 </template>

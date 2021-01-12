@@ -9,50 +9,38 @@
           prio <input type="checkbox" name="prio" placeholder="PRIO" v-model="prio">
         </div>
         <div>
-          <input type="number" name="year" placeholder="YEAR" v-model="year">
-        </div>
-        <div>
-          <textarea rows="5" cols="15" placeholder="DESCRIPTION" v-model="description"></textarea>
-        </div>
-        <div>
-          <button class="app_post_btn" @click="updatePost">Update</button>
+          <button class="app_post_btn" @click="update">Update</button>
         </div>
       </div>
   </div>
 </template>
 
 <script>
-import Post from '@/services/PostsService'
-import myMixin from '@/mixins/Filter'
+import Todo from '@/services/TodosService'
 export default {
-mixins: [myMixin],
-  name: 'EditPost',
+  name: 'TodoEdit',
   data () {
     return {
-      title: '',
-      year : '',
-      prio : '',
-      description: ''
+      model : Todo.empty()
     }
   },
   mounted () {
-    this.getPost()
+    this.get()
   },
   methods: {
-    async getPost () {
+    async get() {
         let id = this.$route.params.id
-      const response = await Post.read(id );
-      console.log( response )
-      this.title = response.data.item.title
-      this.description = response.data.item.description
+      const response = await Todo.read(id );
+      this.title = response.data.item.title;
+      this.prio = response.data.item.prio;
     },
-    async updatePost () {
-      await Post.update({
+    async update() {
+      await Todo.update({
         id: this.$route.params.id,
         title: this.title,
-        description: this.description
+        prio: this.prio
       })
-      this.$router.push({ name: 'Posts' })
+      this.$router.push({ name: 'TodoIndex' })
     }
   }
 }

@@ -30,7 +30,7 @@ export default {
   methods: {
     async add() {
       await Todo.create({...this.model} )
-      this.$router.push({ name: 'PostIndex' })
+      this.$router.push({ name: 'TodoIndex' })
     }
   }
 }

@@ -25,7 +25,8 @@ class REST {
 	}
 
 	update(params) {
-		return Api().put(`${this.root}/${params.id}`, params);
+			let id = params.id || params._id;
+		return Api().put(`${this.root}/${id}`, params);
 	}
 
 	read(id) {

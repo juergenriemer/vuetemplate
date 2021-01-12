@@ -10,16 +10,14 @@ export default {
 				return {
 						filterName : "todo"
 						, filter : {
-								query : {
-										title : "as"	
-									}
+								query : {}
 								, sort : {
 										field : "title" 
 										, dir : 1
 								} 
 								, slice : {
 										skip : 0
-										, limit : 3
+										, limit : 6
 								}
 						}
 				}

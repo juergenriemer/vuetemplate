@@ -1,7 +1,7 @@
 <template>
-      <form>
+      <form @submit.prevent>
           <input type="text" name="title" placeholder="ADD TODO" v-model="model.title">
-          <button click="add">Add</button>
+          <button type="submit" @click="add">Add</button>
       </form>
 </template>
 

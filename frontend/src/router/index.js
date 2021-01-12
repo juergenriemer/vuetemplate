@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import TodoIndex from '@/components/Todo/Index'
 import PostIndex from '@/components/Post/Index'
 import PostSearch from '@/components/Post/Search'
 import PostNew from '@/components/Post/New'
 import PostEdit from '@/components/Post/Edit'
 import TodoNew from '@/components/Todo/New'
+import TodoItemIndex from '@/components/TodoItem/Index'
 import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
@@ -12,7 +14,12 @@ Vue.use(Router)
 export default new Router({
 		// NB: browser back/forward not triggering when console is open!
 		routes: [
-				{ path: '/', redirect: '/post_search' },
+				{ path: '/', redirect: '/todos' },
+				{
+						path: '/todos',
+						name: 'TodoItemIndex',
+						component: TodoItemIndex
+				},
 				{
 						path: '/post_index',
 						name: 'PostIndex',

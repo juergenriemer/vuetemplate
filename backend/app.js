@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const models = {
 		Post: require("./models/post")
 		, Todo : require("./models/todo")
+		, TodoItem : require("./models/TodoItem")
 		//  , Machine: require("../models/machine")
 }
 

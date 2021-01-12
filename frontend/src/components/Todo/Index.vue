@@ -1,17 +1,17 @@
 <template>
 <div>
-	<post-list></post-list>
+	<todo-list></todo-list>
 		<hr>
-	<post-filter></post-filter>
+	<todo-filter></todo-filter>
 
 </div>
 </template>
 
 <script>
-import PostList from '@/components/Post/List'
-import PostFilter from '@/components/Post/Filter'
+import TodoList from '@/components/Todo/List'
+import TodoFilter from '@/components/Todo/Filter'
 export default {
-  name: 'PostIndex'
-,components : { PostList, PostFilter}
+  name: 'TodoIndex'
+,components : { TodoList, TodoFilter}
 }
 </script>

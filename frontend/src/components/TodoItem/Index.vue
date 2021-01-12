@@ -1,8 +1,9 @@
 <template>
 <div>
-	<todo-item-add></todo-list-add>
+<h1>test</h1>
+	<todo-item-add></todo-item-add>
 		<hr>
-	<todo-item-list></todo-list-list>
+	<todo-item-list></todo-item-list>
 
 </div>
 </template>

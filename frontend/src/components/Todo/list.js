@@ -20,7 +20,7 @@ export default {
 						const response = await Todo.list( ...request );
 						this.items = response.data.items;
 				}
-				, async deleteTodo(id) {
+				, async remove(id) {
 						await Todo.delete(id);
 						this.fetch();
 				}
