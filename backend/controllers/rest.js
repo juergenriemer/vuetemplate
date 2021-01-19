@@ -4,43 +4,25 @@ fs.readdirSync("./models").forEach(function (file) {
 		let parts = file.split( ".js" );
 		if( parts[ 1 ] === "" ) {
 				let name = parts[ 0 ];
-				models[ name ] = require("../models/" + name );
+				if( name != "User" ) models[ name ] = require("../models/" + name );
 		}
 })
+const passport = require('passport');
+const passportJWT = require('passport-jwt');
 
-ClientModels = {
-		defaultValue: {
-				"String": ""
-				, "Number": ""
-				, "Boolean": false
-		}
-		, create() {
-				let _models = {};
-				for (let name in models) {
-						let Model = models[ name].Model;
-						console.log( ">>>" + name );
-						let empty = Object.keys(Model)
-								.reduce((destination, key) => {
-										destination[key] = null;
-										return destination;
-								}, {});
-						_models[name] = {
-								Model
-								, aggregates : {
-										empty 
-								}
-						};
-				}
-				let file = "../frontend/src/services/models.js";
-				let content = `const models = ${JSON.stringify(_models, undefined, 4)}\nexport default models;`;
-				fs.writeFile(file, content, (x) => { console.log(x); console.log('done') });
-		}
-}
-ClientModels.create();
+const jwt = require( 'passport-jwt' ).Strategy;
+const jwtxxx = require('passport-jwt');
+
+const ExtractJwt = passportJWT.ExtractJwt;
+const jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
+jwtOptions.secretOrKey = 'thisisthesecretkey';
+
 
 module.exports.controller = app => {
 
 		// create
+app.use(passport.initialize());
 		app.post('/rest/:model', (req, res) => {
 				const Model = models[req.params.model].Schema;
 				let item = new Model(req.body);
@@ -58,7 +40,7 @@ module.exports.controller = app => {
 		})
 
 		// filter
-		app.get('/rest/:model/:query/:sort/:slice/:fields', (req, res) => {
+		app.get('/rest/:model/:query/:sort/:slice/:fields', passport.authenticate('jwt', { session: false }), (req, res) => {
 				let query = {};
 				let queryString = req.params.query;
 				if (queryString) {
@@ -102,7 +84,8 @@ module.exports.controller = app => {
 								});
 						}
 				});
-		})
+		});
+
 
 
 		// update
@@ -139,3 +122,35 @@ module.exports.controller = app => {
 				})
 		})
 }
+
+
+
+ClientModels = {
+		defaultValue: {
+				"String": ""
+				, "Number": ""
+				, "Boolean": false
+		}
+		, create() {
+				let _models = {};
+				for (let name in models) {
+						let Model = models[ name].Model;
+						console.log( ">>>" + name );
+						let empty = Object.keys(Model)
+								.reduce((destination, key) => {
+										destination[key] = null;
+										return destination;
+								}, {});
+						_models[name] = {
+								Model
+								, aggregates : {
+										empty 
+								}
+						};
+				}
+				let file = "../frontend/src/services/models.js";
+				let content = `const models = ${JSON.stringify(_models, undefined, 4)}\nexport default models;`;
+				fs.writeFile(file, content, (x) => { console.log(x); console.log('done') });
+		}
+}
+ClientModels.create();
