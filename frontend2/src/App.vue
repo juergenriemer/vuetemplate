@@ -1,27 +1,22 @@
 <template>
   <div id="app">
-    <a href="#/logout">logout</a>|
-    <a href="#/login">login</a>|
-    <a href="#/register">register</a>||
-    <a href="#/">todos</a>
-    <h1>Todo</h1>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App",
+};
 </script>
 
 <style>
+body {
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
+    Cantarell, Fira Sans, sans-serif;
+  font-size: 14.2px;
+}
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

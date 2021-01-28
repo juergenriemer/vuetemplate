@@ -1,0 +1,10 @@
+* {
+  background: pink;
+}
+.done {
+  background: green !important;
+  opacity: 50 !important;
+}
+td.titles {
+  width: 400px;
+}

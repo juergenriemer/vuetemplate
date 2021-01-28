@@ -1,9 +1,9 @@
 <template>
   <form @submit.prevent>
-  <h3>Login</h3>
+    <h3>Login</h3>
     <input type="text" v-model="username" placeholder="username" /><br />
     <input type="text" v-model="password" placeholder="password" /><br />
-    <button type="submit" @click=submit>sumbit</button>
+    <button type="submit" @click="submit">sumbit</button>
   </form>
 </template>
 <script>
@@ -12,8 +12,8 @@
 import { mapGetters, mapActions } from "vuex";
 export default {
   data: () => ({
-    username: 'dmiep',
-    password: 'test'
+    username: "dmiep",
+    password: "test",
   }),
 
   computed: mapGetters(["user"]),
@@ -21,28 +21,27 @@ export default {
     ...mapActions(["login"]),
     async submit() {
       const info = {
-        username: this.username
-        ,password:this.password
-      }
-      let res = await this.login(info)
-      if( res && res.data && res.data.success){
+        username: this.username,
+        password: this.password,
+      };
+      let res = await this.login(info);
+      console.warn(res);
+      if (res && res.data && res.data.success) {
         let hash = self.location.hash;
-        let parts = hash.split( "ogin#next=");
-        console.log( parts )
-        if( parts && parts[1]){
+        let parts = hash.split("ogin#next=");
+        console.log(parts);
+        if (parts && parts[1]) {
           self.location.href = parts[1];
-        }
-        else {
-          this.$router.push('/')
+        } else {
+          this.$router.push("/");
         }
       }
-        /*
+      /*
       $store.dispatch('login', info).then(
         () => this.$router.push('/')
       );
 
          */
-
 
       /*
 
@@ -68,10 +67,10 @@ console.warn( "ERROR" );
 console.log( error )
         });
        */
-},
-  clear() {
-    this.$refs.form.reset();
+    },
+    clear() {
+      this.$refs.form.reset();
+    },
   },
-},
 };
 </script>

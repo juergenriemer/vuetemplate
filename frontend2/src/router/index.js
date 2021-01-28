@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
-import TodoItemIndex from "@/components/TodoItem/Index";
+import ListIndex from "@/components/List/view";
+import ItemIndex from "@/components/Item/view";
+import MainIndex from "@/components/Main/view";
 import Register from "@/components/User/Register";
 import Login from "@/components/User/Login";
 import Logout from "@/components/User/Logout";
@@ -26,9 +28,14 @@ export default new Router({
       component: Logout
     },
     {
+      path: "/main/:id",
+      name: "MainIndex",
+      component: MainIndex
+    },
+    {
       path: "/",
-      name: "TodoItemIndex",
-      component: TodoItemIndex
+      name: "MainIndex",
+      component: MainIndex
     }
   ]
 });

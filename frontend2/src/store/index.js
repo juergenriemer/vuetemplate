@@ -1,13 +1,13 @@
 import Vuex from "vuex";
 import Vue from "vue";
-import todos from "./modules/todos";
+import list from "./modules/list";
 import user from "./modules/user";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    todos,
+    list,
     user
   }
 });

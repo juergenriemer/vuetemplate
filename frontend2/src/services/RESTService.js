@@ -1,7 +1,10 @@
 import Api from "@/services/Api";
 class REST {
   constructor(model) {
-    this.root = `/${model}s`;
+    this.root = `/${model}`;
+    if (model == "User") {
+      this.root += "s";
+    }
     this.name = model;
   }
 

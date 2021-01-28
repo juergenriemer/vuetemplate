@@ -1,6 +1,14 @@
 import Api from "@/services/Api";
 import REST from "@/services/RESTService";
 class User extends REST {
+  async sawList(listId) {
+    let url = `${this.root}/sawlist/${listId}`;
+    return await Api().put(url);
+  }
+  async register(creds) {
+    let url = `${this.root}/register`;
+    return await Api().post(url, creds);
+  }
   async login(creds) {
     let url = `${this.root}/login`;
     return await Api().post(url, creds);
@@ -10,7 +18,7 @@ class User extends REST {
     return await Api().post(url, { username });
   }
   async logout(creds) {
-    let url = `${this.root}/login`;
+    let url = `${this.root}/logout`;
     return await Api().post(url, creds);
   }
 }

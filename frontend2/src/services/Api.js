@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default () => {
   const http = axios.create({
-    baseURL: `http://10.0.0.199:3000`,
+    baseURL: `http://10.0.0.199:3003`,
     headers: {
       "Content-Type": "application/json",
       Authorization: localStorage.getItem("token")
@@ -14,7 +14,12 @@ export default () => {
       return res;
     },
     error => {
-      if (401 === error.response.status) {
+      if (
+        error &&
+        error.response &&
+        error.response.status &&
+        error.response.status == 401
+      ) {
         let hash = self.location.hash;
         let login = "#/login";
         let next = "";

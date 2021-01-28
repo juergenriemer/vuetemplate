@@ -2,29 +2,28 @@
   <form>
     <input type="text" v-model="username" placeholder="username" /><br />
     <input type="text" v-model="password" placeholder="password" /><br />
-    <button type="submit" @click=submit>sumbit</button>
+    <button type="submit" @click="submit">create</button>
   </form>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
   data: () => ({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   }),
   methods: {
     async submit() {
-
       const info = {
-        username: this.username
-        ,password:this.password
-      }
-      this.$store.dispatch('signup', info).then(
-        () => this.$router.push('/login')
-      );
+        username: this.username,
+        password: this.password,
+      };
+      this.$store
+        .dispatch("register", info)
+        .then(() => this.$router.push("/login"));
 
       /*
         return axios({

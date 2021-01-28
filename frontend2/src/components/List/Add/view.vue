@@ -1,6 +1,6 @@
 <template>
       <form @submit.prevent>
-          <input type="text" name="title" placeholder="ADD TODO" v-model="model.title">
+          <input type="text" name="title" placeholder="ADD LIST" v-model="model.title">
           <button type="submit" @click="add">Add</button>
       </form>
 </template>

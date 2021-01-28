@@ -1,0 +1,31 @@
+body::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+.avatar {
+  background-color: #e6e6e6;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  width: 49px;
+  height: 49px;
+}
+.avatar img {
+  width: 49px;
+  height: 49px;
+}
+.text {
+  position: relative;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#left {
+  min-width: 260px;
+  max-width: 420px;
+}
+#right {
+  min-width: 380px;
+  max-width: 980px;
+}
