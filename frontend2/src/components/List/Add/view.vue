@@ -1,8 +1,13 @@
 <template>
-      <form @submit.prevent>
-          <input type="text" name="title" placeholder="ADD LIST" v-model="model.title">
-          <button type="submit" @click="add">Add</button>
-      </form>
+  <form @submit.prevent>
+    <input
+      type="text"
+      name="title"
+      placeholder="ADD LIST"
+      v-model="list.title"
+    />
+    <button type="submit" @click="add">Add</button>
+  </form>
 </template>
 
 <script src="./script.js"></script>

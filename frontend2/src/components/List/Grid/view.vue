@@ -9,9 +9,13 @@
           :key="list._id"
           :class="list._id == listId ? 'current' : ''"
         >
-          <span v-if="list.meta">(({{ list.meta.updated }})</span>
-          <div class="avatar">
-            <router-link class="" :to="`/main/${list._id}`"> AB </router-link>
+          <div class="bulb">
+            <div class="badge" v-if="missedUpdates[list._id]">
+              {{ missedUpdates[list._id] }}
+            </div>
+            <div class="avatar">
+              <router-link class="" :to="`/main/${list._id}`"> AB </router-link>
+            </div>
           </div>
           <div class="list-title">
             <input v-if="idEdit == list._id" type="text" v-model="list.title" />
@@ -65,6 +69,9 @@
 .list-row a:visited {
   color: #000;
 }
+.list-row .bulb {
+  position: relative;
+}
 .list-row .avatar {
   text-align: center;
   font-size: 20px;
@@ -72,6 +79,24 @@
   margin: 3px;
 }
 
+.list-row .badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  margin-top: 1px;
+  margin-right: 1px;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 16px;
+  color: white;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  background: red;
+  border: 2px solid white;
+}
 .list-title {
   position: relative;
   margin-right: auto;

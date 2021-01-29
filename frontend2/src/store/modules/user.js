@@ -46,19 +46,12 @@ const actions = {
       commit("addUser", res.data.userdata);
     }
     return res;
-  },
-
-  async sawList({ commit }, listId) {
-    const res = await User.sawList(listId);
-    console.log("SAWLIST", res);
-    if (res) commit("sawList", listId);
   }
 };
 
 const mutations = {
   addUser: (state, user) => (state.user = user),
   removeUser: state => (state.user = null),
-  sawList: (state, data) => {},
   updateUser: (state, item) => {
     console.warn(item);
     const index = state.todos.findIndex(todo => {

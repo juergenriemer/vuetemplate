@@ -4,7 +4,7 @@
       type="text"
       name="title"
       placeholder="ADD ITEM"
-      v-model="model.title"
+      v-model="item.title"
     />
     <button type="submit" @click="add">Add</button>
   </form>

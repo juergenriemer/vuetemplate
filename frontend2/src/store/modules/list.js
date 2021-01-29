@@ -23,8 +23,8 @@ const actions = {
     return true;
   },
 
-  async addList({ commit }, data) {
-    const response = await List.create(data);
+  async addList({ commit }, { list }) {
+    const response = await List.create(list);
     commit("addList", response.data);
   },
 
@@ -37,22 +37,21 @@ const actions = {
 
   // ITEMS
 
-  async deleteItem({ commit }, { idList, idItem }) {
-    const res = await Item.delete(idList, idItem);
-    commit("removeItem", { idList, idItem });
+  async deleteItem({ commit }, { listId, itemId }) {
+    const res = await Item.delete(listId, itemId);
+    commit("removeItem", { listId, itemId });
   },
 
-  async updateItem({ commit }, { idList, idItem, data }) {
-    const res = await Item.update(idList, idItem, data);
-
-    commit("updateItem", res.data);
+  async updateItem({ commit }, { listId, itemId, item }) {
+    const res = await Item.update(listId, itemId, item);
+    commit("updateItem", { listId, item: res.data });
     return true;
   },
 
-  async addItem({ commit }, { idList, data }) {
-    const res = await Item.create(idList, data);
-    let item = res.data;
-    commit("addItem", { idList, item });
+  async addItem({ commit }, { listId, item }) {
+    const res = await Item.create(listId, item);
+    commit("addItem", { listId, item: res.data });
+    return true;
   },
 
   addItemExtern({ commit }, data) {
@@ -65,14 +64,27 @@ const actions = {
 
   async removeItemExtern({ commit }, data) {
     commit("removeItemExtern", data);
+  },
+
+  async sawList({ commit }, data) {
+    const res = await List.sawList(data);
+    if (res) commit("sawList", res);
   }
 };
 
 const mutations = {
+  sawList: (state, { data }) => {
+    let userId = localStorage.getItem("userid");
+    let list = state.lists.find(list => list._id == data.listId);
+    if (list) {
+      let user = list.users.find(user => user.userId == userId);
+      user && (user.lastSeen = data.lastSeen);
+    }
+  },
   addList: (state, newList) => state.lists.unshift(newList),
   setLists: (state, lists) => (state.lists = lists),
-  removeList: (state, idList) => {
-    state.lists = state.lists.filter(list => list._id !== idList);
+  removeList: (state, listId) => {
+    state.lists = state.lists.filter(list => list._id !== listId);
   },
   updateList: (state, item) => {
     const index = state.lists.findIndex(list => {
@@ -82,34 +94,35 @@ const mutations = {
       state.lists.splice(index, 1, item);
     }
   },
-  updateItem: (state, data) => {
-    const ix = state.lists.findIndex(itm => itm._id == data._id);
+  updateItem: (state, { listId, item }) => {
+    let userId = localStorage.getItem("userid");
+    let list = state.lists.find(list => list._id == listId);
+    list.users.find(user => user.userId == userId).lastSeen = item.updatedAt;
+    const ix = state.lists.findIndex(itm => itm._id == item._id);
     if (ix !== -1) {
-      state.lists.splice(ix, 1, data);
+      state.lists.splice(ix, 1, item);
     }
   },
-  addItem: (state, { idList, item }) => {
-    let ixList = state.lists.findIndex(list => list._id == idList);
+  addItem: (state, { listId, item }) => {
+    let userId = localStorage.getItem("userid");
+    let list = state.lists.find(list => list._id == listId);
+    list.users.find(user => user.userId == userId).lastSeen = item.updatedAt;
+    let ixList = state.lists.findIndex(list => list._id == listId);
     let items = state.lists[ixList].items;
     items.push(item);
   },
-  removeItem: (state, { idList, idItem }) => {
-    let ixList = state.lists.findIndex(list => list._id == idList);
+  removeItem: (state, { listId, itemId }) => {
+    let ixList = state.lists.findIndex(list => list._id == listId);
     let items = state.lists[ixList].items;
     items.splice(
-      items.findIndex(item => item._id == idItem),
+      items.findIndex(item => item._id == itemId),
       1
     );
   },
   addItemExtern: (state, data) => {
-    let listId = data.listId;
-    let item = data.item;
+    let { listId, item } = data;
     let list = state.lists.find(list => list._id == listId);
     list.items.push(item);
-    if (!list.meta) {
-      Vue.set(list, "meta", { added: 0, updated: 0, removed: 0 });
-    }
-    list.meta.updated++;
   },
   updateItemExtern: (state, updated) => {
     let list = state.lists.find(list => list._id == updated.listId);
@@ -121,17 +134,12 @@ const mutations = {
     list.meta.updated++;
   },
   removeItemExtern: (state, data) => {
-    let listId = data.listId;
-    let itemId = data.itemId;
+    let { listId, itemId } = data;
     let list = state.lists.find(list => list._id == listId);
     list.items.splice(
       list.items.findIndex(item => item._id == itemId),
       1
     );
-    if (!list.meta) {
-      Vue.set(list, "meta", { added: 0, updated: 0, removed: 0 });
-    }
-    list.meta.removed++;
   }
 };
 

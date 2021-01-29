@@ -10,8 +10,7 @@ export default {
       filter: {
         query: {}
       },
-      idEdit: null,
-      lastSeen: null
+      idEdit: null
     };
   },
   created() {
@@ -20,16 +19,28 @@ export default {
   },
   computed: {
     ...mapGetters(["lists", "user"]),
-    idList() {
+    listId() {
       return this.$route.params.id;
     },
+    list() {
+      const list = this.lists.find(list => list._id == this.listId);
+      return list || {};
+    },
     items() {
-      let list = this.lists.filter(list => list._id == this.idList);
-      return list && list[0] && list[0].items ? list[0].items : [];
+      return this.list.items || [];
+    },
+    lastSeen() {
+      const userId = localStorage.getItem("userid");
+      const lastSeen = this.lists.reduce((map, list) => {
+        let user = list.users.find(user => user.userId == userId);
+        map[list._id] = user.lastSeen;
+        return map;
+      }, {});
+      return lastSeen;
     }
   },
   watch: {
-    idList() {
+    listId() {
       this.seeList();
     }
   },
@@ -39,8 +50,8 @@ export default {
       let missed = localStorage.getItem("missed");
       if (missed) {
         let missed2 = JSON.parse(missed);
-        if (missed2 && missed2[this.idList]) {
-          this.lastSeen = missed2[this.idList].lastSeen;
+        if (missed2 && missed2[this.listId]) {
+          this.lastSeen = missed2[this.listId].lastSeen;
         }
       }
     },
@@ -50,28 +61,28 @@ export default {
     async fetch() {
       let result = await this.fetchLists();
     },
-    async remove(id) {
+    async remove(itemId) {
       await this.deleteItem({
-        idList: this.idList,
-        idItem: id
-      });
-      //document.getElementById(id).style.display = "none";
-    },
-    async done(data) {
-      data.done = !data.done;
-      const res = await this.updateItem({
-        idList: this.idList,
-        idItem: data._id,
-        data: data
+        listId: this.listId,
+        itemId
       });
     },
-    async edit(data) {
-      const res = await this.updateItem({
-        idList: this.idList,
-        idItem: data._id,
-        data: data
+    async done(item) {
+      item.done = !item.done;
+      await this.updateItem({
+        listId: this.listId,
+        itemId: item._id,
+        item
       });
-      res && (this.idEdit = null);
+    },
+    async edit(item) {
+      await this.updateItem({
+        listId: this.listId,
+        itemId: item._id,
+        item
+      });
+      this.idEdit = null;
+      //res && (this.idEdit = null);
     }
   }
 };

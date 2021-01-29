@@ -10,8 +10,7 @@ export default {
         query: {}
       },
       items: [],
-      idEdit: null,
-      lastSeen: null
+      idEdit: null
     };
   },
   created() {
@@ -21,17 +20,35 @@ export default {
     ...mapGetters(["lists", "user"]),
     listId() {
       return this.$route.params.id;
+    },
+    lastSeen() {
+      let userId = localStorage.getItem("userid");
+      let lastSeen = this.lists.reduce((map, list) => {
+        let user = list.users.find(user => user.userId == userId);
+        map[list._id] = user.lastSeen;
+        return map;
+      }, {});
+      return lastSeen;
+    },
+    missedUpdates() {
+      let userId = localStorage.getItem("userid");
+      let missed = this.lists.reduce((map, list) => {
+        let lastSeen = list.users.find(user => user.userId == userId).lastSeen;
+        let count = list.items.filter(item => item.updatedAt > lastSeen).length;
+        map[list._id] = count < 100 ? count : 99;
+        return map;
+      }, {});
+      return missed;
     }
   },
   watch: {
     listId() {
-      //      this.sawList(this.listId);
+      this.sawList(this.listId);
     }
   },
   methods: {
     ...mapActions([
       //    "checkForUpdates",
-      //    "seenList",
       "sawList",
       "fetchLists",
       "filterLists",
@@ -43,10 +60,7 @@ export default {
     },
     async fetch() {
       let result = await this.fetchLists();
-      setTimeout(() => {
-        //this.checkForUpdates();
-        //this.seeList();
-      }, 1000);
+      if (this.listId) this.sawList(this.listId);
     },
     async remove(id) {
       let result = await this.deleteList(id);

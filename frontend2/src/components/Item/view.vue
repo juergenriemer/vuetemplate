@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3>List Items</h3>
     <item-add></item-add>
     <item-grid></item-grid>
   </div>

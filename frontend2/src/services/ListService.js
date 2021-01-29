@@ -8,6 +8,10 @@ class List {
     return Api().get(`${this.root}/`);
   }
 
+  sawList(listId) {
+    return Api().put(`${this.root}/sawList/${listId}`);
+  }
+
   create(params) {
     return Api().post(this.root, params);
   }

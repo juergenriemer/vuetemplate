@@ -3,21 +3,20 @@ class Item {
   constructor() {
     this.root = `/list/`;
   }
-  list(idList) {
-    return Api().get(`${this.root}/${idList}`);
+  list(listId) {
+    return Api().get(`${this.root}/${listId}`);
   }
 
-  create(idList, params) {
-    return Api().post(`${this.root}/${idList}`, params);
+  create(listId, item) {
+    return Api().post(`${this.root}/${listId}`, item);
   }
 
-  update(idList, idItem, params) {
-    console.log(params);
-    return Api().put(`${this.root}/${idList}/${idItem}`, params);
+  update(listId, itemId, params) {
+    return Api().put(`${this.root}/${listId}/${itemId}`, params);
   }
 
-  delete(idList, idItem) {
-    return Api().delete(`${this.root}/${idList}/${idItem}`);
+  delete(listId, itemId) {
+    return Api().delete(`${this.root}/${listId}/${itemId}`);
   }
 }
 export default new Item("Item");

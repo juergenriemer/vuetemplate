@@ -4,14 +4,21 @@ export default {
   name: "ListAdd",
   data() {
     return {
-      model: { title: "" }
+      list: { title: "" }
     };
+  },
+  computed: {
+    listId() {
+      return this.$route.params.id;
+    }
   },
   methods: {
     ...mapActions(["addList"]),
-    add() {
-      this.addList(this.model);
-      this.model.title = "";
+    async add() {
+      await this.addList({
+        list: this.list
+      });
+      this.list.title = "";
     }
   }
 };

@@ -4,22 +4,23 @@ export default {
   name: "ItemAdd",
   data() {
     return {
-      model: { title: "" }
+      item: { title: "" }
     };
   },
   computed: {
-    idList() {
+    listId() {
       return this.$route.params.id;
     }
   },
   methods: {
     ...mapActions(["addItem"]),
     async add() {
-      await this.addItem({
-        idList: this.idList,
-        data: this.model
-      });
-      this.model.title = "";
+      const params = {
+        listId: this.listId,
+        item: this.item
+      };
+      await this.addItem(params);
+      this.item.title = "";
     }
   }
 };
