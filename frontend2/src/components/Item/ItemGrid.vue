@@ -7,10 +7,14 @@
         v-for="item in items"
         :id="item._id"
         :key="item._id"
-        :class="item.done ? 'done' : ''"
+        :class="[
+          item.done ? 'done' : '',
+          item.updatedAt > lastSeen[listId] ? 'yellow' : '',
+        ]"
       >
-        <span v-if="new Date(item.updatedAt) > new Date(lastSeen)">NEW</span>
-        <div class="avatar">AB</div>
+        <div class="avatar">
+          <i class="fas fa-check"></i>
+        </div>
         <div class="item-title">
           <input v-if="idEdit == item._id" type="text" v-model="item.title" />
           <span v-if="idEdit != item._id">
@@ -18,10 +22,17 @@
           </span>
         </div>
         <div class="buttons">
-          <button v-if="idEdit != item._id" @click="remove(item._id)">X</button>
-          <button v-if="idEdit != item._id" @click="idEdit = item._id">
-            E
-          </button>
+          <i
+            v-if="idEdit != item._id"
+            @click="remove(item._id)"
+            class="fas fa-trash-alt"
+          ></i>
+
+          <i
+            v-if="idEdit != item._id"
+            @click="idEdit = item._id"
+            class="fas fa-edit"
+          ></i>
           <button v-if="idEdit != item._id" @click="done(item)">OK</button>
           <button v-if="idEdit == item._id" @click="edit(item)" type="submit">
             S
@@ -33,13 +44,58 @@
   </div>
 </template>
 
-<script src="./script.js"></script>
+<script src="./item-grid.js"></script>
 <style>
-.item-row.done {
-  opacity: 0.5;
+#items {
+  overflow: auto;
+  height: calc(100vh - 130px);
+  background: repeating-linear-gradient(
+    45deg,
+    #ececec,
+    #ececec 5px,
+    #efefef 5px,
+    #efefef 10px
+  );
+}
+@media (min-width: 1300px) {
+  #items {
+    height: calc(100vh - 170px);
+  }
+}
+#items::-webkit-scrollbar {
+  width: 6px;
+}
+#items::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+#items::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+}
+
+@keyframes yellow {
+  0% {
+    background: #ecedad;
+  }
+  50% {
+    background: #ecedad;
+  }
+  100% {
+    background: white;
+  }
+}
+.yellow {
+  animation: yellow 2s;
+}
+#items .item-row.done .avatar {
+  background-color: green;
+}
+#items .item-row.done {
+  opacity: 0.9;
   cursor: default;
 }
-.item-row {
+#items .item-row {
+  margin: 5px;
+  background-color: white;
   display: flex;
   position: relative;
   border-bottom: 1px solid #f2f2f2;
@@ -47,10 +103,10 @@
   cursor: pointer;
   color: #000;
 }
-.item-row:active {
+#items .item-row:active {
   background: #ebebeb;
 }
-.item-row:hover {
+#items .item-row:hover {
   background: #f5f5f5;
 }
 .item-row a {
@@ -73,13 +129,14 @@
   flex-basis: 20px;
   flex-grow: 1;
 }
-.item-title a {
+.item-title span {
   overflow: hidden;
   position: absolute;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
-  font-size: 17px;
+  font-size: 1.3em;
+  padding-left: 0.7em;
 }
 
 .item-row .buttons {
@@ -88,6 +145,3 @@
   padding-right: 3px;
 }
 </style>
-<style>
-</style>
-<link rel="stylesheet" href="./styles.css">

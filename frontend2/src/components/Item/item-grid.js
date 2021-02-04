@@ -32,6 +32,7 @@ export default {
     lastSeen() {
       const userId = localStorage.getItem("userid");
       const lastSeen = this.lists.reduce((map, list) => {
+        console.log("calc");
         let user = list.users.find(user => user.userId == userId);
         map[list._id] = user.lastSeen;
         return map;

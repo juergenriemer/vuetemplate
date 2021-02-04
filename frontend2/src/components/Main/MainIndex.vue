@@ -11,10 +11,10 @@
   </div>
 </template>
   <script>
-import ListIndex from "@/components/List/view";
-import ItemIndex from "@/components/Item/view";
-import UserInfo from "@/components/User/Info.vue";
-import UserSocket from "@/components/User/Socket.vue";
+import ListIndex from "@/components/List/ListIndex";
+import ItemIndex from "@/components/Item/ItemIndex";
+import UserInfo from "@/components/User/UserInfo";
+import UserSocket from "@/components/User/UserSocket";
 
 export default {
   name: "DashboardIndex",
@@ -30,11 +30,17 @@ export default {
 body {
   background: whitesmoke;
 }
-body::-webkit-scrollbar {
-  width: 6px !important;
-  height: 6px !important;
-}
 
+#main {
+  border: 1px solid #c0c0c0;
+  box-shadow: 4px 4px 4px #444;
+}
+@media (min-width: 1300px) {
+  #main {
+    margin-top: 20px;
+    height: calc(100vh - 40px);
+  }
+}
 .row {
   display: flex;
   flex-direction: row;

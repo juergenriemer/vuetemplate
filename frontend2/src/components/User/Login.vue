@@ -4,6 +4,8 @@
     <input type="text" v-model="username" placeholder="username" /><br />
     <input type="text" v-model="password" placeholder="password" /><br />
     <button type="submit" @click="submit">sumbit</button>
+    <hr />
+    <router-link to="/register">Register new account</router-link>
   </form>
 </template>
 <script>

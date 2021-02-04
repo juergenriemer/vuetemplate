@@ -13,9 +13,15 @@
             <div class="badge" v-if="missedUpdates[list._id]">
               {{ missedUpdates[list._id] }}
             </div>
-            <div class="avatar">
-              <router-link class="" :to="`/main/${list._id}`"> AB </router-link>
-            </div>
+            <router-link class="" :to="`/main/${list._id}`">
+              <div class="avatar">
+                <svg
+                  width="100%"
+                  height="100%"
+                  :data-jdenticon-value="list.title"
+                ></svg>
+              </div>
+            </router-link>
           </div>
           <div class="list-title">
             <input v-if="idEdit == list._id" type="text" v-model="list.title" />
@@ -43,8 +49,29 @@
   </div>
 </template>
 
-<script src="./script.js"></script>
+<script src="./list-grid.js"></script>
 <style>
+#lists {
+  overflow: auto;
+  background: #fff;
+  height: calc(100vh - 130px);
+}
+
+@media (min-width: 1300px) {
+  #lists {
+    height: calc(100vh - 170px);
+  }
+}
+#lists::-webkit-scrollbar {
+  width: 6px;
+}
+#lists::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+#lists::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+}
+
 .list-row.current {
   background: #ebebeb;
 }
@@ -118,4 +145,3 @@
   padding-right: 3px;
 }
 </style>
-<link rel="stylesheet" href="./styles.css">

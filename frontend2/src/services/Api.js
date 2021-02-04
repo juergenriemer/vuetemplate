@@ -26,10 +26,18 @@ export default () => {
         if (hash != login) {
           next = `${login}#next=${hash}`;
         }
-        self.location.hash = `${next}`;
+        if (!/\/login/.test(hash)) self.location.hash = `${next}`;
+      } else if (
+        error &&
+        error.response &&
+        error.response.data &&
+        error.response.data.error
+      ) {
+        // return error to caller if explicitly set
+        return error.response.data.error;
       } else {
         console.log("ERR>>>>>>>>>>>>>>: ", error);
-        return Promise.reject(error);
+        if (error.response) return Promise.reject(error);
       }
     }
   );

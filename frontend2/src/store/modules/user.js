@@ -13,7 +13,11 @@ const getters = {
 const actions = {
   async register({ commit }, data) {
     const res = await User.register(data);
-    return true;
+    return res;
+  },
+  async verifyRegistration({ commit }, token) {
+    const res = await User.verifyRegistration(token);
+    return res;
   },
 
   async login({ commit }, data) {

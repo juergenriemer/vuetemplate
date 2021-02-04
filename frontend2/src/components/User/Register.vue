@@ -1,51 +1,41 @@
 <template>
-  <form>
-    <input type="text" v-model="username" placeholder="username" /><br />
-    <input type="text" v-model="password" placeholder="password" /><br />
-    <button type="submit" @click="submit">create</button>
-  </form>
+  <div>
+    <form @submit.prevent>
+      <input type="text" v-model="user.username" placeholder="username" /><br />
+      <input type="text" v-model="user.email" placeholder="email" /><br />
+      <input type="text" v-model="user.password" placeholder="password" /><br />
+      <button type="submit" @click="submit">create</button>
+    </form>
+    <p v-if="status == 'idle'">Please enter your data.</p>
+    <p v-if="status == 'OK'">
+      Your registration was successful.<br />
+      Please check your mailbox for a verification e-mail.
+    </p>
+    <p v-if="status == 'error'">
+      An error happend.<br />
+      Please try again later.
+    </p>
+  </div>
 </template>
 
 <script>
-import axios from "axios";
-import { mapGetters, mapActions } from "vuex";
+import { mapActions } from "vuex";
 
 export default {
   data: () => ({
-    username: "",
-    password: "",
+    status: "idle",
+    user: {
+      username: "jriemer",
+      email: "juergen.riemer@gmail.com",
+      password: "test",
+    },
   }),
   methods: {
+    ...mapActions(["register"]),
     async submit() {
-      const info = {
-        username: this.username,
-        password: this.password,
-      };
-      this.$store
-        .dispatch("register", info)
-        .then(() => this.$router.push("/login"));
-
-      /*
-        return axios({
-          method: 'post',
-          data: {
-            username: this.username,
-            password: this.password,
-          },
-          url: 'http://10.0.0.199:3000/users/register',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(() => {
-            this.$router.push({ name: 'Login' });
-          })
-          .catch((error) => {
-            const message = error.response.data.message;
-            console.warn(`${message}`);
-          });
-      return true;
-       */
+      const res = await this.register(this.user);
+      console.log(res);
+      this.status = "OK";
     },
     clear() {
       this.$refs.form.reset();

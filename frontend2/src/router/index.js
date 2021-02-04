@@ -1,17 +1,20 @@
 import Vue from "vue";
 import Router from "vue-router";
-import ListIndex from "@/components/List/view";
-import ItemIndex from "@/components/Item/view";
-import MainIndex from "@/components/Main/view";
+import MainIndex from "@/components/Main/MainIndex";
 import Register from "@/components/User/Register";
+import VerifyRegistration from "@/components/User/RegisterVerify";
 import Login from "@/components/User/Login";
-import Logout from "@/components/User/Logout";
 
 Vue.use(Router);
 
 export default new Router({
   // NB: browser back/forward not triggering when console is open!
   routes: [
+    {
+      path: "/verify-registration/:token",
+      name: "VerifyRegistration",
+      component: VerifyRegistration
+    },
     {
       path: "/register",
       name: "Register",
@@ -23,9 +26,9 @@ export default new Router({
       component: Login
     },
     {
-      path: "/logout",
-      name: "Logout",
-      component: Logout
+      path: "/main",
+      name: "MainIndex",
+      component: MainIndex
     },
     {
       path: "/main/:id",

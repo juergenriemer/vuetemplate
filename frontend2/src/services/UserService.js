@@ -5,6 +5,10 @@ class User extends REST {
     let url = `${this.root}/register`;
     return await Api().post(url, creds);
   }
+  async verifyRegistration(token) {
+    let url = `${this.root}/verifyRegistration/${token}`;
+    return await Api().get(url);
+  }
   async login(creds) {
     let url = `${this.root}/login`;
     return await Api().post(url, creds);
