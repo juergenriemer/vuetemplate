@@ -56,6 +56,14 @@ export default {
         }
       }
     },
+    editMode(evt, item) {
+      const row = evt.target.closest("form");
+      this.idEdit = this.idEdit == item._id ? null : item._id;
+      setTimeout(() => {
+        const input = row.querySelector("input");
+        input && input.focus();
+      }, 1);
+    },
     onFilterChange() {
       this.fetch();
     },
@@ -76,14 +84,13 @@ export default {
         item
       });
     },
-    async edit(item) {
+    async submit(item) {
       await this.updateItem({
         listId: this.listId,
         itemId: item._id,
         item
       });
       this.idEdit = null;
-      //res && (this.idEdit = null);
     }
   }
 };

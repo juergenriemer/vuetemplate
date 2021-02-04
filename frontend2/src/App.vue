@@ -22,8 +22,9 @@ body {
 }
 
 #app {
-  width: 1300px;
   margin: 0 auto;
+  min-width: 640px;
+  max-width: 1400px;
 }
 #wrapper {
   border: 1px solid transparent;

@@ -2,45 +2,39 @@
   <div id="items">
     <div v-if="items && items.length > 0">
       <form
-        @submit.prevent
+        @submit.prevent="submit(item)"
+        @dblclick="done(item)"
         class="item-row"
         v-for="item in items"
         :id="item._id"
         :key="item._id"
         :class="[
+          item._id == idEdit ? 'focus' : '',
           item.done ? 'done' : '',
           item.updatedAt > lastSeen[listId] ? 'yellow' : '',
         ]"
       >
         <div class="avatar">
-          <i class="fas fa-check"></i>
+          <i class="fas fa-check" @click="done(item)"></i>
         </div>
         <div class="item-title">
-          <input v-if="idEdit == item._id" type="text" v-model="item.title" />
-          <span v-if="idEdit != item._id">
+          <input
+            v-if="idEdit == item._id"
+            @blur="idEdit = null"
+            type="text"
+            v-model="item.title"
+          />
+          <span class="noselect" v-if="idEdit != item._id">
             {{ item.title }}
           </span>
         </div>
         <div class="buttons">
-          <i
-            v-if="idEdit != item._id"
-            @click="remove(item._id)"
-            class="fas fa-trash-alt"
-          ></i>
-
-          <i
-            v-if="idEdit != item._id"
-            @click="idEdit = item._id"
-            class="fas fa-edit"
-          ></i>
-          <button v-if="idEdit != item._id" @click="done(item)">OK</button>
-          <button v-if="idEdit == item._id" @click="edit(item)" type="submit">
-            S
-          </button>
+          <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
+          <i @click="editMode($event, item)" class="fas fa-edit"></i>
         </div>
       </form>
     </div>
-    <div v-else>You don't have any item yet</div>
+    <div class="onboard" v-else>You don't have any item yet</div>
   </div>
 </template>
 
@@ -88,10 +82,14 @@
 }
 #items .item-row.done .avatar {
   background-color: green;
+  color: white;
 }
 #items .item-row.done {
   opacity: 0.9;
-  cursor: default;
+  xcursor: default;
+}
+#items .item-row.done .item-title span {
+  text-decoration: line-through;
 }
 #items .item-row {
   margin: 5px;
@@ -108,6 +106,10 @@
 }
 #items .item-row:hover {
   background: #f5f5f5;
+}
+
+#items .item-row.focus:hover {
+  background: #fff;
 }
 .item-row a {
   text-decoration: none;
@@ -129,19 +131,50 @@
   flex-basis: 20px;
   flex-grow: 1;
 }
+
+.item-row input {
+}
+.item-row .buttons {
+  padding-top: 4px;
+  padding-right: 4px;
+}
+.item-row .buttons i {
+  color: #777;
+  font-size: 1.3em;
+  padding: 5px;
+}
+.item-row .buttons i:hover {
+  color: #000;
+}
+
 .item-title span {
   overflow: hidden;
   position: absolute;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+}
+
+.item-title span,
+.item-title input {
+  /* needed to set for input as well.. put in app.vue */
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
+    Cantarell, Fira Sans, sans-serif;
   font-size: 1.3em;
   padding-left: 0.7em;
 }
 
-.item-row .buttons {
-  color: #ababab;
-  padding-left: 3px;
-  padding-right: 3px;
+#items input:focus {
+  outline: none;
+}
+#items input {
+  margin: 0;
+  border: 0;
+  background: #fff;
+  margin-top: 11px;
+}
+.onboard {
+  font-size: 2em;
+  padding: 3em;
 }
 </style>

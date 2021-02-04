@@ -46,11 +46,18 @@ export default {
   border-top: 1px dashed #c0c0c0;
 }
 #item-add input {
-  margin: 10px;
-  font-size: 1.3em;
+  margin-top: 7px;
+  margin-left: 7px;
+  height: 30px;
+  font-size: 1.5em;
+  padding: 0.3em;
   border: 0;
-  padding: 5px;
   background: #fff;
+  width: 100%;
+  max-width: 853px;
+}
+#add-item input:focus {
+  outline: none;
 }
 
 #item-add button {
