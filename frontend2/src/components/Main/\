@@ -1,37 +1,33 @@
 <template>
   <div class="row" id="main">
     <div class="left column">
-      <user-socket></user-socket>
       <user-info></user-info>
       <list-add></list-add>
       <list-grid></list-grid>
     </div>
     <div class="right column">
-      <item-list-menu></item-list-menu>
-      <item-grid></item-grid>
-      <item-add></item-add>
+      <user-socket></user-socket>
+      <item-index></item-index>
     </div>
   </div>
 </template>
   <script>
+import ListIndex from "@/components/List/ListIndex";
 import ListAdd from "@/components/List/ListAdd";
 import ListGrid from "@/components/List/ListGrid";
-import ItemAdd from "@/components/Item/ItemAdd";
-import ItemGrid from "@/components/Item/ItemGrid";
-import ItemListMenu from "@/components/Item/ItemListMenu";
+import ItemIndex from "@/components/Item/ItemIndex";
 import UserInfo from "@/components/User/UserInfo";
 import UserSocket from "@/components/User/UserSocket";
 
 export default {
   name: "DashboardIndex",
   components: {
-    UserInfo,
-    UserSocket,
-    ListAdd,
-    ListGrid,
-    ItemGrid,
-    ItemAdd,
-    ItemListMenu,
+    "user-info": UserInfo,
+    "user-socket": UserSocket,
+    "list-index": ListIndex,
+    "list-add": ListAdd,
+    "list-grid": ListGrid,
+    "item-index": ItemIndex,
   },
 };
 </script>

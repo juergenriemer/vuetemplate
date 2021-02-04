@@ -63,7 +63,7 @@
   }
 }
 #lists::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 #lists::-webkit-scrollbar-track {
   background: #e0e0e0;

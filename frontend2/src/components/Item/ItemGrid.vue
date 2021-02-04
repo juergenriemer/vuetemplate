@@ -42,7 +42,7 @@
 <style>
 #items {
   overflow: auto;
-  height: calc(100vh - 130px);
+  height: calc(100vh - 132px); /* +2 for two times borders */
   background: repeating-linear-gradient(
     45deg,
     #ececec,
@@ -53,11 +53,11 @@
 }
 @media (min-width: 1300px) {
   #items {
-    height: calc(100vh - 170px);
+    height: calc(100vh - 172px);
   }
 }
 #items::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 #items::-webkit-scrollbar-track {
   background: #e0e0e0;

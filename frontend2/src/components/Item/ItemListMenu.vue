@@ -9,6 +9,9 @@
     <div class="buttons">
       <i class="fas fa-ellipsis-v"></i>
     </div>
+    <div id="menu" class="hide">
+      transform-origin: right top; transform: scale(1); opacity: 1;
+    </div>
   </div>
 </template>
 <script>
@@ -35,7 +38,7 @@ export default {
   top: 0;
   z-index: 3;
   background: #e0e0e0;
-  border-bottom: 1px dashed #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
 }
 #item-list-menu .large.avatar {
   width: 60px;

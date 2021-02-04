@@ -44,8 +44,8 @@ export default {
   top: 0;
   z-index: 3;
   background: #e0e0e0;
-  border-bottom: 1px dashed #c0c0c0;
-  border-right: 6px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+  border-right: 1px solid #c0c0c0;
 }
 
 #user-info .list-row {

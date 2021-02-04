@@ -41,22 +41,20 @@ export default {
 <style>
 #item-add {
   height: 60px;
-  background: #f0f0f0;
   background: #e0e0e0;
-  border-top: 1px dashed #c0c0c0;
+  border-top: 1px solid #c0c0c0;
 }
+
 #item-add input {
-  margin-top: 7px;
-  margin-left: 7px;
-  height: 30px;
-  font-size: 1.5em;
-  padding: 0.3em;
-  border: 0;
+  font-size: 1.3em;
   background: #fff;
-  width: 100%;
-  max-width: 853px;
+  width: calc(100% - 40px);
+  margin: 10px;
+  padding: 10px;
+  border: 0;
 }
-#add-item input:focus {
+
+#item-add input:focus {
   outline: none;
 }
 

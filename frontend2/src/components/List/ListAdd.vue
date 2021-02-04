@@ -1,12 +1,11 @@
 <template>
-  <form id="list-add" @submit.prevent>
+  <form id="list-add" @submit.prevent="add">
     <input
       type="text"
       name="title"
-      placeholder="ADD LIST"
+      placeholder="NEW LIST"
       v-model="list.title"
     />
-    <button type="submit" @click="add">Add</button>
   </form>
 </template>
 
@@ -40,16 +39,19 @@ export default {
 <style>
 #list-add {
   height: 60px;
-  background: #f0f0f0;
   background: #e0e0e0;
-  border-top: 1px dashed #c0c0c0;
-  border-right: 6px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+  border-right: 1px solid #c0c0c0;
 }
 #list-add input {
-  margin: 10px;
   font-size: 1.3em;
-  border: 0;
-  padding: 5px;
   background: #fff;
+  width: calc(100% - 40px);
+  margin: 10px;
+  padding: 10px;
+  border: 0;
+}
+#list-add input:focus {
+  outline: none;
 }
 </style>
