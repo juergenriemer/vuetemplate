@@ -23,6 +23,12 @@ const actions = {
     return true;
   },
 
+  async resetList({ commit }, listId) {
+    const response = await List.reset(listId);
+    commit("resetList", listId);
+    return true;
+  },
+
   async addList({ commit }, { list }) {
     const response = await List.create(list);
     commit("addList", response.data);
@@ -93,6 +99,12 @@ const mutations = {
     if (index !== -1) {
       state.lists.splice(index, 1, item);
     }
+  },
+  resetList: (state, listId) => {
+    const list = state.lists.find(list => {
+      return list._id == listId;
+    });
+    list.items.forEach(item => (item.done = false));
   },
   updateItem: (state, { listId, item }) => {
     let userId = localStorage.getItem("userid");

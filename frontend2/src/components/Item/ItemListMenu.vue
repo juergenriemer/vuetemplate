@@ -1,24 +1,59 @@
 <template>
-  <div id="item-list-menu" class="list-row">
-    <div class="avatar large">
-      <svg width="100%" height="100%" :data-jdenticon-value="list.title"></svg>
+  <div>
+    <div id="item-list-menu" class="list-row">
+      <div class="avatar large">
+        <svg
+          width="100%"
+          height="100%"
+          :data-jdenticon-value="list.title"
+        ></svg>
+      </div>
+      <div class="title">{{ list.title }}</div>
+      <div class="buttons">
+        <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
+      </div>
+
+      <div id="menu" v-if="showMenu">
+        <div
+          style="transform-origin: right top; transform: scale(1); opacity: 1"
+        >
+          <ul @click="menu($event)">
+            <li data-link="manage">Manage list</li>
+            <li data-link="editItems" :class="editListItems ? 'bold' : ''">
+              Edit list items
+            </li>
+            <li data-link="reset">Uncheck all items</li>
+            <li data-link="share">Share list</li>
+            <li data-link="delete">Delete list</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="title">
-      {{ list.title }}
-    </div>
-    <div class="buttons">
-      <i class="fas fa-ellipsis-v"></i>
-    </div>
-    <div id="menu" class="hide">
-      transform-origin: right top; transform: scale(1); opacity: 1;
+    <div id="modal" v-if="showConfirmation">
+      <div class="modal">
+        <p class="title">Are you sure you want to delete this list?</p>
+        <div class="buttons">
+          <button class="secondary" @click="showConfirmation = false">
+            cancel
+          </button>
+          <button class="primary" @click="remove(list._id)">
+            delete the list
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
+import { bus } from "../../main";
 export default {
   name: "ItemListMenu",
-  data: () => ({}),
+  data: () => ({
+    showMenu: false,
+    showConfirmation: false,
+    editListItems: false,
+  }),
   computed: {
     ...mapGetters(["lists"]),
     listId() {
@@ -29,10 +64,57 @@ export default {
       return list || {};
     },
   },
+  created() {},
+  methods: {
+    ...mapActions(["deleteList", "resetList"]),
+    async remove(id) {
+      let count = this.lists.length;
+      console.log(this.lists);
+      console.log(count);
+      let nextId = null;
+      if (count > 1) {
+        let index = this.lists.findIndex((list) => list._id == id);
+        let nextIndex = index > 0 ? --index : 1;
+        console.warn(nextIndex);
+        nextId = this.lists[nextIndex]._id;
+        console.log(nextId);
+      }
+      await this.deleteList(id);
+      this.showConfirmation = false;
+      console.log(nextId);
+      if (nextId) self.location.hash = `/#/main/${nextId}`;
+    },
+    menu(evt) {
+      const link = evt.target.getAttribute("data-link");
+      switch (link) {
+        case "editItems":
+          this.editListItems = !this.editListItems;
+          bus.$emit("editListItems", this.editListItems);
+          break;
+        case "reset":
+          this.resetList(this.listId);
+          break;
+        case "share":
+          break;
+        case "delete":
+          this.showConfirmation = true;
+          break;
+      }
+      this.showMenu = false;
+    },
+  },
 };
 // phttps://jdenticon.com/ MIT license
 </script>
 <style>
+#item-list-menu .buttons i {
+  padding: 0.5em;
+}
+#item-list-menu #menu {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+}
 #item-list-menu {
   height: 70px;
   top: 0;

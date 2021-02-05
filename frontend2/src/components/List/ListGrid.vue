@@ -31,17 +31,6 @@
               </router-link>
             </span>
           </div>
-          <div class="buttons">
-            <button v-if="idEdit != list._id" @click="remove(list._id)">
-              X
-            </button>
-            <button v-if="idEdit != list._id" @click="idEdit = list._id">
-              E
-            </button>
-            <button v-if="idEdit == list._id" @click="edit(list)" type="submit">
-              S
-            </button>
-          </div>
         </div>
       </div>
       <div v-else>You don't have any list yet</div>
@@ -137,11 +126,5 @@
   white-space: nowrap;
   width: 100%;
   font-size: 17px;
-}
-
-.list-row .buttons {
-  color: #ababab;
-  padding-left: 3px;
-  padding-right: 3px;
 }
 </style>

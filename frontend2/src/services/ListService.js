@@ -16,6 +16,10 @@ class List {
     return Api().post(this.root, params);
   }
 
+  reset(listId) {
+    return Api().put(`${this.root}/${listId}`);
+  }
+
   update(params) {
     let id = params.id || params._id;
     return Api().put(`${this.root}/${id}`, params);

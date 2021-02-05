@@ -1,21 +1,25 @@
 //import Filter from "@/mixins/Filter";
 import { mapGetters, mapActions } from "vuex";
+import { bus } from "../../main";
 
 export default {
   name: "ItemGrid",
-  //mixins: [Filter],
   data() {
     return {
-      //      filterName: "list",
+      editListItems: false,
       filter: {
         query: {}
       },
-      idEdit: null
+      idEdit: null,
+      newTitle: null
     };
   },
   created() {
     this.fetch();
     this.seeList();
+    bus.$on("editListItems", data => {
+      this.editListItems = data;
+    });
   },
   computed: {
     ...mapGetters(["lists", "user"]),
@@ -27,12 +31,13 @@ export default {
       return list || {};
     },
     items() {
+      let items = this.list.items;
+      if (items) items.sort((a, b) => (a.done > b.done ? 1 : -1));
       return this.list.items || [];
     },
     lastSeen() {
       const userId = localStorage.getItem("userid");
       const lastSeen = this.lists.reduce((map, list) => {
-        console.log("calc");
         let user = list.users.find(user => user.userId == userId);
         map[list._id] = user.lastSeen;
         return map;
@@ -56,16 +61,29 @@ export default {
         }
       }
     },
+    closeInput() {
+      this.newTitle = null;
+      this.idEdit = null;
+    },
+    editInput(evt, item) {
+      switch (evt.key) {
+        case "Escape":
+          this.closeInput();
+          break;
+        case "Enter":
+          //item.title = this.newTitle;
+          //this.submit(item);
+          break;
+      }
+    },
     editMode(evt, item) {
       const row = evt.target.closest("form");
       this.idEdit = this.idEdit == item._id ? null : item._id;
+      this.newTitle = item.title;
       setTimeout(() => {
         const input = row.querySelector("input");
         input && input.focus();
-      }, 1);
-    },
-    onFilterChange() {
-      this.fetch();
+      }, 0); /* need to wait for element to render */
     },
     async fetch() {
       let result = await this.fetchLists();
@@ -84,13 +102,14 @@ export default {
         item
       });
     },
-    async submit(item) {
+    async saveInput(item) {
+      if (this.newTitle) item.title = this.newTitle;
       await this.updateItem({
         listId: this.listId,
         itemId: item._id,
         item
       });
-      this.idEdit = null;
+      this.closeInput();
     }
   }
 };

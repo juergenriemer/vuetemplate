@@ -2,7 +2,7 @@
   <div id="items">
     <div v-if="items && items.length > 0">
       <form
-        @submit.prevent="submit(item)"
+        @submit.prevent="saveInput(item)"
         @dblclick="done(item)"
         class="item-row"
         v-for="item in items"
@@ -20,15 +20,20 @@
         <div class="item-title">
           <input
             v-if="idEdit == item._id"
-            @blur="idEdit = null"
+            @blur="closeInput()"
+            @keydown="
+              if ($event.key == 'Escape') {
+                closeInput();
+              }
+            "
             type="text"
-            v-model="item.title"
+            v-model="newTitle"
           />
-          <span class="noselect" v-if="idEdit != item._id">
+          <div class="noselect" v-if="idEdit != item._id" :title="item.title">
             {{ item.title }}
-          </span>
+          </div>
         </div>
-        <div class="buttons">
+        <div v-if="editListItems" class="buttons">
           <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
           <i @click="editMode($event, item)" class="fas fa-edit"></i>
         </div>
@@ -85,10 +90,9 @@
   color: white;
 }
 #items .item-row.done {
-  opacity: 0.9;
-  xcursor: default;
+  opacity: 0.8;
 }
-#items .item-row.done .item-title span {
+#items .item-row.done .item-title div {
   text-decoration: line-through;
 }
 #items .item-row {
@@ -107,8 +111,13 @@
 #items .item-row:hover {
   background: #f5f5f5;
 }
-
+#items .item-row:hover .buttons {
+  background: #f5f5f5;
+}
 #items .item-row.focus:hover {
+  background: #fff;
+}
+#items .item-row.focus:hover .buttons {
   background: #fff;
 }
 .item-row a {
@@ -123,6 +132,8 @@
   font-size: 20px;
   font-weight: bold;
   margin: 3px;
+  min-width: 49px;
+  max-width: 49px;
 }
 
 .item-title {
@@ -132,11 +143,12 @@
   flex-grow: 1;
 }
 
-.item-row input {
-}
 .item-row .buttons {
+  position: absolute;
+  right: 0;
   padding-top: 4px;
   padding-right: 4px;
+  background: #fff;
 }
 .item-row .buttons i {
   color: #777;
@@ -147,15 +159,15 @@
   color: #000;
 }
 
-.item-title span {
+.item-title div {
   overflow: hidden;
-  position: absolute;
+  display: cell;
+  max-height: 50px;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
+  max-width: calc(100%-150px);
 }
 
-.item-title span,
+.item-title div,
 .item-title input {
   /* needed to set for input as well.. put in app.vue */
   font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
@@ -172,6 +184,7 @@
   border: 0;
   background: #fff;
   margin-top: 11px;
+  width: calc(100% - 90px);
 }
 .onboard {
   font-size: 2em;

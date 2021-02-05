@@ -9,7 +9,7 @@ const error = error => {
 };
 
 Vue.config.productionTip = false;
-
+export const bus = new Vue();
 /* remove below? */
 /*
 Vue.prototype.$http = Axios;
