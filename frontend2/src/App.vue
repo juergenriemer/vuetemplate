@@ -46,7 +46,7 @@ body {
 
 #menu {
   background: #fff;
-  z-index: 10;
+  z-index: 100;
   width: 250px;
   border: 1px solid #c0c0c0;
   box-shadow: 3px 3px 3px #c0c0c0;
@@ -70,6 +70,7 @@ body {
 
 /* modal window */
 .modal {
+  z-index: 200;
   padding: 24px 24px 24px;
   border-radius: 3px;
   box-shadow: 0 15px 50px 0 #444;

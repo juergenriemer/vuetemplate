@@ -17,7 +17,7 @@ class List {
   }
 
   reset(listId) {
-    return Api().put(`${this.root}/${listId}`);
+    return Api().put(`${this.root}/reset/${listId}`);
   }
 
   update(params) {

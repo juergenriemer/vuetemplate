@@ -67,22 +67,19 @@ export default {
   created() {},
   methods: {
     ...mapActions(["deleteList", "resetList"]),
-    async remove(id) {
+    async remove(listId) {
       let count = this.lists.length;
-      console.log(this.lists);
-      console.log(count);
-      let nextId = null;
+      let nextId = "";
       if (count > 1) {
-        let index = this.lists.findIndex((list) => list._id == id);
-        let nextIndex = index > 0 ? --index : 1;
-        console.warn(nextIndex);
+        let index = this.lists.findIndex((list) => list._id == listId);
+        let nextIndex = index > 0 ? index - 1 : 1;
         nextId = this.lists[nextIndex]._id;
-        console.log(nextId);
       }
-      await this.deleteList(id);
       this.showConfirmation = false;
-      console.log(nextId);
-      if (nextId) self.location.hash = `/#/main/${nextId}`;
+      this.$root.$router.push({
+        path: `/main/${nextId}`,
+      });
+      await this.deleteList(listId);
     },
     menu(evt) {
       const link = evt.target.getAttribute("data-link");
