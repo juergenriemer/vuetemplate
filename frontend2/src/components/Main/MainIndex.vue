@@ -45,7 +45,7 @@ body {
   border: 1px solid #c0c0c0;
   box-shadow: 4px 4px 4px #444;
 }
-@media (min-width: 1300px) {
+@media (min-width: 1400px) {
   #main {
     margin-top: 20px;
     height: calc(100vh - 40px);

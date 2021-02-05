@@ -16,7 +16,7 @@ export default {
   name: "ItemAdd",
   data() {
     return {
-      item: { title: "" },
+      item: { title: "", done: false },
     };
   },
   computed: {

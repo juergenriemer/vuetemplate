@@ -17,21 +17,23 @@
         <div class="avatar">
           <i class="fas fa-check" @click="done(item)"></i>
         </div>
-        <div class="item-title">
-          <input
-            v-if="idEdit == item._id"
-            @blur="closeInput()"
-            @keydown="
-              if ($event.key == 'Escape') {
-                closeInput();
-              }
-            "
-            type="text"
-            v-model="newTitle"
-          />
-          <div class="noselect" v-if="idEdit != item._id" :title="item.title">
-            {{ item.title }}
-          </div>
+        <input
+          v-if="idEdit == item._id"
+          @blur="closeInput()"
+          @keydown="
+            if ($event.key == 'Escape') {
+              closeInput();
+            }
+          "
+          type="text"
+          v-model="newTitle"
+        />
+        <div
+          v-if="idEdit != item._id"
+          class="title noselect"
+          :title="item.title"
+        >
+          {{ item.title }}
         </div>
         <div v-if="editListItems" class="buttons">
           <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
@@ -61,6 +63,48 @@
     height: calc(100vh - 172px);
   }
 }
+
+#items .item-row {
+  margin: 5px;
+  background-color: white;
+  display: flex;
+  position: relative;
+  border-bottom: 1px solid #f2f2f2;
+  line-height: 49px;
+  cursor: pointer;
+  color: #000;
+}
+#items .item-row .title {
+  overflow: hidden;
+  display: cell;
+  max-height: 50px;
+  text-overflow: ellipsis;
+  max-width: calc(100%-150px);
+}
+#items .item-row input {
+  margin: 0;
+  border: 0;
+  background: #fff;
+  margin-top: 11px;
+  width: calc(100% - 90px);
+}
+
+#items .item-row .avatar {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 3px;
+  min-width: 49px;
+  max-width: 49px;
+}
+
+.item-title {
+  position: relative;
+  margin-right: auto;
+  flex-basis: 20px;
+  flex-grow: 1;
+}
+
 #items::-webkit-scrollbar {
   width: 8px;
 }
@@ -90,20 +134,10 @@
   color: white;
 }
 #items .item-row.done {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 #items .item-row.done .item-title div {
   text-decoration: line-through;
-}
-#items .item-row {
-  margin: 5px;
-  background-color: white;
-  display: flex;
-  position: relative;
-  border-bottom: 1px solid #f2f2f2;
-  line-height: 49px;
-  cursor: pointer;
-  color: #000;
 }
 #items .item-row:active {
   background: #ebebeb;
@@ -120,55 +154,25 @@
 #items .item-row.focus:hover .buttons {
   background: #fff;
 }
-.item-row a {
-  text-decoration: none;
-}
-.item-row a:active,
-.item-row a:visited {
-  color: #000;
-}
-.item-row .avatar {
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 3px;
-  min-width: 49px;
-  max-width: 49px;
-}
 
-.item-title {
-  position: relative;
-  margin-right: auto;
-  flex-basis: 20px;
-  flex-grow: 1;
-}
-
-.item-row .buttons {
+#items .item-row .buttons {
   position: absolute;
   right: 0;
   padding-top: 4px;
   padding-right: 4px;
   background: #fff;
 }
-.item-row .buttons i {
+#items .item-row .buttons i {
   color: #777;
   font-size: 1.3em;
   padding: 5px;
 }
-.item-row .buttons i:hover {
+#items .item-row .buttons i:hover {
   color: #000;
 }
 
-.item-title div {
-  overflow: hidden;
-  display: cell;
-  max-height: 50px;
-  text-overflow: ellipsis;
-  max-width: calc(100%-150px);
-}
-
-.item-title div,
-.item-title input {
+#items .item-row .title,
+#items .item-row .title input {
   /* needed to set for input as well.. put in app.vue */
   font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
     Cantarell, Fira Sans, sans-serif;
@@ -176,17 +180,10 @@
   padding-left: 0.7em;
 }
 
-#items input:focus {
+#items .item-row input:focus {
   outline: none;
 }
-#items input {
-  margin: 0;
-  border: 0;
-  background: #fff;
-  margin-top: 11px;
-  width: calc(100% - 90px);
-}
-.onboard {
+#items .onboard {
   font-size: 2em;
   padding: 3em;
 }
