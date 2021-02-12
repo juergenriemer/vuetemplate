@@ -82,11 +82,20 @@
   max-width: calc(100%-150px);
 }
 #items .item-row input {
-  margin: 0;
+  height: 40px;
+  margin-top: 3px;
   border: 0;
   background: #fff;
-  margin-top: 11px;
   width: calc(100% - 90px);
+}
+
+#items .item-row .title,
+#items .item-row input {
+  /* needed to set for input as well.. put in app.vue */
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
+    Cantarell, Fira Sans, sans-serif;
+  font-size: 1.3em;
+  padding-left: 0.7em;
 }
 
 #items .item-row .avatar {
@@ -169,15 +178,6 @@
 }
 #items .item-row .buttons i:hover {
   color: #000;
-}
-
-#items .item-row .title,
-#items .item-row .title input {
-  /* needed to set for input as well.. put in app.vue */
-  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
-    Cantarell, Fira Sans, sans-serif;
-  font-size: 1.3em;
-  padding-left: 0.7em;
 }
 
 #items .item-row input:focus {

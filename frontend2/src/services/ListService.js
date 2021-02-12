@@ -8,6 +8,18 @@ class List {
     return Api().get(`${this.root}/`);
   }
 
+  approveInvites(listIds) {
+    return Api().post(`${this.root}/approveInvitations`, listIds);
+  }
+
+  invite(listId, email, role) {
+    return Api().get(`${this.root}/invite/${listId}/${email}/${role}`);
+  }
+
+  verifyInvitation(token) {
+    return Api().get(`${this.root}/verifyInvitation/${token}`);
+  }
+
   sawList(listId) {
     return Api().put(`${this.root}/sawList/${listId}`);
   }

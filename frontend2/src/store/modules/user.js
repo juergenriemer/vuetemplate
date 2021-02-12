@@ -11,31 +11,42 @@ const getters = {
 };
 
 const actions = {
-  async register({ commit }, data) {
+  async registerUser({ commit }, data) {
     const res = await User.register(data);
     return res;
   },
   async verifyRegistration({ commit }, token) {
     const res = await User.verifyRegistration(token);
-    return res;
+    if (res && res.data && res.data.token) {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("firstName", res.data.userdata.firstName);
+      localStorage.setItem("lastName", res.data.userdata.lastName);
+      localStorage.setItem("userid", res.data.userdata._id);
+      return res;
+    } else {
+      throw new Error("auth failed");
+    }
   },
 
   async login({ commit }, data) {
     const res = await User.login(data);
-    console.warn(data);
-    console.warn(res);
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("username", res.data.userdata.username);
-    localStorage.setItem("userid", res.data.userdata._id);
-    if (res && res.data) {
+    console.log(res);
+    if (res && res.data && res.data.userdata) {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("firstName", res.data.userdata.firstName);
+      localStorage.setItem("lastName", res.data.userdata.lastName);
+      localStorage.setItem("userid", res.data.userdata._id);
       commit("addUser", res.data.userdata);
+      return res;
+    } else {
+      throw new Error("auth failed");
     }
-    return res;
   },
 
   async logout({ commit }) {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
     localStorage.removeItem("userid");
     commit("removeUser");
     self.location.hash = "#/login";
@@ -44,8 +55,8 @@ const actions = {
   async info({ commit }) {
     // do I need this method? I should have everything in local storage, no?
     // need it because name might have changed on pc _and_ lsatSeen data?
-    const username = localStorage.getItem("username");
-    const res = await User.info(username);
+    const userid = localStorage.getItem("userid");
+    const res = await User.info(userid);
     if (res && res.data) {
       commit("addUser", res.data.userdata);
     }

@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent>
     <h3>Login</h3>
-    <input type="text" v-model="username" placeholder="username" /><br />
+    <input type="text" v-model="email" placeholder="email" /><br />
     <input type="text" v-model="password" placeholder="password" /><br />
     <button type="submit" @click="submit">sumbit</button>
     <hr />
@@ -14,7 +14,7 @@
 import { mapGetters, mapActions } from "vuex";
 export default {
   data: () => ({
-    username: "dmiep",
+    email: "juergen.riemer@gmail.com",
     password: "test",
   }),
 
@@ -23,11 +23,10 @@ export default {
     ...mapActions(["login"]),
     async submit() {
       const info = {
-        username: this.username,
+        email: this.email,
         password: this.password,
       };
       let res = await this.login(info);
-      console.warn(res);
       if (res && res.data && res.data.success) {
         let hash = self.location.hash;
         let parts = hash.split("ogin#next=");
@@ -38,37 +37,6 @@ export default {
           this.$router.push("/");
         }
       }
-      /*
-      $store.dispatch('login', info).then(
-        () => this.$router.push('/')
-      );
-
-         */
-
-      /*
-
-      return axios({
-        method: 'post',
-        data: {
-          username: this.username,
-          password: this.password,
-        },
-        url: 'http://10.0.0.199:3000/users/login',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => {
-          window.localStorage.setItem('auth', response.data.token);
-alert( "OK" );
-// this.$swal('Great!', 'You are ready to start!', 'success');
-          this.$router.push({ name: '/' });
-        })
-        .catch((error) => {
-console.warn( "ERROR" );
-console.log( error )
-        });
-       */
     },
     clear() {
       this.$refs.form.reset();

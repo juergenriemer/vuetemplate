@@ -1,11 +1,9 @@
 <template>
   <div id="user-info" class="list-row">
     <div class="avatar">
-      <svg width="100%" height="100%" :data-jdenticon-value="username"></svg>
+      <svg width="100%" height="100%" :data-jdenticon-value="firstName"></svg>
     </div>
-    <div class="list-title">
-      {{ username }}
-    </div>
+    <div class="list-title">{{ firstName }} {{ lastName }}</div>
     <div class="buttons">
       <!--a href="#" v-on:click.prevent="logout">log</a-->
       <i class="fas fa-ellipsis-v"></i>
@@ -19,21 +17,22 @@ export default {
   data() {
     return {
       userid: "",
-      username: "",
+      firstName: "",
+      lastName: "",
+      email: "",
     };
   },
   computed: mapGetters(["user"]),
   created() {
-    if (!this.user.username) {
-      this.fetch();
-    }
-    this.userid = localStorage.getItem("userid");
-    this.username = localStorage.getItem("username");
+    this.init();
   },
   methods: {
     ...mapActions(["info", "logout"]),
-    async fetch() {
+    async init() {
       let res = await this.info();
+      this.userid = localStorage.getItem("userid");
+      this.firstName = localStorage.getItem("firstName");
+      this.lastName = localStorage.getItem("lastName");
     },
   },
 };

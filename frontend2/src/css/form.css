@@ -1,0 +1,28 @@
+form.form {
+  margin: 0 auto;
+  width: 77%;
+  position: relative;
+}
+form.form > div {
+  padding: 0.5em;
+}
+form.form input {
+  width: 100%;
+  font-size: 1.3em;
+}
+form.form label {
+  display: block;
+  font-size: 0.8em;
+}
+
+form.form button {
+  text-transform: uppercase;
+  transition: box-shadow 0.2s ease-out, background 0.2s ease-out,
+    color 0.2s ease-out;
+  padding: 12px 24px;
+  border-radius: 3px;
+  border: 0;
+}
+form.form button:hover {
+  box-shadow: 3px 3px 3px #c0c0c0;
+}

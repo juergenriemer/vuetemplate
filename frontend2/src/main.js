@@ -2,8 +2,8 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router";
 import store from "./store/index";
-import io from "socket.io-client";
 import VueSocketIO from "vue-socket.io";
+
 const error = error => {
   alert(error);
 };

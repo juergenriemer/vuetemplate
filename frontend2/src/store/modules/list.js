@@ -17,6 +17,21 @@ const actions = {
     commit("removeList", id);
   },
 
+  async approveInvites({ commit }, { approves, lists }) {
+    const response = await List.approveInvites(approves);
+    commit("approveInvites", { lists });
+  },
+
+  async inviteList({ commit }, { listId, email, role }) {
+    const response = await List.invite(listId, email, role);
+    commit("inviteList", { listId, email, role });
+  },
+
+  async verifyInvitation({ commit }, token) {
+    const res = await List.verifyInvitation(token);
+    return res;
+  },
+
   async updateList({ commit }, data) {
     const response = await List.update(data);
     commit("updateList", response.data);
@@ -91,6 +106,10 @@ const mutations = {
   setLists: (state, lists) => (state.lists = lists),
   removeList: (state, listId) => {
     state.lists = state.lists.filter(list => list._id !== listId);
+  },
+
+  approveInvites: (state, { lists }) => {
+    console.log("add lists!!");
   },
   updateList: (state, item) => {
     const index = state.lists.findIndex(list => {

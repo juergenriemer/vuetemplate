@@ -13,10 +13,12 @@
         <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
       </div>
 
-      <div id="menu" v-if="showMenu">
-        <div
-          style="transform-origin: right top; transform: scale(1); opacity: 1"
-        >
+      <div
+        id="menu"
+        v-if="showMenu"
+        style="transform-origin: right top; transform: scale(1); opacity: 1"
+      >
+        <div>
           <ul @click="menu($event)">
             <li data-link="manage">Manage list</li>
             <li data-link="editItems" :class="editListItems ? 'bold' : ''">
@@ -29,19 +31,6 @@
         </div>
       </div>
     </div>
-    <div id="modal" v-if="showConfirmation">
-      <div class="modal">
-        <p class="title">Are you sure you want to delete this list?</p>
-        <div class="buttons">
-          <button class="secondary" @click="showConfirmation = false">
-            cancel
-          </button>
-          <button class="primary" @click="remove(list._id)">
-            delete the list
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -51,7 +40,6 @@ export default {
   name: "ItemListMenu",
   data: () => ({
     showMenu: false,
-    showConfirmation: false,
     editListItems: false,
   }),
   computed: {
@@ -67,20 +55,6 @@ export default {
   created() {},
   methods: {
     ...mapActions(["deleteList", "resetList"]),
-    async remove(listId) {
-      let count = this.lists.length;
-      let nextId = "";
-      if (count > 1) {
-        let index = this.lists.findIndex((list) => list._id == listId);
-        let nextIndex = index > 0 ? index - 1 : 1;
-        nextId = this.lists[nextIndex]._id;
-      }
-      this.showConfirmation = false;
-      this.$root.$router.push({
-        path: `/main/${nextId}`,
-      });
-      await this.deleteList(listId);
-    },
     menu(evt) {
       const link = evt.target.getAttribute("data-link");
       switch (link) {
@@ -92,9 +66,10 @@ export default {
           this.resetList(this.listId);
           break;
         case "share":
+          bus.$emit("shareList");
           break;
         case "delete":
-          this.showConfirmation = true;
+          bus.$emit("deleteList");
           break;
       }
       this.showMenu = false;
@@ -110,7 +85,9 @@ export default {
 #item-list-menu #menu {
   position: absolute;
   top: 50px;
-  right: 50px;
+  right: 20px;
+  scale: 0;
+  opacity: 1;
 }
 #item-list-menu {
   height: 70px;
@@ -120,6 +97,7 @@ export default {
   border-bottom: 1px solid #c0c0c0;
 }
 #item-list-menu .large.avatar {
+  background: #fff;
   width: 60px;
   height: 60px;
 }
