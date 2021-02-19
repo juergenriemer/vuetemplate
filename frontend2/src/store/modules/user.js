@@ -12,20 +12,22 @@ const getters = {
 
 const actions = {
   async registerUser({ commit }, data) {
-    const res = await User.register(data);
-    return res;
-  },
-  async verifyRegistration({ commit }, token) {
-    const res = await User.verifyRegistration(token);
-    if (res && res.data && res.data.token) {
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("firstName", res.data.userdata.firstName);
-      localStorage.setItem("lastName", res.data.userdata.lastName);
-      localStorage.setItem("userid", res.data.userdata._id);
+    return User.register(data).then(res => {
       return res;
-    } else {
-      throw new Error("auth failed");
-    }
+    });
+  },
+  async registerVerifyResend({ commit }, email) {
+    return User.registerVerifyResend(email).then(res => {
+      return res;
+    });
+  },
+  async registerVerify({ commit }, token) {
+    return User.registerVerify(token).then(res => res);
+    //return res;
+    //});
+  },
+  async listInvites({ commit }) {
+    return User.listInvites().then(res => res);
   },
 
   async login({ commit }, data) {

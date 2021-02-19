@@ -1,0 +1,13 @@
+.rows .row {
+  border-bottom: 1px solid whitesmoke;
+  padding: 0.3em 0.5em;
+  cursor: pointer;
+}
+
+.rows .row:first-child {
+  border-top: 1px solid whitesmoke;
+}
+
+.rows .row:hover {
+  background: whitesmoke;
+}

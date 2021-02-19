@@ -1,61 +1,101 @@
-<template>
-  <div class="row" id="user">
-    <div class="left column">
-      <div id="RegisterVerify">
-        <h3>Verify your registration</h3>
-        <p v-if="status == 'expired'">
-          The link expired.<br />
-          Please try to register again.
-        </p>
-        <p v-if="status == 'invalid'">
-          The link is not valid.<br />
-          Please check if the link was properly pasted.
-        </p>
-        <div v-if="invites">
-          <h6>You are invited to the fllowong lists</h6>
-          <div
-            class="list-row"
-            @bouclick="toggle(invite_.id)"
-            @click="approves[invite._id] = !approves[invite._id]"
-            v-for="invite in invites"
-            :key="invite._id"
-          >
-            <div class="checkbox">
-              <i v-if="approves[invite._id]" class="fas fa-check-square"></i>
-              <i v-if="!approves[invite._id]" class="far fa-check-square"></i>
-            </div>
-            <div class="list-title">
-              {{ invite.title }}
-            </div>
-          </div>
-          <div class="buttons">
-            <button class="secondary green">cancel</button>
-            <button class="primary green" @click="approve">INVITE</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--div class="right column"></div-->
-  </div>
+<template lang="pug">
+#user.row
+  .left.column
+    .form
+      h3 Verify your registration
+      .w-flex.result(v-if="status == 'expired'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | The link already expired.
+          p
+            | Click the link below to send it again.
+          a(href="#/resend-verification")
+            | Resend registration verification
+      .w-flex.result(v-if="status == 'invalid'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | The link is invalid.
+          p
+            | In case you pasted the link make sure you copied the entire link.
+            | We can also send another verification e-mail to you.
+          a(href="#/resend-verification")
+            | Resend registration verification
+      .w-flex.result(v-if="status == 'unknown-user'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | There is no user attached to this link
+          p
+            | Perhaps you want to register again?
+          a(href="#/register")
+            | Register an account
+      .w-flex.result(v-if="status == 'user-already-verified'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | The account is already verified.
+          p
+            | In case you have troubles loggin in, consider to reset your password.
+          a(href="#/reset-password")
+            | Reset your password
+      .w-flex.result(v-if="status == 'OK'")
+        i.success.bounce.fas.fa-check
+        div
+          p
+            | Your registration was successful.
+          p
+            | You get redirected
 </template>
-
 <script>
+// REF: test all links in above error modes.. didn't test them all
 import { mapGetters, mapActions } from "vuex";
-
+import Form from "@/mixins/Form";
 export default {
-  data: () => ({
-    invites: [],
-    approves: {},
-    status: "verifying...",
-  }),
+  name: "RegisterVerify",
+  mixins: [Form],
   created() {
-    this.verify();
+  this.submit();
   },
   methods: {
-    ...mapActions(["verifyRegistration", "approveInvites"]),
-    async verify() {
+    ...mapActions(["registerVerify"]),
+    submit() {
       const token = this.$route.params.token;
-      const res = await this.verifyRegistration(token);
+      this.registerVerify(token)
+        .then((res) => {
+          this.status = "OK";
+          console.log( res )
+          if (res.data.lists) {
+            this.invites = res.data.lists;
+            this.$router.push("/approve-invites");
+          }
+          else {
+            this.$router.push("/main");
+          }
+        })
+        .catch((err) => {
+
+          console.log( err )
+          switch (err.status) {
+            case 400:
+              this.status = "idle";
+              console.warn(err.message);
+              break;
+            case 422:
+              this.status = err.message;
+              break;
+            default:
+              this.status = "idle";
+              this.showError(err);
+              break;
+          }
+        });
+    }
+  },
+};
+    /*
+      this.verifyRegistration(token);
       console.log(res);
       if (res && res.data && res.data.userdata) {
         //if (res && res.data && res.data.is_verified) {
@@ -80,8 +120,7 @@ export default {
       console.log(res);
       this.$router.push("/main");
     },
-  },
-};
+     */
 </script>
 <style>
 .list-row {

@@ -1,28 +1,37 @@
-form.form {
-  margin: 0 auto;
-  width: 77%;
-  position: relative;
+.form {
+  padding: 1em;
 }
-form.form > div {
-  padding: 0.5em;
-}
-form.form input {
-  width: 100%;
+.form .result,
+.form form {
+  padding: 2em;
   font-size: 1.3em;
 }
-form.form label {
-  display: block;
-  font-size: 0.8em;
+.form p {
+  padding-bottom: 1em;
+}
+.form .result a {
+  color: #34558b;
+  text-decoration: none;
+  border-bottom: 1px dashed #34558b;
+}
+.form .result a:hover {
+  border-bottom: 1px solid #34558b;
 }
 
-form.form button {
-  text-transform: uppercase;
-  transition: box-shadow 0.2s ease-out, background 0.2s ease-out,
-    color 0.2s ease-out;
-  padding: 12px 24px;
-  border-radius: 3px;
-  border: 0;
+.form .result i {
+  padding-top: 0.3em;
+  padding-right: 0.7em;
+  font-size: 1.7em;
 }
-form.form button:hover {
-  box-shadow: 3px 3px 3px #c0c0c0;
+
+.form .buttons {
+  padding: 1em;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form .buttons button {
+  letter-spacing: 3px;
+  padding-left: 15px;
+  padding-right: 15px;
 }

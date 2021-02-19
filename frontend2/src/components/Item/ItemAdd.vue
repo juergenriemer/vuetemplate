@@ -31,8 +31,13 @@ export default {
         listId: this.listId,
         item: this.item,
       };
-      await this.addItem(params);
-      this.item.title = "";
+      this.addItem(params)
+        .then(() => {
+          this.item.title = "";
+        })
+        .catch((err) => {
+          this.error(err);
+        });
     },
   },
 };

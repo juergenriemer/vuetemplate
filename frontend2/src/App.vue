@@ -2,7 +2,9 @@
   <div id="wrapper">
     <div id="backdrop"><div class="logo">!!</div></div>
     <div id="app">
-      <router-view />
+      <w-app>
+        <router-view />
+      </w-app>
     </div>
   </div>
 </template>
@@ -13,6 +15,7 @@ export default {
 };
 </script>
 <style src="./css/form.css"></style>
+<style src="./css/list.css"></style>
 <style>
 body {
   margin: 0;
@@ -222,5 +225,23 @@ body {
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently */
+}
+
+.bounce {
+  animation: bounce-in 0.5s;
+}
+.unbounce {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

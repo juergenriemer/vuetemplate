@@ -1,14 +1,21 @@
 import Api from "@/services/Api";
-import REST from "@/services/RESTService";
-class User extends REST {
+class User {
+  constructor() {
+    this.root = `/users`;
+  }
+  registerVerifyResend(email) {
+    return Api().post(`${this.root}/registerVerifyResend`, email);
+  }
+  registerVerify(token) {
+    return Api().get(`${this.root}/registerVerify/${token}`);
+  }
+  listInvites() {
+    return Api().get(`${this.root}/listInvites`);
+  }
+  /* refactor below */
   async register(creds) {
-    console.log(creds);
     let url = `${this.root}/register`;
     return await Api().post(url, creds);
-  }
-  async verifyRegistration(token) {
-    let url = `${this.root}/verifyRegistration/${token}`;
-    return await Api().get(url);
   }
   async login(creds) {
     let url = `${this.root}/login`;

@@ -2,7 +2,10 @@ import Vue from "vue";
 import Router from "vue-router";
 import MainIndex from "@/components/Main/MainIndex";
 import Register from "@/components/User/Register";
-import VerifyRegistration from "@/components/User/RegisterVerify";
+import ResetPassword from "@/components/User/ResetPassword";
+import RegisterVerifyResend from "@/components/User/RegisterVerifyResend";
+import ApproveInvites from "@/components/User/ApproveInvites";
+import RegisterVerify from "@/components/User/RegisterVerify";
 import VerifyInvitation from "@/components/List/ShareVerify";
 import Login from "@/components/User/Login";
 
@@ -24,7 +27,7 @@ export default new Router({
     {
       path: "/verify-registration/:token",
       name: "VerifyRegistration",
-      component: VerifyRegistration
+      component: RegisterVerify
     },
     {
       path: "/register",
@@ -35,6 +38,21 @@ export default new Router({
       path: "/login",
       name: "Login",
       component: Login
+    },
+    {
+      path: "/resend-verification",
+      name: "RegisterVerifyResend",
+      component: RegisterVerifyResend
+    },
+    {
+      path: "/approve-invites",
+      name: "ApproveInvites",
+      component: ApproveInvites
+    },
+    {
+      path: "/reset-password",
+      name: "ResetPassword",
+      component: ResetPassword
     },
     {
       path: "/main",

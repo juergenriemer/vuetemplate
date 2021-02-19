@@ -24,7 +24,7 @@ const actions = {
 
   async inviteList({ commit }, { listId, email, role }) {
     const response = await List.invite(listId, email, role);
-    commit("inviteList", { listId, email, role });
+    //commit("inviteList", { listId, email, role });
   },
 
   async verifyInvitation({ commit }, token) {
@@ -58,9 +58,11 @@ const actions = {
 
   // ITEMS
 
-  async deleteItem({ commit }, { listId, itemId }) {
-    const res = await Item.delete(listId, itemId);
-    commit("removeItem", { listId, itemId });
+  async addItem({ commit }, { listId, item }) {
+    return Item.create(listId, item).then(res => {
+      commit("addItem", { listId, item: res.data });
+      return res;
+    });
   },
 
   async updateItem({ commit }, { listId, itemId, item }) {
@@ -69,10 +71,9 @@ const actions = {
     return true;
   },
 
-  async addItem({ commit }, { listId, item }) {
-    const res = await Item.create(listId, item);
-    commit("addItem", { listId, item: res.data });
-    return true;
+  async deleteItem({ commit }, { listId, itemId }) {
+    const res = await Item.delete(listId, itemId);
+    commit("removeItem", { listId, itemId });
   },
 
   addItemExtern({ commit }, data) {
