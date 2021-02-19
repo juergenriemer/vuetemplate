@@ -48,12 +48,23 @@ export default {
   methods: {
     ...mapActions(["inviteList"]),
     async share() {
-      await this.inviteList({
+      this.inviteList({
         listId: this.listId,
         email: this.email,
         role: this.role,
-      });
-      this.showForm = false;
+      })
+        .then(() => {
+          this.showForm = false;
+        })
+        .catch((err) => {
+          console.log(err);
+          switch (err.status) {
+            default:
+              this.status = "idle";
+              this.showError(err);
+              break;
+          }
+        });
     },
   },
 };

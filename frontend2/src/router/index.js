@@ -3,6 +3,7 @@ import Router from "vue-router";
 import MainIndex from "@/components/Main/MainIndex";
 import Register from "@/components/User/Register";
 import ResetPassword from "@/components/User/ResetPassword";
+import ResetPasswordVerify from "@/components/User/ResetPasswordVerify";
 import RegisterVerifyResend from "@/components/User/RegisterVerifyResend";
 import ApproveInvites from "@/components/User/ApproveInvites";
 import RegisterVerify from "@/components/User/RegisterVerify";
@@ -53,6 +54,11 @@ export default new Router({
       path: "/reset-password",
       name: "ResetPassword",
       component: ResetPassword
+    },
+    {
+      path: "/reset-password-verify/:token",
+      name: "ResetPasswordVerify",
+      component: ResetPasswordVerify
     },
     {
       path: "/main",

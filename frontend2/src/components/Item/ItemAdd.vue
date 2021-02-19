@@ -36,7 +36,7 @@ export default {
           this.item.title = "";
         })
         .catch((err) => {
-          this.error(err);
+          this.showError(err);
         });
     },
   },

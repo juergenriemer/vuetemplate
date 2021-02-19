@@ -1,7 +1,7 @@
 import Api from "@/services/Api";
 class Item {
   constructor() {
-    this.root = `/list/item`;
+    this.root = `/item`;
   }
   list(listId) {
     return Api().get(`${this.root}/${listId}`);

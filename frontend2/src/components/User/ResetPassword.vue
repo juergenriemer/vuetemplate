@@ -3,7 +3,7 @@
   .left.column
     .form
       h3 Reset your password
-      w-form(novalidate, v-if="status != 'OK'", @validate="validate")
+      w-form(novalidate, v-if="active", @validate="validate")
         w-input#email.mb4(
           label="E-MAIL",
           name="email",
@@ -20,26 +20,41 @@
           :validators="[valid.password]",
           required
         )
-        w-button.ma1(
-          bg-color="primary",
-          color="white",
-          lg,
-          :disabled="sending",
-          :loading="sending",
-          type="submit"
-        ) RESET
-      .result(v-if="status !== 'no-account'")
-        p
-          | The account exists already.
-        p
-          | To create a new account click on the button below.
-        a(href="#/register")
-          | Register an account
-      .result(v-if="status == 'OK'")
-        p
-          | Your password reset was successful.
-        p
-          | Please check your mailbox for a verification e-mail.
+        .buttons
+          w-button.ma1(
+            bg-color="primary",
+            color="white",
+            shadow,
+            md,
+            :disabled="sending",
+            :loading="sending",
+            type="submit"
+          ) REGISTER
+      .w-flex.result(v-if="status == 'no-user'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | The account does not exist.
+          p
+            | Check your e-mail or create a new account.
+          a(href="#/register")
+            | Register an account
+      .w-flex.result(v-if="status == 'in-registration'")
+        i.error.bounce.fas.fa-exclamation-triangle
+        div
+          p
+            | The account exists already but was not yet verified.
+          p
+            | In case you did not receive an e-mail we can send it again.
+          a(href="#/resend-verification")
+            | Resend registration verification
+      .w-flex.result(v-if="status == 'OK'")
+        i.success.bounce.fas.fa-check
+        div
+          p
+            | Your request to change the password was successful.
+          p
+            | Please check your mailbox for a verification e-mail.
 </template>
 <script>
 import { mapActions } from "vuex";
@@ -54,11 +69,11 @@ export default {
     },
   }),
   methods: {
-    ...mapActions(["registerUser"]),
+    ...mapActions(["resetPassword"]),
     async submit() {
       this.status = "sending";
       setTimeout(() => {
-        this.registerUser(this.user)
+        this.resetPassword(this.user)
           .then(() => {
             this.status = "OK";
           })
@@ -66,7 +81,6 @@ export default {
             switch (err.status) {
               case 400:
                 this.status = "idle";
-                console.warn(err.message);
                 break;
               case 422:
                 this.status = err.message;

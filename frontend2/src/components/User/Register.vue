@@ -85,7 +85,6 @@ export default {
       email: "juergen.riemer@gmail.com",
       password: "Test!234",
     },
-    toggleFade: false,
   }),
   methods: {
     ...mapActions(["registerUser"]),

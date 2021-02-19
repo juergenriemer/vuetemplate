@@ -9,9 +9,16 @@ class User {
   registerVerify(token) {
     return Api().get(`${this.root}/registerVerify/${token}`);
   }
-  listInvites() {
-    return Api().get(`${this.root}/listInvites`);
+
+  resetPassword(data) {
+    console.log(data);
+    return Api().post(`${this.root}/resetPassword`, data);
   }
+
+  resetPasswordVerify(token) {
+    return Api().get(`${this.root}/resetPasswordVerify/${token}`);
+  }
+
   /* refactor below */
   async register(creds) {
     let url = `${this.root}/register`;

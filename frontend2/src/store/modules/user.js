@@ -21,13 +21,18 @@ const actions = {
       return res;
     });
   },
+
   async registerVerify({ commit }, token) {
     return User.registerVerify(token).then(res => res);
-    //return res;
-    //});
   },
-  async listInvites({ commit }) {
-    return User.listInvites().then(res => res);
+
+  async resetPassword({ commit }, data) {
+    console.log(data);
+    return User.resetPassword(data).then(res => res);
+  },
+
+  async resetPasswordVerify({ commit }, token) {
+    return User.resetPasswordVerify(token).then(res => res);
   },
 
   async login({ commit }, data) {

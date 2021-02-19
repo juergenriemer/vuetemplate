@@ -1,5 +1,6 @@
 import List from "@/services/ListService";
 import Item from "@/services/ItemService";
+import Share from "@/services/ShareService";
 import Vue from "vue";
 const state = {
   lists: []
@@ -12,24 +13,30 @@ const getters = {
 };
 
 const actions = {
-  async deleteList({ commit }, id) {
-    const response = await List.delete(id);
-    commit("removeList", id);
+  /* share */
+
+  async listInvites({ commit }) {
+    return Share.listInvites().then(res => res);
   },
 
   async approveInvites({ commit }, { approves, lists }) {
-    const response = await List.approveInvites(approves);
+    const response = await Share.approveInvites(approves);
     commit("approveInvites", { lists });
   },
 
   async inviteList({ commit }, { listId, email, role }) {
-    const response = await List.invite(listId, email, role);
-    //commit("inviteList", { listId, email, role });
+    return Share.invite(listId, email, role);
   },
 
   async verifyInvitation({ commit }, token) {
-    const res = await List.verifyInvitation(token);
+    const res = await Share.verifyInvitation(token);
     return res;
+  },
+
+  /* list */
+  async deleteList({ commit }, id) {
+    const response = await List.delete(id);
+    commit("removeList", id);
   },
 
   async updateList({ commit }, data) {
