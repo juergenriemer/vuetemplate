@@ -13,6 +13,9 @@ export default () => {
     res => res,
     err => {
       const status = err && err.response && err.response.status;
+      if (status == 401) {
+        self.location.hash = "#/login";
+      }
       const uid =
         err && err.response && err.response.data && err.response.data.uid;
       const message =

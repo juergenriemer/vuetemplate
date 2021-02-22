@@ -67,6 +67,7 @@ const actions = {
 
   async addItem({ commit }, { listId, item }) {
     return Item.create(listId, item).then(res => {
+      console.log(">>>", res);
       commit("addItem", { listId, item: res.data });
       return res;
     });
@@ -148,7 +149,6 @@ const mutations = {
     list.users.find(user => user.userId == userId).lastSeen = item.updatedAt;
     let ixList = state.lists.findIndex(list => list._id == listId);
     let items = state.lists[ixList].items;
-    console.log(item);
     items.push(item);
   },
   removeItem: (state, { listId, itemId }) => {

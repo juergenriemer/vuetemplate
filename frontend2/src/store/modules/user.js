@@ -23,31 +23,32 @@ const actions = {
   },
 
   async registerVerify({ commit }, token) {
-    return User.registerVerify(token).then(res => res);
+    return User.registerVerify(token).then(res => {
+      commit("addUser", res.data.token);
+      commit("setToken", res.data.token);
+      return res;
+    });
   },
 
   async resetPassword({ commit }, data) {
-    console.log(data);
     return User.resetPassword(data).then(res => res);
   },
 
   async resetPasswordVerify({ commit }, token) {
-    return User.resetPasswordVerify(token).then(res => res);
+    return User.resetPasswordVerify(token).then(res => {
+      commit("addUser", res.data.token);
+      commit("setToken", res.data.token);
+      return res;
+    });
   },
 
   async login({ commit }, data) {
-    const res = await User.login(data);
-    console.log(res);
-    if (res && res.data && res.data.userdata) {
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("firstName", res.data.userdata.firstName);
-      localStorage.setItem("lastName", res.data.userdata.lastName);
-      localStorage.setItem("userid", res.data.userdata._id);
-      commit("addUser", res.data.userdata);
-      return res;
-    } else {
-      throw new Error("auth failed");
-    }
+    return User.login(data).then(res => {
+      if (res && res.data) {
+        commit("addUser", res.data.userdata);
+        commit("setToken", res.data.token);
+      }
+    });
   },
 
   async logout({ commit }) {
@@ -63,16 +64,24 @@ const actions = {
     // do I need this method? I should have everything in local storage, no?
     // need it because name might have changed on pc _and_ lsatSeen data?
     const userid = localStorage.getItem("userid");
-    const res = await User.info(userid);
-    if (res && res.data) {
-      commit("addUser", res.data.userdata);
-    }
-    return res;
+    return User.info(userid).then(res => {
+      if (res && res.data) {
+        commit("addUser", res.data.userdata);
+      }
+    });
   }
 };
 
 const mutations = {
-  addUser: (state, user) => (state.user = user),
+  addUser: (state, user) => {
+    state.user = user;
+    localStorage.setItem("firstName", user.firstName);
+    localStorage.setItem("lastName", user.lastName);
+    localStorage.setItem("userid", user._id);
+  },
+  setToken: (state, token) => {
+    localStorage.setItem("token", token);
+  },
   removeUser: state => (state.user = null),
   updateUser: (state, item) => {
     console.warn(item);

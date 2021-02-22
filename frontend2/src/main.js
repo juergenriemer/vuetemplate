@@ -26,7 +26,7 @@ Vue.use(
 Vue.mixin({
   methods: {
     showError({ status, message, uid }) {
-      alert("An error happened, corrid:\n\n" + uid);
+      if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
     }
   }
 });

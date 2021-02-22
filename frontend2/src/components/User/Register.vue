@@ -96,11 +96,9 @@ export default {
             this.status = "OK";
           })
           .catch((err) => {
-            console.log(err);
             switch (err.status) {
               case 400:
                 this.status = "idle";
-                console.warn(err.message);
                 break;
               case 422:
                 this.status = err.message;

@@ -3,7 +3,7 @@
   .left.column
     .form
       h3 Verify your registration
-      .w-flex.result(v-if="status == 'expired'")
+      .w-flex.result(v-if="status == 'token-expired'")
         i.error.bounce.fas.fa-exclamation-triangle
         div
           p
@@ -12,7 +12,7 @@
             | Click the link below to send it again.
           a(href="#/resend-verification")
             | Resend registration verification
-      .w-flex.result(v-if="status == 'invalid'")
+      .w-flex.result(v-if="status == 'token-invalid'")
         i.error.bounce.fas.fa-exclamation-triangle
         div
           p
@@ -56,7 +56,7 @@ export default {
   name: "RegisterVerify",
   mixins: [Form],
   created() {
-  this.submit();
+    this.submit();
   },
   methods: {
     ...mapActions(["registerVerify"]),
@@ -65,18 +65,16 @@ export default {
       this.registerVerify(token)
         .then((res) => {
           this.status = "OK";
-          console.log( res )
+          console.log(res);
           if (res.data.lists) {
             this.invites = res.data.lists;
             this.$router.push("/approve-invites");
-          }
-          else {
+          } else {
             this.$router.push("/main");
           }
         })
         .catch((err) => {
-
-          console.log( err )
+          console.log(err);
           switch (err.status) {
             case 400:
               this.status = "idle";
@@ -91,36 +89,9 @@ export default {
               break;
           }
         });
-    }
+    },
   },
 };
-    /*
-      this.verifyRegistration(token);
-      console.log(res);
-      if (res && res.data && res.data.userdata) {
-        //if (res && res.data && res.data.is_verified) {
-        if (res.data.lists) {
-          this.invites = res.data.lists;
-          this.approves = this.invites.reduce((map, list) => {
-            map[list._id] = true;
-            return map;
-          }, {});
-        } else {
-          this.$router.push("/main");
-        }
-      } else {
-        this.status = res;
-      }
-    },
-    async approve() {
-      const res = await this.approveInvites({
-        approves: this.approves,
-        lists: this.invites.filter((inv) => this.approves[inv._id]),
-      });
-      console.log(res);
-      this.$router.push("/main");
-    },
-     */
 </script>
 <style>
 .list-row {

@@ -3,25 +3,25 @@
   .left.column
     .form
       h3 Verify your password reset
-      .w-flex.result(v-if="status == 'expired'")
+      .w-flex.result(v-if="status == 'token-expired'")
         i.error.bounce.fas.fa-exclamation-triangle
         div
           p
             | The link already expired.
           p
-            | Click the link below to send it again.
-          a(href="#/resend-verification")
-            | XXResend registration verification
-      .w-flex.result(v-if="status == 'invalid'")
+            | Click the link below to request again.
+          a(href="#/reset-password")
+            | Reset password again
+      .w-flex.result(v-if="status == 'token-invalid'")
         i.error.bounce.fas.fa-exclamation-triangle
         div
           p
             | The link is invalid.
           p
             | In case you pasted the link make sure you copied the entire link.
-            | We can also send another verification e-mail to you.
-          a(href="#/resend-verification")
-            | XXResend registration verification
+            | You can also reset the password again.
+          a(href="#/reset-password")
+            | Reset password again
       .w-flex.result(v-if="status == 'unknown-user'")
         i.error.bounce.fas.fa-exclamation-triangle
         div

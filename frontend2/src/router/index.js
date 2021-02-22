@@ -26,8 +26,8 @@ export default new Router({
       }
     },
     {
-      path: "/verify-registration/:token",
-      name: "VerifyRegistration",
+      path: "/register-verify/:token",
+      name: "RegisterVerify",
       component: RegisterVerify
     },
     {
@@ -65,7 +65,6 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        console.log(localStorage.getItem("userid"));
         if (!localStorage.getItem("userid")) next("/login");
         next();
       }
@@ -75,7 +74,6 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        console.log(localStorage.getItem("userid"));
         if (!localStorage.getItem("userid")) next("/login");
         next();
       }
@@ -85,7 +83,6 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        console.log(localStorage.getItem("userid"));
         if (!localStorage.getItem("userid")) next("/login");
         next();
       }

@@ -2,8 +2,7 @@ export default {
   data: () => ({
     status: "idle",
     valid: {
-      firstName: input => "XXAt least two characters",
-      //firstName: input => input.length > 1 || "At least two characters",
+      firstName: input => input.length > 1 || "At least two characters",
       lastName: input => input.length > 1 || "At least two characters",
       email: input =>
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input) || "Enter a valid e-mail",
