@@ -41,61 +41,26 @@ router.put(
   role("user"),
   (req, res, next) => {
     const listId = req.params.listId;
-    const data = { listId, date: new Date() };
-    User.findByIdAndUpdate(
-      req.userId,
-      {
-        $push: { lastSeen: data },
-      },
-      { new: true, upsert: true },
-      (error, list) => {
-        if (error) {
-          res.status(500).json(error);
-        } else {
-          res.status(200).json(data);
-        }
-      }
-    );
-  }
-);
-
-/*
-// show all list
-// REF: just update list title
-router.put(
-  "/:listId/:itemId",
-  passport.authenticate("jwt", { session: false }),
-  validateIds,
-  userInfo,
-  role("owner"),
-  (req, res, next) => {
-    const { listId, itemId } = req.params;
-    let item = req.body;
+    const userId = req.userId;
+    const lastSeen = new Date();
+    console.log(">>>>>>>>>>>>>>", listId, userId);
     List.findOneAndUpdate(
-      { _id: listId, items: { $elemMatch: { _id: itemId } } },
+      { _id: listId, "users.userId": userId },
       {
-        $set: {
-          "items.$.title": item.title,
-          "items.$.done": item.done,
-        },
+        $set: { "users.$.lastSeen": lastSeen },
       },
-      { new: true, safe: true, upsert: true }
+      { new: true, upsert: true }
     )
-      .exec()
-      .then((list) => {
-        item.updatedAt = new Date(); // set date to show as new
-        res.status(200).json(item);
-        utils.broadcast(req, list, {
-          type: "updateItem",
-          item,
-        });
+      .then((found) => {
+        if (!found) throw new ApiError(500, "user-not-in-list");
+        res.status(200).json({ lastSeen });
       })
       .catch((error) => {
         next(error);
       });
   }
 );
-*/
+
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
