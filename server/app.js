@@ -1,7 +1,15 @@
+const cookieParser = require("cookie-parser");
+const csrf = require("csurf");
+const bodyParser = require("body-parser");
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const passport = require("passport");
+
+const csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
+
 /**
  * -------------- GENERAL SETUP ----------------
  */
@@ -12,6 +20,8 @@ require("dotenv").config();
 // Create the Express application
 var app = express();
 
+app.use(cookieParser());
+
 // Configures the database and opens a global connection that can be used in any module with `mongoose.connection`
 require("./config/database");
 
@@ -21,6 +31,7 @@ require("./models/List");
 
 // Pass the global passport object into the configuration function
 require("./config/passport")(passport);
+//
 
 // This will initialize the passport object on every request
 app.use(passport.initialize());
@@ -30,17 +41,49 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Allows our Angular application to make HTTP requests to Express application
-app.use(cors());
+
+const corsConfig = {
+  origin: true,
+  credentials: true,
+};
+app.use(cors(corsConfig));
+
+app.get("/form", csrfProtection, function (req, res) {
+  // pass the csrfToken to the view
+  res.status(200).json({ csrf: req.csrfToken() });
+});
+
+app.post("/form", csrfProtection, function (req, res) {
+  // pass the csrfToken to the view
+  res.status(200).json({ ok: 1 });
+});
 
 // Where Angular builds to - In the ./angular/angular.json file, you will find this configuration
 // at the property: projects.angular.architect.build.options.outputPath
 // When you run `ng build`, the output will go to the ./public directory
 app.use(express.static(path.join(__dirname, "public")));
-
+/*
+app.use(csrfProtection, (req, res, next) => {
+  //res.status(200).json({ csrfToken: req.csrfToken() });
+  var token = req.csrfToken();
+  res.cookie("XSRF-TOKEN", token);
+  res.locals.csrfToken = token;
+  next();
+});
+*/
 /**
  * -------------- ROUTES ----------------
  */
+// set up for CSRF protection
 
+/*
+var bodyParser = require("body-parser"); // delete
+const csurf = require("csurf");
+app.use(bodyParser.json());
+app.use(cookieParser());
+const csrfProtection = csurf({ cookie: true });
+app.use(csrfProtection);
+*/
 // Imports all of the routes from ./routes/index.js
 app.use(require("./routes"));
 

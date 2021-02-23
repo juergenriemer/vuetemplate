@@ -1,3 +1,6 @@
+const cookieParser = require("cookie-parser");
+const csrf = require("csurf");
+var bodyParser = require("body-parser"); // delete
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const List = mongoose.model("List");
@@ -7,6 +10,19 @@ const utils = require("../lib/utils");
 const userInfo = require("../middleware/userInfo.js");
 const validateIds = require("../middleware/validateIds.js");
 const role = require("../middleware/role.js");
+
+const csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
+
+router.use(cookieParser());
+
+router.get("/test", csrfProtection, (req, res) => {
+  res.status(200).json({ ok: true });
+});
+//
+//
+//
+//
 // LIST ROUTES
 //
 // uncheck all items
@@ -36,6 +52,7 @@ router.put(
 
 router.put(
   "/sawList/:listId",
+  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
   role("user"),
@@ -43,7 +60,6 @@ router.put(
     const listId = req.params.listId;
     const userId = req.userId;
     const lastSeen = new Date();
-    console.log(">>>>>>>>>>>>>>", listId, userId);
     List.findOneAndUpdate(
       { _id: listId, "users.userId": userId },
       {
@@ -63,13 +79,14 @@ router.put(
 
 router.get(
   "/",
+  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
+    console.log(">>>>>>>>>>>");
     List.find({ "users.userId": req.userId })
       .exec()
       .then((lists) => {
-        console.log(lists);
         res.status(200).json(lists);
       })
       .catch((err) => {
@@ -82,9 +99,12 @@ router.get(
 // create list
 router.post(
   "/",
+  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
+    console.log(req.headers);
+    //console.log(req.rawHeaders);
     let list = new List(req.body);
     list.users = [{ userId: req.userId, lastSeen: new Date(), role: "owner" }];
     list._id = new mongoose.mongo.ObjectId();
