@@ -95,7 +95,7 @@ export default {
             this.$root.$router.push({
               path: `/main`,
             });
-          }, 1000);
+          }, 500);
         })
         .catch((err) => {
           switch (err.status) {

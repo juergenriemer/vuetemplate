@@ -1,8 +1,10 @@
 import axios from "axios";
-import config from "../config.js";
-
+import appConfig from "../config.js";
+var firstload = true;
+window.csrf = null;
+import Api from "@/services/Api";
 const http = axios.create({
-  baseURL: config.backend,
+  baseURL: appConfig.backend,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -11,6 +13,39 @@ const http = axios.create({
     mode: "cors"
   }
 });
+const getCsrfToken = async () => {
+  let csrf = sessionStorage.getItem("csrf");
+  if (csrf) {
+    return csrf;
+  } else {
+    const res = await fetch(`${appConfig.backend}/csrf`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      },
+      credentials: "include",
+      mode: "cors"
+    });
+    const json = await res.json();
+    sessionStorage.setItem("csrf", json.csrf);
+    return true;
+  }
+};
+
+http.interceptors.request.use(
+  async config => {
+    const value = await getCsrfToken();
+    config.headers["xsrf-token"] = sessionStorage.getItem("csrf");
+    config.headers["Authorization"] = localStorage.getItem("token");
+    return config;
+  },
+  err => {
+    return Promise.reject(err);
+  }
+);
+
 http.interceptors.response.use(
   res => res,
   err => {

@@ -55,10 +55,8 @@ export default {
       "deleteList",
       "updateList"
     ]),
-    onFilterChange() {
-      this.fetch();
-    },
     async fetch() {
+      console.log("fetch");
       let result = await this.fetchLists();
       if (this.listId) this.sawList(this.listId);
     },

@@ -51,6 +51,7 @@ app.use(cors(corsConfig));
 
 app.use(csrfProtection);
 app.get("/csrf", csrfProtection, function (req, res) {
+  console.log(">>csrf<>");
   res.status(200).json({ csrf: req.csrfToken() });
 });
 

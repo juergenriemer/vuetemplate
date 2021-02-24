@@ -1,6 +1,5 @@
 import axios from "axios";
 import Api from "@/services/Api";
-import Csrf from "@/services/CsrfService";
 
 class List {
   constructor(name) {
@@ -8,15 +7,13 @@ class List {
     this.name = name;
   }
 
-  sawList(listId) {
-    return Csrf().then(() => {
-      return Api().put(`${this.root}/sawList/${listId}`);
-    });
+  async sawList(listId) {
+    return await Api().put(`${this.root}/sawList/${listId}`);
   }
 
-  list() {
-    return Api().get(`${this.root}/`);
-  }
+  list = async () => {
+    return await Api().get(`${this.root}/`);
+  };
 
   approveInvites(listIds) {
     return Api().post(`${this.root}/approveInvitations`, listIds);
@@ -31,9 +28,9 @@ class List {
   }
 
   create(params) {
-    return Csrf().then(() => {
-      return Api().post(this.root, params);
-    });
+    //   return Csrf().then(() => {
+    return Api().post(this.root, params);
+    //   });
   }
 
   reset(listId) {
@@ -46,9 +43,7 @@ class List {
   }
 
   delete(id) {
-    return Csrf().then(() => {
-      return Api().delete(`${this.root}/${id}`);
-    });
+    return Api().delete(`${this.root}/${id}`);
   }
 }
 

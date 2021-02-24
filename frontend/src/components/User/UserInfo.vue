@@ -6,7 +6,7 @@
     <div class="list-title">{{ firstName }} {{ lastName }}</div>
     <div class="buttons">
       <!--a href="#" v-on:click.prevent="logout">log</a-->
-      <i class="fas fa-ellipsis-v"></i>
+      <i class="fas fa-ellipsis-v" @click="logout"></i>
     </div>
   </div>
 </template>

@@ -9,11 +9,6 @@ module.exports = (role) => {
     let roles = ["owner"];
     if (role == "admin") roles.push(...["admin"]);
     if (role == "user") roles.push(...["admin", "user"]);
-    console.log(">>>>>>>>>>");
-    console.log("listId: " + listId);
-    console.log("userId: " + userId);
-    console.log(roles);
-    console.log(">>>>>>>>>>");
     List.findOne({
       $and: [
         { _id: listId },
@@ -29,8 +24,8 @@ module.exports = (role) => {
     })
       .exec()
       .then((found) => {
-        console.log("FOUND", found);
         if (found) next();
+        // Q have only one 401 error message?h
         else throw new ApiError(401, "wrong-role");
       })
       .catch((error) => {
