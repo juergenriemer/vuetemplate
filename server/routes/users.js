@@ -1,5 +1,7 @@
 require("dotenv").config();
 const baseUrl = process.env.CLIENT_HOST;
+//const csrf = require("csurf");
+//const csrfProtection = csrf({ cookie: true });
 // make users insgular
 const mongoose = require("mongoose");
 const router = require("express").Router();

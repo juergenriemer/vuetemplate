@@ -1,14 +1,13 @@
 const cookieParser = require("cookie-parser");
 const csrf = require("csurf");
-const bodyParser = require("body-parser");
-
+const csrfProtection = csrf({ cookie: true });
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const passport = require("passport");
 
-const csrfProtection = csrf({ cookie: true });
-var parseForm = bodyParser.urlencoded({ extended: false });
+//const bodyParser = require("body-parser");
+//var parseForm = bodyParser.urlencoded({ extended: false });
 
 /**
  * -------------- GENERAL SETUP ----------------
@@ -48,29 +47,17 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 
-app.get("/form", csrfProtection, function (req, res) {
-  // pass the csrfToken to the view
-  res.status(200).json({ csrf: req.csrfToken() });
-});
+// provide CSRF token service
 
-app.post("/form", csrfProtection, function (req, res) {
-  // pass the csrfToken to the view
-  res.status(200).json({ ok: 1 });
+app.use(csrfProtection);
+app.get("/csrf", csrfProtection, function (req, res) {
+  res.status(200).json({ csrf: req.csrfToken() });
 });
 
 // Where Angular builds to - In the ./angular/angular.json file, you will find this configuration
 // at the property: projects.angular.architect.build.options.outputPath
 // When you run `ng build`, the output will go to the ./public directory
 app.use(express.static(path.join(__dirname, "public")));
-/*
-app.use(csrfProtection, (req, res, next) => {
-  //res.status(200).json({ csrfToken: req.csrfToken() });
-  var token = req.csrfToken();
-  res.cookie("XSRF-TOKEN", token);
-  res.locals.csrfToken = token;
-  next();
-});
-*/
 /**
  * -------------- ROUTES ----------------
  */

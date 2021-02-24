@@ -34,9 +34,11 @@ const actions = {
   },
 
   /* list */
-  async deleteList({ commit }, id) {
-    const response = await List.delete(id);
-    commit("removeList", id);
+  async deleteList({ commit }, listId) {
+    return List.delete(listId).then(res => {
+      commit("removeList", listId);
+      return res;
+    });
   },
 
   async updateList({ commit }, data) {
@@ -67,7 +69,6 @@ const actions = {
 
   async addItem({ commit }, { listId, item }) {
     return Item.create(listId, item).then(res => {
-      console.log(">>>", res);
       commit("addItem", { listId, item: res.data });
       return res;
     });

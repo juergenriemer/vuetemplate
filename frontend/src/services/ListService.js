@@ -1,16 +1,19 @@
 import axios from "axios";
 import Api from "@/services/Api";
-var readCookie = name => {
-  let cookies = document.cookie;
-  let c = cookies.split(name + "=")[1];
-  console.log(">>>>>>>>>>>>>", c);
-  return c;
-};
+import Csrf from "@/services/CsrfService";
+
 class List {
   constructor(name) {
     this.root = `/${name}`;
     this.name = name;
   }
+
+  sawList(listId) {
+    return Csrf().then(() => {
+      return Api().put(`${this.root}/sawList/${listId}`);
+    });
+  }
+
   list() {
     return Api().get(`${this.root}/`);
   }
@@ -27,14 +30,10 @@ class List {
     return Api().get(`${this.root}/verifyInvitation/${token}`);
   }
 
-  sawList(listId) {
-    //    return Api().post(`http://192.168.1.27:3003/form`);
-    return Api().put(`${this.root}/sawList/${listId}`);
-  }
-
   create(params) {
-    axios.defaults.headers.common["x-csrf-token"] = readCookie("_csrf");
-    return Api().post(this.root, params);
+    return Csrf().then(() => {
+      return Api().post(this.root, params);
+    });
   }
 
   reset(listId) {
@@ -47,7 +46,9 @@ class List {
   }
 
   delete(id) {
-    return Api().delete(`${this.root}/${id}`);
+    return Csrf().then(() => {
+      return Api().delete(`${this.root}/${id}`);
+    });
   }
 }
 
@@ -104,5 +105,5 @@ var test = async function() {
   console.log(parsedResponse2);
 */
 };
-test();
+//test();
 export default new List("List");

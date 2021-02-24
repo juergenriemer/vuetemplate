@@ -1,4 +1,5 @@
 import User from "@/services/UserService";
+import Api from "@/services/Api";
 
 const state = {
   user: []
@@ -51,15 +52,6 @@ const actions = {
     });
   },
 
-  async logout({ commit }) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("firstName");
-    localStorage.removeItem("lastName");
-    localStorage.removeItem("userid");
-    commit("removeUser");
-    self.location.hash = "#/login";
-  },
-
   async info({ commit }) {
     // do I need this method? I should have everything in local storage, no?
     // need it because name might have changed on pc _and_ lsatSeen data?
@@ -69,6 +61,15 @@ const actions = {
         commit("addUser", res.data.userdata);
       }
     });
+  },
+
+  async logout({ commit }) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
+    localStorage.removeItem("userid");
+    commit("removeUser");
+    self.location.hash = "#/login";
   }
 };
 
@@ -80,7 +81,11 @@ const mutations = {
     localStorage.setItem("userid", user._id);
   },
   setToken: (state, token) => {
+    console.log(token);
     localStorage.setItem("token", token);
+    //Authorization: localStorage.getItem("token"),
+    Api().defaults.headers.common["Authorization"] = token;
+    console.log(localStorage.getItem("token"));
   },
   removeUser: state => (state.user = null),
   updateUser: (state, item) => {

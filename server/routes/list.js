@@ -1,39 +1,26 @@
-const cookieParser = require("cookie-parser");
-const csrf = require("csurf");
-var bodyParser = require("body-parser"); // delete
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const List = mongoose.model("List");
-const User = mongoose.model("User");
+//const User = mongoose.model("User");
 const passport = require("passport");
-const utils = require("../lib/utils");
+//const utils = require("../lib/utils");
 const userInfo = require("../middleware/userInfo.js");
 const validateIds = require("../middleware/validateIds.js");
 const role = require("../middleware/role.js");
 
-const csrfProtection = csrf({ cookie: true });
-var parseForm = bodyParser.urlencoded({ extended: false });
-
-router.use(cookieParser());
-
-router.get("/test", csrfProtection, (req, res) => {
-  res.status(200).json({ ok: true });
-});
-//
-//
 //
 //
 // LIST ROUTES
 //
 // uncheck all items
 router.put(
-  "/reset/:id",
+  "/reset/:listId",
   passport.authenticate("jwt", { session: false }),
   userInfo,
   validateIds,
   role("user"),
   (req, res, next) => {
-    List.findById(req.params.id)
+    List.findById(req.params.listId)
       .then((list) => {
         list.items.forEach((item) => {
           item.done = false;
@@ -52,10 +39,9 @@ router.put(
 
 router.put(
   "/sawList/:listId",
-  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
-  role("user"),
+  //put back role("user"),
   (req, res, next) => {
     const listId = req.params.listId;
     const userId = req.userId;
@@ -76,14 +62,12 @@ router.put(
       });
   }
 );
-
+// get all lists a user can see
 router.get(
   "/",
-  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    console.log(">>>>>>>>>>>");
     List.find({ "users.userId": req.userId })
       .exec()
       .then((lists) => {
@@ -99,12 +83,9 @@ router.get(
 // create list
 router.post(
   "/",
-  csrfProtection,
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    console.log(req.headers);
-    //console.log(req.rawHeaders);
     let list = new List(req.body);
     list.users = [{ userId: req.userId, lastSeen: new Date(), role: "owner" }];
     list._id = new mongoose.mongo.ObjectId();
@@ -122,13 +103,14 @@ router.post(
 //
 // delete list
 router.delete(
-  "/:id",
+  "/:listId",
   passport.authenticate("jwt", { session: false }),
   userInfo,
+  validateIds,
   role("owner"),
   (req, res, next) => {
     List.remove({
-      _id: req.params.id,
+      _id: req.params.listId,
     })
       .then(() => {
         res.status(200).json({ ok: true });
@@ -143,13 +125,13 @@ router.delete(
 // REF: just update list title
 
 router.put(
-  "/:id",
+  "/:listId",
   passport.authenticate("jwt", { session: false }),
   userInfo,
   validateIds,
   role("owner"),
   (req, res, next) => {
-    List.findById(req.params.id)
+    List.findById(req.params.listId)
       .then((list) => {
         Object.assign(list, req.body);
         return list.save();

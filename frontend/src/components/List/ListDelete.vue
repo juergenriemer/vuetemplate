@@ -40,18 +40,23 @@ export default {
   methods: {
     ...mapActions(["deleteList"]),
     async remove(listId) {
-      let count = this.lists.length;
-      let nextId = "";
-      if (count > 1) {
-        let index = this.lists.findIndex((list) => list._id == listId);
-        let nextIndex = index > 0 ? index - 1 : 1;
-        nextId = this.lists[nextIndex]._id;
-      }
-      this.showConfirmation = false;
-      this.$root.$router.push({
-        path: `/main/${nextId}`,
-      });
-      await this.deleteList(listId);
+      this.deleteList(listId)
+        .then(() => {
+          let count = this.lists.length;
+          let nextId = "";
+          if (count > 1) {
+            let index = this.lists.findIndex((list) => list._id == listId);
+            let nextIndex = index > 0 ? index - 1 : 1;
+            nextId = this.lists[nextIndex]._id;
+          }
+          this.showConfirmation = false;
+          this.$root.$router.push({
+            path: `/main/${nextId}`,
+          });
+        })
+        .catch((err) => {
+          this.showError(err);
+        });
     },
   },
 };

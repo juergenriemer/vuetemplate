@@ -1,19 +1,6 @@
 import axios from "axios";
 import config from "../config.js";
-/*
-axios
-  .create()
-  .get("/csrf")
-  .then(
-    res => {
-      console.log(">>>>>>>>>>>>>>>> " + res.data.csrfToken);
-      http.defaults.headers.common["X-CSRF-TOKEN"] = res.data.csrfToken;
-    },
-    err => {
-      console.log(err);
-    }
-  );
-*/
+
 const http = axios.create({
   baseURL: config.backend,
   withCredentials: true,
@@ -21,10 +8,7 @@ const http = axios.create({
     "Content-Type": "application/json",
     Authorization: localStorage.getItem("token"),
     credentials: "include",
-    mode: "cors",
-    Cookie: document.cookie, //"_csrf=Lt9RED3GVWyvyuFSl3Scy8oS",
-    "xsrf-token": localStorage.getItem("csrf"),
-    withCredentials: true
+    mode: "cors"
   }
 });
 http.interceptors.response.use(
@@ -42,16 +26,7 @@ http.interceptors.response.use(
     return Promise.reject({ status, message, uid });
   }
 );
-http.get("/form").then(
-  res => {
-    console.log(res.data.csrf);
-    localStorage.setItem("csrf", res.data.csrf);
-    http.defaults.headers.common["xsrf-token"] = res.data.csrf;
-  },
-  err => {
-    console.log(err);
-  }
-);
+
 export default () => {
   return http;
 };

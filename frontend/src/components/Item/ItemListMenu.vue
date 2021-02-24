@@ -8,7 +8,7 @@
           :data-jdenticon-value="list.title"
         ></svg>
       </div>
-      <div class="title">{{ list.title }}</div>
+      <div class="title">{{ list._id }}</div>
       <div class="buttons">
         <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
       </div>

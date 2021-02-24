@@ -91,9 +91,11 @@ export default {
       this.login(this.user)
         .then(() => {
           this.status = "OK";
-          this.$root.$router.push({
-            path: `/main`,
-          });
+          setTimeout(() => {
+            this.$root.$router.push({
+              path: `/main`,
+            });
+          }, 1000);
         })
         .catch((err) => {
           switch (err.status) {

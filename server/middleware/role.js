@@ -9,6 +9,11 @@ module.exports = (role) => {
     let roles = ["owner"];
     if (role == "admin") roles.push(...["admin"]);
     if (role == "user") roles.push(...["admin", "user"]);
+    console.log(">>>>>>>>>>");
+    console.log("listId: " + listId);
+    console.log("userId: " + userId);
+    console.log(roles);
+    console.log(">>>>>>>>>>");
     List.findOne({
       $and: [
         { _id: listId },
@@ -24,8 +29,9 @@ module.exports = (role) => {
     })
       .exec()
       .then((found) => {
+        console.log("FOUND", found);
         if (found) next();
-        else throw new ApiError(401, "no-permission");
+        else throw new ApiError(401, "wrong-role");
       })
       .catch((error) => {
         next(error);

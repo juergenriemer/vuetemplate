@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const List = mongoose.model("List");
-const User = mongoose.model("User");
 const passport = require("passport");
 const utils = require("../lib/utils");
 const userInfo = require("../middleware/userInfo.js");
 const role = require("../middleware/role.js");
 const validateIds = require("../middleware/validateIds.js");
 
-const ApiError = require("../middleware/ApiError");
 // LISTITEM ROUTES
 router.put(
   "/:listId/:itemId",

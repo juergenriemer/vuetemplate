@@ -11,7 +11,6 @@ class User {
   }
 
   resetPassword(data) {
-    console.log(data);
     return Api().post(`${this.root}/resetPassword`, data);
   }
 

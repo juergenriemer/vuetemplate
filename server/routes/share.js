@@ -199,6 +199,7 @@ const validToken = (token, secret) => {
 
 // verify via token
 router.get("/verifyInvitation/:token", (req, res) => {
+  // change to put? or put csrf token here?
   var token = req.params.token;
   const data = validToken(token, secret);
   if (data) {
@@ -259,13 +260,13 @@ router.get("/verifyInvitation/:token", (req, res) => {
 // unshare list
 
 router.delete(
-  "/unshare/:id/:userId",
+  "/unshare/:listId/:userId",
   passport.authenticate("jwt", { session: false }),
   validateIds,
   userInfo,
   role("admin"),
   (req, res, next) => {
-    let listId = req.params.id;
+    let listId = req.params.listId;
     let userId = req.params.userId;
     // test this? need elemMatch like in role middleware?
     List.findByIdAndUpdate(
