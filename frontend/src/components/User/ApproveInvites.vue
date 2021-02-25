@@ -1,5 +1,5 @@
 <template lang="pug">
-#user.row
+#user.row(v-if="!hide")
   .left.column
     .form
       h3 Approve invitations
@@ -29,16 +29,21 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { bus } from "../../main";
 import Form from "@/mixins/Form";
 export default {
   name: "ApproveInvites",
   mixins: [Form],
+  props: ["hide"],
   data: () => ({
     approves: {},
     invites: [],
   }),
   created() {
     this.getListInvites();
+    bus.$on("showApproveInvites", (isShown) => {
+      this.hide = !isShown;
+    });
   },
   methods: {
     ...mapActions(["approveInvites", "listInvites"]),
@@ -46,7 +51,6 @@ export default {
       this.listInvites()
         .then((res) => {
           this.status = "OK";
-          console.log(res);
           if (res.data && res.data.lists) {
             this.invites = res.data.lists;
             this.approves = this.invites.reduce((map, list) => {

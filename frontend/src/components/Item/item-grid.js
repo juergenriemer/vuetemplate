@@ -6,6 +6,7 @@ export default {
   name: "ItemGrid",
   data() {
     return {
+      showItemGrid: true,
       editListItems: false,
       filter: {
         query: {}
@@ -19,6 +20,9 @@ export default {
     this.seeList();
     bus.$on("editListItems", data => {
       this.editListItems = data;
+    });
+    bus.$on("manageList", isShown => {
+      this.showItemGrid = !isShown;
     });
   },
   computed: {

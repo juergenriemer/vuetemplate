@@ -54,10 +54,9 @@ function genPassword(password) {
   };
 }
 
-function getUserId(token) {
+function getUserInfo(token) {
   const decoded = jsonwebtoken.verify(token, PUB_KEY);
-  const userId = decoded.sub;
-  return userId;
+  return decoded.sub;
 }
 
 /**
@@ -65,9 +64,13 @@ function getUserId(token) {
  */
 function issueJWT(user) {
   const _id = user._id;
+  const name = `${user.firstName} ${user.lastName}`;
+  const short = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+  const email = user.email;
   const expiresIn = "1m"; //1d';
   const payload = {
-    sub: _id,
+    //sub: _id,
+    sub: { _id, name, short, email },
     iat: Date.now(),
   };
   const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
@@ -126,4 +129,4 @@ module.exports.broadcast = broadcast;
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
-module.exports.getUserId = getUserId;
+module.exports.getUserInfo = getUserInfo;

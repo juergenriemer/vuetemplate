@@ -171,6 +171,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
+    console.log(">>>>>>>>>>", req.userId);
     User.findOne({ _id: req.userId })
       .exec()
       .then((user) => {
@@ -281,6 +282,7 @@ router.get("/resetPasswordVerify/:token", (req, res, next) => {
       user.salt = saltHash.salt;
       user.hash = saltHash.hash;
       user.failedLogin = 0;
+      // Q REFpass on user object rather than userdata? we pick fields in utils in any case
       userdata = {
         firstName: user.firstName,
         lastName: user.lastName,

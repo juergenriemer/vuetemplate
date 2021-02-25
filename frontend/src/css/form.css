@@ -1,10 +1,12 @@
 .form {
   padding: 1em;
 }
-.form .result,
 .form form {
-  padding: 2em;
   font-size: 1.3em;
+}
+#user .form .result,
+#user .form form {
+  padding: 2em;
 }
 .form p {
   padding-bottom: 1em;

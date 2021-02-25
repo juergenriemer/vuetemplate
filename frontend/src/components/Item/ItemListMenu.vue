@@ -71,6 +71,9 @@ export default {
         case "delete":
           bus.$emit("deleteList");
           break;
+        case "manage":
+          bus.$emit("manageList", true);
+          break;
       }
       this.showMenu = false;
     },

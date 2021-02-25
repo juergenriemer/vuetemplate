@@ -1,5 +1,5 @@
 <template>
-  <div id="items">
+  <div id="items" v-if="showItemGrid">
     <div v-if="items && items.length > 0">
       <form
         @submit.prevent="saveInput(item)"

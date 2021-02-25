@@ -13,14 +13,11 @@ const getters = {
 
 const actions = {
   async registerUser({ commit }, data) {
-    return User.register(data).then(res => {
-      return res;
-    });
+    return User.register(data).then(res => res);
   },
+
   async registerVerifyResend({ commit }, email) {
-    return User.registerVerifyResend(email).then(res => {
-      return res;
-    });
+    return User.registerVerifyResend(email).then(res => res);
   },
 
   async registerVerify({ commit }, token) {
@@ -49,6 +46,7 @@ const actions = {
         commit("addUser", res.data.userdata);
         commit("setToken", res.data.token);
       }
+      return res;
     });
   },
 
@@ -60,6 +58,7 @@ const actions = {
       if (res && res.data) {
         commit("addUser", res.data.userdata);
       }
+      return res;
     });
   },
 

@@ -87,7 +87,15 @@ router.post(
   userInfo,
   (req, res, next) => {
     let list = new List(req.body);
-    list.users = [{ userId: req.userId, lastSeen: new Date(), role: "owner" }];
+    list.users = [
+      {
+        userId: req.userId,
+        name: req.name,
+        short: req.short,
+        lastSeen: new Date(),
+        role: "owner",
+      },
+    ];
     list._id = new mongoose.mongo.ObjectId();
     list
       .save()

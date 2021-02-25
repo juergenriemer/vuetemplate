@@ -31,6 +31,8 @@ const ListSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
+        name: String,
+        short: String,
         lastSeen: Date,
         role: String,
       },

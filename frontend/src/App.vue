@@ -15,6 +15,7 @@ export default {
 };
 </script>
 <style src="./css/form.css"></style>
+<style src="./css/misc.css"></style>
 <style src="./css/list.css"></style>
 <style>
 body {
@@ -199,18 +200,6 @@ body {
   background: #fff;
 }
 
-.avatar {
-  background-color: #e6e6e6;
-  border-radius: 50%;
-  position: relative;
-  overflow: hidden;
-  width: 49px;
-  height: 49px;
-}
-.avatar img {
-  width: 49px;
-  height: 49px;
-}
 .text {
   position: relative;
   flex-grow: 1;

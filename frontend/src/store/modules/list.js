@@ -15,22 +15,30 @@ const getters = {
 const actions = {
   /* share */
 
+  async sawList({ commit }, listId) {
+    List.sawList(listId).then(res => {
+      commit("sawList", res);
+      return res;
+    });
+  },
+
   async listInvites({ commit }) {
     return Share.listInvites().then(res => res);
   },
 
   async approveInvites({ commit }, { approves, lists }) {
-    const response = await Share.approveInvites(approves);
-    commit("approveInvites", { lists });
+    return Share.approveInvites(approves).then(res => {
+      commit("approveInvites", { lists });
+      return res;
+    });
   },
 
   async inviteList({ commit }, { listId, email, role }) {
-    return Share.invite(listId, email, role);
+    return Share.invite(listId, email, role).then(res => res);
   },
 
   async verifyInvitation({ commit }, token) {
-    const res = await Share.verifyInvitation(token);
-    return res;
+    return Share.verifyInvitation(token).then(res => res);
   },
 
   /* list */
@@ -42,27 +50,33 @@ const actions = {
   },
 
   async updateList({ commit }, data) {
-    const response = await List.update(data);
-    commit("updateList", response.data);
-    return true;
+    List.update(data).then(res => {
+      commit("updateList", res.data);
+      return true;
+    });
   },
 
   async resetList({ commit }, listId) {
-    const response = await List.reset(listId);
-    commit("resetList", listId);
-    return true;
+    List.reset(listId).then(res => {
+      commit("resetList", listId);
+      return true;
+    });
   },
 
   async addList({ commit }, { list }) {
-    const response = await List.create(list);
-    commit("addList", response.data);
+    List.create(list).then(res => {
+      commit("addList", res.data);
+      return res;
+    });
   },
 
   async fetchLists({ commit }) {
-    const res = await List.list();
-    if (res && res.data) {
-      commit("setLists", res.data);
-    }
+    List.list().then(res => {
+      if (res && res.data) {
+        commit("setLists", res.data);
+      }
+      return res;
+    });
   },
 
   // ITEMS
@@ -75,14 +89,17 @@ const actions = {
   },
 
   async updateItem({ commit }, { listId, itemId, item }) {
-    const res = await Item.update(listId, itemId, item);
-    commit("updateItem", { listId, item: res.data });
-    return true;
+    Item.update(listId, itemId, item).then(res => {
+      commit("updateItem", { listId, item: res.data });
+      return true;
+    });
   },
 
   async deleteItem({ commit }, { listId, itemId }) {
-    const res = await Item.delete(listId, itemId);
-    commit("removeItem", { listId, itemId });
+    return Item.delete(listId, itemId).then(res => {
+      commit("removeItem", { listId, itemId });
+      return res;
+    });
   },
 
   addItemExtern({ commit }, data) {
@@ -95,11 +112,6 @@ const actions = {
 
   async removeItemExtern({ commit }, data) {
     commit("removeItemExtern", data);
-  },
-
-  async sawList({ commit }, data) {
-    const res = await List.sawList(data);
-    if (res) commit("sawList", res);
   }
 };
 

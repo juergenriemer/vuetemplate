@@ -56,9 +56,15 @@ export default {
       "updateList"
     ]),
     async fetch() {
-      console.log("fetch");
-      let result = await this.fetchLists();
-      if (this.listId) this.sawList(this.listId);
+      this.fetchLists()
+        .then(() => {
+          console.log(this.listId);
+          if (this.listId) {
+            return this.sawList(this.listId);
+          }
+          return Promise.resolve(true);
+        })
+        .catch(err => this.showError("xxxx" + err));
     },
     async remove(id) {
       let result = await this.deleteList(id);

@@ -172,6 +172,8 @@ router.post(
                 let role = lst.invitees.find((inv) => inv.email == email).role;
                 lst.users.push({
                   userId: req.userId,
+                  name: req.name,
+                  short: req.short,
                   lastSeen: new Date(),
                   role,
                 });

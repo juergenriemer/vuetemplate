@@ -39,24 +39,23 @@ export default {
   },
   methods: {
     ...mapActions(["deleteList"]),
+    showNextList() {
+      let count = this.lists.length;
+      let nextId = "";
+      if (count > 1) {
+        let index = this.lists.findIndex((list) => list._id == listId);
+        let nextIndex = index > 0 ? index - 1 : 1;
+        nextId = this.lists[nextIndex]._id;
+      }
+      this.showConfirmation = false;
+      this.$root.$router.push({
+        path: `/main/${nextId}`,
+      });
+    },
     async remove(listId) {
       this.deleteList(listId)
-        .then(() => {
-          let count = this.lists.length;
-          let nextId = "";
-          if (count > 1) {
-            let index = this.lists.findIndex((list) => list._id == listId);
-            let nextIndex = index > 0 ? index - 1 : 1;
-            nextId = this.lists[nextIndex]._id;
-          }
-          this.showConfirmation = false;
-          this.$root.$router.push({
-            path: `/main/${nextId}`,
-          });
-        })
-        .catch((err) => {
-          this.showError(err);
-        });
+        .then(() => this.showNextList())
+        .catch((err) => this.showError(err));
     },
   },
 };

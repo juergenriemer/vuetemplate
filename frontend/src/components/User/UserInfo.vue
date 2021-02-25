@@ -5,8 +5,20 @@
     </div>
     <div class="list-title">{{ firstName }} {{ lastName }}</div>
     <div class="buttons">
-      <!--a href="#" v-on:click.prevent="logout">log</a-->
-      <i class="fas fa-ellipsis-v" @click="logout"></i>
+      <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
+    </div>
+
+    <div
+      id="menu"
+      v-if="showMenu"
+      style="transform-origin: right top; transform: scale(1); opacity: 1"
+    >
+      <div>
+        <ul @click="menu($event)">
+          <li data-link="invites">My Invitations</li>
+          <li data-link="logout">Logout</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -16,10 +28,12 @@ export default {
   name: "UserInfo",
   data() {
     return {
+      showMenu: false,
       userid: "",
       firstName: "",
       lastName: "",
       email: "",
+      short: "",
     };
   },
   computed: mapGetters(["user"]),
@@ -29,10 +43,24 @@ export default {
   methods: {
     ...mapActions(["info", "logout"]),
     async init() {
-      let res = await this.info();
-      this.userid = localStorage.getItem("userid");
-      this.firstName = localStorage.getItem("firstName");
-      this.lastName = localStorage.getItem("lastName");
+      this.info().then((res) => {
+        this.userid = localStorage.getItem("userid");
+        this.short = localStorage.getItem("short");
+        this.firstName = localStorage.getItem("firstName");
+        this.lastName = localStorage.getItem("lastName");
+      });
+    },
+    menu(evt) {
+      const link = evt.target.getAttribute("data-link");
+      switch (link) {
+        case "invitations":
+          bus.$emit("showApproveInvites", true);
+          break;
+        case "logout":
+          this.logout();
+          break;
+      }
+      this.showMenu = false;
     },
   },
 };

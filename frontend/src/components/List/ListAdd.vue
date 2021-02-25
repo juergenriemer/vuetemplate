@@ -27,10 +27,11 @@ export default {
   methods: {
     ...mapActions(["addList"]),
     async add() {
-      await this.addList({
+      this.addList({
         list: this.list,
-      });
-      this.list.title = "";
+      })
+        .then(() => (this.list.title = ""))
+        .catch((err) => this.showError(err));
     },
   },
 };

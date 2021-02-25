@@ -48,6 +48,7 @@ export default new Router({
     {
       path: "/approve-invites",
       name: "ApproveInvites",
+      props: { name: "show" },
       component: ApproveInvites
     },
     {

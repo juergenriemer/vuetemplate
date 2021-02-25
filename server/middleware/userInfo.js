@@ -7,12 +7,15 @@ module.exports = function (req, res, next) {
     const parts = auth.split("Bearer ");
     if (parts && parts[1]) {
       const token = parts[1];
-      const userId = utils.getUserId(token);
-      if (userId) {
-        req.userId = userId;
+      const info = utils.getUserInfo(token);
+      if (info) {
+        req.userId = info._id;
+        req.name = info.name;
+        req.short = info.short;
+        req.email = info.email;
         next();
       } else {
-        res.send(401, "User not authorized"); // user not found
+        res.send(401, "not-authorized"); // user not found
       }
     } else {
       res.send(401, "not-authorized");
