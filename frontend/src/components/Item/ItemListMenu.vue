@@ -1,18 +1,11 @@
 <template>
-  <div>
-    <div id="item-list-menu" class="list-row">
-      <div class="avatar large">
-        <svg
-          width="100%"
-          height="100%"
-          :data-jdenticon-value="list.title"
-        ></svg>
-      </div>
-      <div class="title">{{ list._id }}</div>
-      <div class="buttons">
-        <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
-      </div>
-
+  <div id="item-list-menu">
+    <div class="avatar">
+      <svg width="100%" height="100%" :data-jdenticon-value="list.title"></svg>
+    </div>
+    <div class="title">{{ list._id }}</div>
+    <div class="buttons menu">
+      <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
       <div
         id="menu"
         v-if="showMenu"
@@ -82,42 +75,4 @@ export default {
 // phttps://jdenticon.com/ MIT license
 </script>
 <style>
-#item-list-menu .buttons i {
-  padding: 0.5em;
-}
-#item-list-menu #menu {
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  scale: 0;
-  opacity: 1;
-}
-#item-list-menu {
-  height: 70px;
-  top: 0;
-  z-index: 3;
-  background: #e0e0e0;
-  border-bottom: 1px solid #c0c0c0;
-}
-#item-list-menu .large.avatar {
-  background: #fff;
-  width: 60px;
-  height: 60px;
-}
-#item-list-menu .buttons {
-  font-size: 1.3em;
-  line-height: 70px;
-  color: #444;
-  padding-right: 1em;
-}
-
-#item-list-menu .title {
-  font-size: 1.3em;
-  line-height: 70px;
-  color: #444;
-  position: relative;
-  margin-right: auto;
-  flex-basis: 20px;
-  flex-grow: 1;
-}
 </style>

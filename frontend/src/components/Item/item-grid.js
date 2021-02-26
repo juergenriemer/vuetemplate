@@ -7,7 +7,7 @@ export default {
   data() {
     return {
       showItemGrid: true,
-      editListItems: false,
+      editListItems: true,
       filter: {
         query: {}
       },

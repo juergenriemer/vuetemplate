@@ -1,23 +1,20 @@
 <template>
-  <div id="user-info" class="list-row">
-    <div class="avatar">
-      <svg width="100%" height="100%" :data-jdenticon-value="firstName"></svg>
-    </div>
-    <div class="list-title">{{ firstName }} {{ lastName }}</div>
-    <div class="buttons">
+  <div id="user-info">
+    <div class="avatar">JR</div>
+    <div class="title">{{ firstName }} {{ lastName }}</div>
+    <div class="menu buttons">
       <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
-    </div>
-
-    <div
-      id="menu"
-      v-if="showMenu"
-      style="transform-origin: right top; transform: scale(1); opacity: 1"
-    >
-      <div>
-        <ul @click="menu($event)">
-          <li data-link="invites">My Invitations</li>
-          <li data-link="logout">Logout</li>
-        </ul>
+      <div
+        id="menu"
+        v-if="showMenu"
+        style="transform-origin: right top; transform: scale(1); opacity: 1"
+      >
+        <div>
+          <ul @click="menu($event)">
+            <li data-link="invites">My Invitations</li>
+            <li data-link="logout">Logout</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -66,39 +63,4 @@ export default {
 };
 </script>
 <style>
-#user-info {
-  height: 70px;
-  top: 0;
-  z-index: 3;
-  background: #e0e0e0;
-  border-bottom: 1px solid #c0c0c0;
-  border-right: 1px solid #c0c0c0;
-}
-
-#user-info .list-row {
-  display: flex;
-  position: relative;
-  line-height: 70px;
-  cursor: pointer;
-  color: #000;
-}
-
-#user-info .buttons {
-  font-size: 1.3em;
-  line-height: 70px;
-  color: #444;
-  padding-right: 1em;
-}
-#user-info .list-title {
-  overflow: hidden;
-  position: absolute;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  font-size: 20px;
-  position: relative;
-  margin-right: auto;
-  flex-basis: 20px;
-  flex-grow: 1;
-}
 </style>

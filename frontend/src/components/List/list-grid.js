@@ -55,6 +55,9 @@ export default {
       "deleteList",
       "updateList"
     ]),
+    to(listId) {
+      self.location.href = "/#/main/" + listId;
+    },
     async fetch() {
       this.fetchLists()
         .then(() => {

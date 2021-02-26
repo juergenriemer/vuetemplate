@@ -15,9 +15,26 @@ export default {
 };
 </script>
 <style src="./css/form.css"></style>
-<style src="./css/misc.css"></style>
+<style src="./css/layout.css"></style>
 <style src="./css/list.css"></style>
+<style src="./css/menu.css"></style>
 <style>
+#wrapper {
+  border: 1px solid transparent;
+}
+#backdrop {
+  position: fixed;
+  width: 100%;
+  height: 130px;
+  background: #ff5f49;
+  z-index: -1;
+}
+#backdrop .logo {
+  padding: 1em;
+  font-size: 2em;
+}
+
+/*
 body {
   margin: 0;
   font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
@@ -118,7 +135,7 @@ body {
   background: #fff;
 }
 
-/* menu */
+
 
 #menu {
   background: #fff;
@@ -145,7 +162,7 @@ body {
   background: whitesmoke;
 }
 
-/* modal window */
+
 .modal {
   z-index: 200;
   padding: 24px 24px 24px;
@@ -208,12 +225,12 @@ body {
   white-space: nowrap;
 }
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently */
+  -webkit-touch-callout: none; 
+  -webkit-user-select: none; 
+  -khtml-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
+  user-select: none; 
 }
 
 .bounce {
@@ -233,4 +250,5 @@ body {
     transform: scale(1);
   }
 }
+*/
 </style>

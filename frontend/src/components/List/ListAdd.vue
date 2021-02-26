@@ -38,7 +38,7 @@ export default {
 </script>
 
 <style>
-#list-add {
+#xxxxxxxxxxlist-add {
   height: 60px;
   background: #e0e0e0;
   border-bottom: 1px solid #c0c0c0;
@@ -47,7 +47,6 @@ export default {
 #list-add input {
   font-size: 1.3em;
   background: #fff;
-  width: calc(100% - 40px);
   margin: 10px;
   padding: 10px;
   border: 0;

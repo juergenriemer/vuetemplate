@@ -1,13 +1,71 @@
-.rows .row {
+.row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 2px;
+
+  background: #fff;
   border-bottom: 1px solid whitesmoke;
   padding: 0.3em 0.5em;
   cursor: pointer;
 }
 
-.rows .row:first-child {
+.row:first-child {
   border-top: 1px solid whitesmoke;
+  xborder-top: 1px solid red;
 }
 
-.rows .row:hover {
+.row:hover {
   background: whitesmoke;
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 4;
+  margin: 2px;
+  background: inherit;
+}
+
+.buttons {
+  justify-self: end;
+  flex-shrink: 1;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.buttons i {
+  color: #777;
+  font-size: 1em;
+  padding-left: 2px;
+}
+
+.buttons i:hover {
+  color: #000;
+}
+
+.avatar {
+  flex-shrink: 1;
+  margin: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: red;
+  color: #fff;
+  font-weight: bold;
+  width: 35px;
+  height: 35px;
+  font-size: 18px;
+}
+
+.header .avatar {
+  width: 45px;
+  height: 45px;
+}
+
+.header .title {
+  font-weight: bold;
+  font-size: 1.3em;
 }

@@ -1,10 +1,10 @@
 <template>
-  <div id="items" v-if="showItemGrid">
+  <div id="item-grid" v-if="showItemGrid">
     <div v-if="items && items.length > 0">
       <form
         @submit.prevent="saveInput(item)"
         @dblclick="done(item)"
-        class="item-row"
+        class="row"
         v-for="item in items"
         :id="item._id"
         :key="item._id"
@@ -17,17 +17,19 @@
         <div class="avatar">
           <i class="fas fa-check" @click="done(item)"></i>
         </div>
-        <input
-          v-if="idEdit == item._id"
-          @blur="closeInput()"
-          @keydown="
-            if ($event.key == 'Escape') {
-              closeInput();
-            }
-          "
-          type="text"
-          v-model="newTitle"
-        />
+        <div class="title" v-if="idEdit == item._id">
+          <input
+            @blur="closeInput()"
+            @keydown="
+              if ($event.key == 'Escape') {
+                closeInput();
+              }
+            "
+            spellcheck="false"
+            type="text"
+            v-model="newTitle"
+          />
+        </div>
         <div
           v-if="idEdit != item._id"
           class="title noselect"
@@ -36,155 +38,43 @@
           {{ item.title }}
         </div>
         <div v-if="editListItems" class="buttons">
-          <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
-          <i @click="editMode($event, item)" class="fas fa-edit"></i>
+          <div class="special">
+            <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
+            <i @click="editMode($event, item)" class="fas fa-edit"></i>
+          </div>
         </div>
       </form>
     </div>
-    <div class="onboard" v-else>You don't have any item yet</div>
+    <div v-else>You don't have any item yet</div>
   </div>
 </template>
 
 <script src="./item-grid.js"></script>
 <style>
-#items {
-  overflow: auto;
-  height: calc(100vh - 132px); /* +2 for two times borders */
-  background: repeating-linear-gradient(
-    45deg,
-    #ececec,
-    #ececec 5px,
-    #efefef 5px,
-    #efefef 10px
-  );
-}
-@media (min-width: 1300px) {
-  #items {
-    height: calc(100vh - 172px);
-  }
-}
-
-#items .item-row {
-  margin: 5px;
-  background-color: white;
-  display: flex;
-  position: relative;
-  border-bottom: 1px solid #f2f2f2;
-  line-height: 49px;
-  cursor: pointer;
-  color: #000;
-}
-#items .item-row .title {
-  overflow: hidden;
-  display: cell;
-  max-height: 50px;
-  text-overflow: ellipsis;
-  max-width: calc(100%-150px);
-}
-#items .item-row input {
-  height: 40px;
-  margin-top: 3px;
+.row input {
+  width: 100%;
   border: 0;
   background: #fff;
-  width: calc(100% - 90px);
+}
+.row.focus {
+  background: whitesmoke;
+}
+.row.focus input {
+  background: whitesmoke;
 }
 
-#items .item-row .title,
-#items .item-row input {
-  /* needed to set for input as well.. put in app.vue */
-  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
-    Cantarell, Fira Sans, sans-serif;
-  font-size: 1.3em;
-  padding-left: 0.7em;
-}
-
-#items .item-row .avatar {
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 3px;
-  min-width: 49px;
-  max-width: 49px;
-}
-
-.item-title {
-  position: relative;
-  margin-right: auto;
-  flex-basis: 20px;
-  flex-grow: 1;
-}
-
-#items::-webkit-scrollbar {
-  width: 8px;
-}
-#items::-webkit-scrollbar-track {
-  background: #e0e0e0;
-}
-#items::-webkit-scrollbar-thumb {
-  background: #c0c0c0;
-}
-
-@keyframes yellow {
-  0% {
-    background: #ecedad;
-  }
-  50% {
-    background: #ecedad;
-  }
-  100% {
-    background: white;
-  }
-}
-.yellow {
-  animation: yellow 2s;
-}
-#items .item-row.done .avatar {
-  background-color: green;
-  color: white;
-}
-#items .item-row.done {
+.row.done {
   opacity: 0.7;
 }
-#items .item-row.done .item-title div {
-  text-decoration: line-through;
-}
-#items .item-row:active {
-  background: #ebebeb;
-}
-#items .item-row:hover {
-  background: #f5f5f5;
-}
-#items .item-row:hover .buttons {
-  background: #f5f5f5;
-}
-#items .item-row.focus:hover {
-  background: #fff;
-}
-#items .item-row.focus:hover .buttons {
-  background: #fff;
-}
-
-#items .item-row .buttons {
-  position: absolute;
-  right: 0;
-  padding-top: 4px;
-  padding-right: 4px;
-  background: #fff;
-}
-#items .item-row .buttons i {
-  color: #777;
-  font-size: 1.3em;
-  padding: 5px;
-}
-#items .item-row .buttons i:hover {
+.row .avatar {
+  background: #c0c0c0;
   color: #000;
 }
-
-#items .item-row input:focus {
-  outline: none;
+.row.done .avatar {
+  background: green;
+  color: white;
 }
-#items .onboard {
-  font-size: 2em;
-  padding: 3em;
+.row.done .title {
+  text-decoration: line-through;
 }
 </style>

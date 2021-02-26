@@ -1,0 +1,124 @@
+input,
+body {
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
+    Cantarell, Fira Sans, sans-serif;
+  margin: 0;
+  font-size: 14px;
+}
+body {
+  background: whitesmoke;
+  overflow: hidden;
+}
+/* overrule waveUI flex box which breaks ours */
+.w-app {
+  display: inline !important;
+}
+.hide {
+  display: none !important;
+}
+
+#single,
+#box {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+  height: 100vh;
+  box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
+}
+#single {
+  min-width: 300px;
+  max-width: 500px;
+}
+@media (min-width: 505px) {
+  #single {
+    margin-top: 20px !important;
+    margin: 0 auto;
+    height: calc(100vh - 40px);
+  }
+}
+#box {
+  min-width: 640px;
+  max-width: 1200px;
+}
+@media (min-width: 1225px) {
+  #box {
+    margin-top: 20px !important;
+    margin: 0 auto;
+    height: calc(100vh - 40px);
+  }
+}
+
+@media (max-width: 800px) {
+  .right.column:not(.hide) ~ .middle.column {
+    display: none;
+  }
+}
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  background: #fff;
+}
+.single.column {
+  min-width: 300px;
+  flex: 1;
+}
+.left.column {
+  order: 1;
+  min-width: 300px;
+  flex: 2;
+}
+.middle.column {
+  order: 2;
+  min-width: 400px;
+  flex: 8;
+}
+.right.column {
+  order: 3;
+  min-width: 300px;
+  flex: 4;
+}
+
+.column .header,
+.column .add,
+.column .content {
+  xborder-bottom: 1px solid #c0c0c0;
+  xborder-right: 1px solid #c0c0c0;
+}
+
+.header {
+  height: 66px;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 2px;
+}
+.add {
+  min-height: 60px;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content {
+  flex: 1;
+  overflow: auto;
+  background: repeating-linear-gradient(
+    45deg,
+    #ececec,
+    #ececec 5px,
+    #efefef 5px,
+    #efefef 10px
+  );
+}
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+.content::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+}
+.content::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}

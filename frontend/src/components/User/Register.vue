@@ -1,6 +1,6 @@
 <template lang="pug">
-#user.row
-  .left.column
+#single
+  .middle.column
     .form
       h3 Register an account
       w-form(novalidate, v-if="active", @validate="validate")

@@ -1,17 +1,19 @@
 <template>
-  <div class="row" id="main">
+  <div id="box">
     <div class="left column">
       <user-socket></user-socket>
-      <user-info></user-info>
-      <list-add></list-add>
-      <list-grid></list-grid>
+      <user-info class="header"></user-info>
+      <list-add class="add"></list-add>
+      <list-grid class="content"></list-grid>
     </div>
-    <div class="right column">
-      <item-list-menu></item-list-menu>
-      <manage-list></manage-list>
-      <approve-invites hide="true"></approve-invites>
-      <item-grid></item-grid>
-      <item-add></item-add>
+    <div class="xhide right column">
+      <manage-list class="content"></manage-list>
+      <approve-invites class="content"></approve-invites>
+    </div>
+    <div class="middle column">
+      <item-list-menu class="header"></item-list-menu>
+      <item-grid class="content"></item-grid>
+      <item-add class="add"></item-add>
     </div>
     <div>
       <list-delete></list-delete>
