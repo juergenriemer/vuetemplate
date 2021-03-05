@@ -4,8 +4,8 @@
 .form form {
   font-size: 1.3em;
 }
-#user .form .result,
-#user .form form {
+#single .form .result,
+#single .form form {
   padding: 2em;
 }
 .form p {

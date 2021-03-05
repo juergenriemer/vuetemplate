@@ -3,6 +3,7 @@
     <input
       type="text"
       name="title"
+      @blur="add"
       placeholder="NEW LIST"
       v-model="list.title"
     />
@@ -27,6 +28,7 @@ export default {
   methods: {
     ...mapActions(["addList"]),
     async add() {
+      if (!this.list.title) return;
       this.addList({
         list: this.list,
       })

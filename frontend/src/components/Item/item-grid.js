@@ -1,4 +1,3 @@
-//import Filter from "@/mixins/Filter";
 import { mapGetters, mapActions } from "vuex";
 import { bus } from "../../main";
 
@@ -6,8 +5,8 @@ export default {
   name: "ItemGrid",
   data() {
     return {
-      showItemGrid: true,
-      editListItems: true,
+      itemCount: 0,
+      editListItems: false,
       filter: {
         query: {}
       },
@@ -21,9 +20,6 @@ export default {
     bus.$on("editListItems", data => {
       this.editListItems = data;
     });
-    bus.$on("manageList", isShown => {
-      this.showItemGrid = !isShown;
-    });
   },
   computed: {
     ...mapGetters(["lists", "user"]),
@@ -36,7 +32,7 @@ export default {
     },
     items() {
       let items = this.list.items;
-      if (items) items.sort((a, b) => (a.done > b.done ? 1 : -1));
+      //      if (items) items.sort((a, b) => (a.done > b.done ? 1 : -1));
       return this.list.items || [];
     },
     lastSeen() {
@@ -52,6 +48,13 @@ export default {
   watch: {
     listId() {
       this.seeList();
+    }
+  },
+  updated() {
+    // scroll to bottom in case we added a new item
+    if (this.itemCount < this.items.length) {
+      this.itemCount = this.items.length;
+      this.$el.scrollTop = this.$el.scrollHeight;
     }
   },
   methods: {

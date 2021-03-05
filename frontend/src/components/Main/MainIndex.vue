@@ -1,19 +1,22 @@
 <template>
-  <div id="box">
-    <div class="left column">
-      <user-socket></user-socket>
-      <user-info class="header"></user-info>
-      <list-add class="add"></list-add>
-      <list-grid class="content"></list-grid>
-    </div>
-    <div class="xhide right column">
-      <manage-list class="content"></manage-list>
-      <approve-invites class="content"></approve-invites>
-    </div>
-    <div class="middle column">
-      <item-list-menu class="header"></item-list-menu>
-      <item-grid class="content"></item-grid>
-      <item-add class="add"></item-add>
+  <div>
+    <div id="box">
+      <div class="left column" v-if="showLeft">
+        <user-socket></user-socket>
+        <user-info class="header"></user-info>
+        <list-add class="add"></list-add>
+        <div>{{ windowWidth }}</div>
+        <list-grid class="content"></list-grid>
+      </div>
+      <div class="right column" :class="[showInfo ? '' : 'hide']">
+        <info-header class="header" :title="infoTitle"></info-header>
+        <component class="content" :is="infoComponent"></component>
+      </div>
+      <div class="middle column" v-if="showMiddle">
+        <item-list-menu class="header"></item-list-menu>
+        <item-grid class="content"></item-grid>
+        <item-add class="add"></item-add>
+      </div>
     </div>
     <div>
       <list-delete></list-delete>
@@ -33,6 +36,9 @@ import ManageList from "@/components/List/ManageList";
 import ApproveInvites from "@/components/User/ApproveInvites";
 import UserInfo from "@/components/User/UserInfo";
 import UserSocket from "@/components/User/UserSocket";
+import InfoHeader from "@/components/Info/InfoHeader";
+import ListInfo from "@/components/Info/ListInfo";
+import { bus } from "../../main";
 
 export default {
   name: "DashboardIndex",
@@ -48,6 +54,47 @@ export default {
     ItemListMenu,
     ManageList,
     ApproveInvites,
+    InfoHeader,
+    ListInfo,
+  },
+  data() {
+    return {
+      phoneWidth: 400,
+      windowWidth: window.innerWidth,
+      infoTitle: "",
+      infoComponent: "",
+      showInfo: false,
+      infos: {
+        "approve-invites": "Approve Invitations",
+        "list-info": "List information",
+        "manage-list": "Mange this list",
+      },
+    };
+  },
+  computed: {
+    showLeft() {
+      if (this.windowWidth > this.phoneWidth) return true;
+      if (!this.$route.params.id && !this.showInfo) return true;
+      return false;
+    },
+    showMiddle() {
+      if (this.windowWidth > this.phoneWidth) return true;
+      if (this.$route.params.id && !this.showInfo) return true;
+      return false;
+    },
+  },
+  mounted() {
+    window.addEventListener("resize", () => {
+      this.windowWidth = window.innerWidth;
+    });
+  },
+  created() {
+    bus.$on("showInfo", (component) => {
+      this.infoTitle = this.infos[component];
+      this.infoComponent = component;
+      this.showInfo = true;
+    });
+    bus.$on("closeInfo", () => (this.showInfo = false));
   },
 };
 </script>

@@ -3,6 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   padding: 2px;
+  flex-wrap: nowrap;
 
   background: #fff;
   border-bottom: 1px solid whitesmoke;
@@ -12,7 +13,6 @@
 
 .row:first-child {
   border-top: 1px solid whitesmoke;
-  xborder-top: 1px solid red;
 }
 
 .row:hover {
@@ -23,7 +23,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 4;
+  flex-grow: 2;
   margin: 2px;
   background: inherit;
 }
@@ -34,11 +34,15 @@
   margin: 2px;
   cursor: pointer;
 }
-
+.buttons > div {
+  /* button containers */
+  display: flex;
+  flex-wrap: nowrap;
+}
 .buttons i {
   color: #777;
   font-size: 1em;
-  padding-left: 2px;
+  padding-left: 5px;
 }
 
 .buttons i:hover {
@@ -46,26 +50,52 @@
 }
 
 .avatar {
+  font-size: 0.9em;
   flex-shrink: 1;
   margin: 2px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background: red;
-  color: #fff;
+  background: #c0c0c0;
+  color: #000;
   font-weight: bold;
-  width: 35px;
-  height: 35px;
-  font-size: 18px;
+  max-width: 35px;
+  max-height: 35px;
+  min-width: 35px;
+  min-height: 35px;
 }
 
 .header .avatar {
-  width: 45px;
-  height: 45px;
+  font-size: 1.3em;
+  min-width: 45px;
+  min-height: 45px;
+  max-width: 45px;
+  max-height: 45px;
+  color: #000;
 }
 
 .header .title {
   font-weight: bold;
+  font-size: 1.3em;
+}
+
+.avatar .admin {
+  position: absolute;
+  font-size: 0.6em;
+  color: #16821d;
+  margin-top: -35px;
+  text-shadow: 1px 1px #000;
+}
+
+.avatar .owner {
+  color: goldenrod;
+}
+
+.row .title {
+  font-size: 1.3em;
+}
+
+.row i {
   font-size: 1.3em;
 }

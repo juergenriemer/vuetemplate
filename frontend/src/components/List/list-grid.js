@@ -46,6 +46,9 @@ export default {
       this.sawList(this.listId);
     }
   },
+  updated() {
+    this.$el.scrollTop = 0; //this.$el.scrollHeight;
+  },
   methods: {
     ...mapActions([
       //    "checkForUpdates",
@@ -61,7 +64,6 @@ export default {
     async fetch() {
       this.fetchLists()
         .then(() => {
-          console.log(this.listId);
           if (this.listId) {
             return this.sawList(this.listId);
           }

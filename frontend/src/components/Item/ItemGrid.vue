@@ -1,5 +1,5 @@
 <template>
-  <div id="item-grid" v-if="showItemGrid">
+  <div id="item-grid">
     <div v-if="items && items.length > 0">
       <form
         @submit.prevent="saveInput(item)"
@@ -11,7 +11,7 @@
         :class="[
           item._id == idEdit ? 'focus' : '',
           item.done ? 'done' : '',
-          item.updatedAt > lastSeen[listId] ? 'yellow' : '',
+          item.updatedAt > lastSeen[listId] ? 'xxxyellow' : '',
         ]"
       >
         <div class="avatar">
@@ -37,8 +37,13 @@
         >
           {{ item.title }}
         </div>
-        <div v-if="editListItems" class="buttons">
-          <div class="special">
+        <div class="buttons">
+          <div v-if="!editListItems" class="normal">
+            <i class="far fa-comment-dots"></i>
+            <i class="fas fa-comment-dots"></i>
+            <i class="fas fa-comment-medical"></i>
+          </div>
+          <div v-if="editListItems" class="special">
             <i @click="remove(item._id)" class="fas fa-trash-alt"></i>
             <i @click="editMode($event, item)" class="fas fa-edit"></i>
           </div>

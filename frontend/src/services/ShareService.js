@@ -16,5 +16,9 @@ class Share {
   verifyInvitation(token) {
     return Api().get(`${this.root}/verifyInvitation/${token}`);
   }
+
+  toggleAdmin({ listId, userId, isAdmin }) {
+    return Api().put(`${this.root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
+  }
 }
 export default new Share();

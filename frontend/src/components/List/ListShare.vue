@@ -1,34 +1,38 @@
-<template>
-  <div id="modal" class="shareForm" v-if="showForm">
-    <form class="modal shareForm" @submit.prevent>
-      <p class="title">Invite a friend to share this list!</p>
-      <p>
-        <small
-          >Your friend will be able to add, edit and delete items as well as
-          mark them done.</small
-        >
-      </p>
-      <input type="text" placeholder="ENTER E-MAIL" v-model="email" />
-      <div class="buttons">
-        <button class="secondary green" @click="showForm = false">
-          cancel
-        </button>
-        <button type="submit" class="primary green" @click="share">
-          INVITE
-        </button>
-      </div>
-    </form>
-  </div>
+<template lang="pug">
+w-dialog.dialog(
+  shadow,
+  v-model="showDialog",
+  transition="bounce",
+  title="Share list",
+  width="400"
+)
+  w-form(novalidate, v-if="active", @validate="validate")
+    .body
+      .title Invite a friend to work together on this list!
+      .text Your friend will be able to add, edit and delete items as well as mark them done.
+      w-input#email.center(
+        label="E-MAIL OF FRIEND",
+        name="email",
+        v-model="email",
+        :disabled="sending",
+        :validators="[valid.email]",
+        required
+      )
+      .buttons
+        w-button.ma1(@click="showDialog = false", text, shadow, md) CANCEL
+        w-button.ma1(type="submit", shadow, md, bg-color="success") INVITE
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { bus } from "../../main";
+import Form from "@/mixins/Form";
 export default {
+  mixins: [Form],
   name: "ListShare",
   data: () => ({
     email: "",
     role: "user",
-    showForm: false,
+    showDialog: false,
   }),
   computed: {
     ...mapGetters(["lists"]),
@@ -42,19 +46,19 @@ export default {
   },
   created() {
     bus.$on("shareList", (data) => {
-      this.showForm = true;
+      this.showDialog = true;
     });
   },
   methods: {
     ...mapActions(["inviteList"]),
-    async share() {
+    async submit() {
       this.inviteList({
         listId: this.listId,
         email: this.email,
         role: this.role,
       })
         .then(() => {
-          this.showForm = false;
+          this.showDialog = false;
         })
         .catch((err) => {
           console.log(err);

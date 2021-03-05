@@ -19,9 +19,13 @@ export default {
   created() {
     const userid = localStorage.getItem("userid");
     this.sockets.subscribe(userid, (data) => {
-      console.log(data);
-      console.log("call: " + data.type + "Extern");
-      this[`${data.type}Extern`](data);
+      if (data.csrf !== sessionStorage.getItem("csrf")) {
+        console.log(data);
+        console.log("call: " + data.type + "Extern");
+        this[`${data.type}Extern`](data);
+      } else {
+        console.log("I am trigger of socket message");
+      }
     });
   },
   methods: {
@@ -73,9 +77,4 @@ export default {
   },
 };
 </script>
-<style>
-* {
-  body : {
-  }
-}
-</style>
+

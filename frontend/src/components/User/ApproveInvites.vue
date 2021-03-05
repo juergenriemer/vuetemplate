@@ -1,31 +1,28 @@
 <template lang="pug">
-#user.row(v-if="!hide")
-  .left.column
-    .form
-      h3 Approve invitations
-      w-form
-        p
-          | You have been invited to join lists.
-        p
-          | Select the ones you want and join.
-        .rows
-          .row(
-            v-for="invite in invites",
-            :key="invite._id",
-            @click="approves[invite._id] = !approves[invite._id]"
-          )
-            .w-flex
-              w-checkbox(v-model="approves[invite._id]") {{ invite.title }}
-          .buttons
-            w-button.ma1(
-              bg-color="primary",
-              color="white",
-              md,
-              shadow,
-              :disabled="sending",
-              :loading="sending",
-              @click="submit"
-            ) JOIN
+.form
+  w-form
+    p
+      | You have been invited to join lists.
+    p
+      | Select the ones you want and join.
+    .rows
+      .row(
+        v-for="invite in invites",
+        :key="invite._id",
+        @click="approves[invite._id] = !approves[invite._id]"
+      )
+        .w-flex
+          w-checkbox(v-model="approves[invite._id]") {{ invite.title }}
+      .buttons
+        w-button.ma1(
+          bg-color="primary",
+          color="white",
+          md,
+          shadow,
+          :disabled="sending",
+          :loading="sending",
+          @click="submit"
+        ) JOIN
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";

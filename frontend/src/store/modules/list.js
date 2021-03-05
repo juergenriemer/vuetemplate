@@ -41,6 +41,14 @@ const actions = {
     return Share.verifyInvitation(token).then(res => res);
   },
 
+  async toggleAdmin({ commit }, params) {
+    console.warn(params);
+    return Share.toggleAdmin(params).then(res => {
+      commit("toggleAdmin", params);
+      return res;
+    });
+  },
+
   /* list */
   async deleteList({ commit }, listId) {
     return List.delete(listId).then(res => {
@@ -171,6 +179,11 @@ const mutations = {
       items.findIndex(item => item._id == itemId),
       1
     );
+  },
+  toggleAdmin: (state, { listId, userId, isAdmin }) => {
+    let ixList = state.lists.findIndex(list => list._id == listId);
+    let user = state.lists[ixList].users.find(usr => usr.userId == userId);
+    user.role = isAdmin ? "admin" : "user";
   },
   addItemExtern: (state, data) => {
     let { listId, item } = data;

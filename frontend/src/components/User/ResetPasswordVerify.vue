@@ -1,6 +1,6 @@
 <template lang="pug">
-#user.row
-  .left.column
+#single
+  .single.column
     .form
       h3 Verify your password reset
       .w-flex.result(v-if="status == 'token-expired'")

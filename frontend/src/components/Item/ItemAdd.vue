@@ -1,12 +1,13 @@
 <template>
-  <form id="item-add" @submit.prevent>
+  <form id="item-add" @submit.prevent="add">
     <input
       type="text"
       name="title"
-      placeholder="NEW ITEM"
+      @blur="delayedAdd"
+      placeholder="A NEW ITEM"
       v-model="item.title"
     />
-    <button type="submit" @click="add">ADD</button>
+    <i class="fas fa-times clear" @click="clear()" />
   </form>
 </template>
 
@@ -26,7 +27,17 @@ export default {
   },
   methods: {
     ...mapActions(["addItem"]),
+    clear() {
+      this.item.title = "";
+    },
+    delayedAdd() {
+      setTimeout(() => {
+        this.add();
+      }, 250);
+    },
     async add() {
+      console.log(this.item.title);
+      if (!this.item.title) return;
       const params = {
         listId: this.listId,
         item: this.item,
@@ -34,6 +45,7 @@ export default {
       this.addItem(params)
         .then(() => {
           this.item.title = "";
+          this.$el.querySelector("input").focus();
         })
         .catch((err) => {
           this.showError(err);

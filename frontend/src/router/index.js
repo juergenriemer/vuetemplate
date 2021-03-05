@@ -5,7 +5,7 @@ import Register from "@/components/User/Register";
 import ResetPassword from "@/components/User/ResetPassword";
 import ResetPasswordVerify from "@/components/User/ResetPasswordVerify";
 import RegisterVerifyResend from "@/components/User/RegisterVerifyResend";
-import ApproveInvites from "@/components/User/ApproveInvites";
+import ApproveInvitesSingle from "@/components/User/ApproveInvitesSingle";
 import RegisterVerify from "@/components/User/RegisterVerify";
 import VerifyInvitation from "@/components/List/ShareVerify";
 import Login from "@/components/User/Login";
@@ -47,9 +47,8 @@ export default new Router({
     },
     {
       path: "/approve-invites",
-      name: "ApproveInvites",
-      props: { name: "show" },
-      component: ApproveInvites
+      name: "ApproveInvitesSingle",
+      component: ApproveInvitesSingle
     },
     {
       path: "/reset-password",

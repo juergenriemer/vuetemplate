@@ -113,11 +113,14 @@ const validateToken = (token) => {
 };
 
 function broadcast(req, list, data) {
-  const io = req.app.get("io");
-  const userId = req.userId;
-  let inform = list.users.filter((user) => user.userId != userId);
+  data.csrf = req.headers["xsrf-token"];
   data.listId = list._id;
-  inform.forEach((user) => {
+  const io = req.app.get("io");
+  //  REF: check if we have more than one user logged it, i.e. a user on
+  //  web and on phone.. only then we need to also send to him, otherwise
+  //  we can exclude him like so:
+  //  let inform = list.users.filter((user) => user.userId != req.userId);
+  list.users.forEach((user) => {
     io.sockets.emit(user.userId, data);
   });
 }

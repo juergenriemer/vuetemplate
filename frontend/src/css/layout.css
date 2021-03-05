@@ -25,6 +25,8 @@ body {
   height: 100vh;
   box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
 }
+.is-safari #box {
+}
 #single {
   min-width: 300px;
   max-width: 500px;
@@ -37,9 +39,32 @@ body {
   }
 }
 #box {
-  min-width: 640px;
-  max-width: 1200px;
+  xmin-width: 640px;
+  xmin-width: 500px;
+  xmax-width: 1200px;
 }
+/* min width for outer box _NOT_ for phones */
+@media (min-width: 400px) {
+  #box {
+    min-width: 640px;
+    min-width: 500px;
+    max-width: 1200px;
+  }
+
+  .single.column {
+    min-width: 300px;
+  }
+  .left.column {
+    min-width: 250px;
+  }
+  .middle.column {
+    min-width: 250px;
+  }
+  .right.column {
+    min-width: 250px;
+  }
+}
+
 @media (min-width: 1225px) {
   #box {
     margin-top: 20px !important;
@@ -61,30 +86,30 @@ body {
   background: #fff;
 }
 .single.column {
-  min-width: 300px;
+  xmin-width: 300px;
   flex: 1;
 }
 .left.column {
   order: 1;
-  min-width: 300px;
-  flex: 2;
+  xmin-width: 250px;
+  flex: 3;
 }
 .middle.column {
   order: 2;
-  min-width: 400px;
+  xmin-width: 250px;
   flex: 8;
 }
 .right.column {
   order: 3;
-  min-width: 300px;
-  flex: 4;
+  xmin-width: 250px;
+  flex: 8;
 }
 
 .column .header,
 .column .add,
 .column .content {
-  xborder-bottom: 1px solid #c0c0c0;
-  xborder-right: 1px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+  border-right: 1px solid #c0c0c0;
 }
 
 .header {

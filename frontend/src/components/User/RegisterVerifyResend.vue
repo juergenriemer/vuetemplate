@@ -1,6 +1,6 @@
 <template lang="pug">
-#user.row
-  .left.column
+#single
+  .single.column
     .form
       h3 Reset your password
       w-form(novalidate, v-if="active", @validate="validate")

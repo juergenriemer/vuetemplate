@@ -259,6 +259,45 @@ router.get("/verifyInvitation/:token", (req, res) => {
     res.status(500).json({ error: "invalid" });
   }
 });
+// toggle admin
+router.put(
+  "/toggleAdmin/:listId/:userId/:isAdmin",
+  passport.authenticate("jwt", { session: false }),
+  validateIds,
+  userInfo,
+  role("admin"),
+  (req, res, next) => {
+    let listId = req.params.listId;
+    let userId = req.params.userId;
+    let isAdmin = req.params.isAdmin == "true";
+    const role = isAdmin ? "admin" : "user";
+    List.findOneAndUpdate(
+      { _id: listId, "users.userId": userId },
+      {
+        $set: { "users.$.role": role },
+      },
+      { new: true, upsert: true }
+    )
+      .then((found) => {
+        if (!found) throw new ApiError(500, "user-not-in-list");
+        /*
+        var io = req.app.get("io");
+        let data = {
+          type: "toggleRole",
+          listId,
+          userId,
+          role,
+        };
+        io.sockets.emit(userId, data);
+        */
+        res.status(200).json({ ok: true });
+      })
+      .catch((error) => {
+        next(error);
+      });
+  }
+);
+
 // unshare list
 
 router.delete(

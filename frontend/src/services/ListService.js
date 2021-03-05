@@ -42,8 +42,8 @@ class List {
     return Api().put(`${this.root}/${id}`, params);
   }
 
-  delete(id) {
-    return Api().delete(`${this.root}/${id}`);
+  delete(listId) {
+    return Api().delete(`${this.root}/${listId}`);
   }
 }
 
