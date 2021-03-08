@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const passport = require("passport");
+const utils = require("./lib/utils");
 
 //const bodyParser = require("body-parser");
 //var parseForm = bodyParser.urlencoded({ extended: false });
@@ -51,8 +52,12 @@ app.use(cors(corsConfig));
 
 app.use(csrfProtection);
 app.get("/csrf", csrfProtection, function (req, res) {
-  console.log(">>csrf<>");
   res.status(200).json({ csrf: req.csrfToken() });
+});
+app.get("/users", csrfProtection, function (req, res) {
+  res
+    .status(200)
+    .json({ count: Object.keys(utils.users).length, users: utils.users });
 });
 
 // Where Angular builds to - In the ./angular/angular.json file, you will find this configuration
@@ -62,16 +67,7 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * -------------- ROUTES ----------------
  */
-// set up for CSRF protection
 
-/*
-var bodyParser = require("body-parser"); // delete
-const csurf = require("csurf");
-app.use(bodyParser.json());
-app.use(cookieParser());
-const csrfProtection = csurf({ cookie: true });
-app.use(csrfProtection);
-*/
 // Imports all of the routes from ./routes/index.js
 app.use(require("./routes"));
 
@@ -92,7 +88,27 @@ const io = require("socket.io")(http, {
     methods: ["GET", "POST"],
   },
 });
+
 app.set("io", io);
 io.on("connection", (socket) => {
-  console.log("socket.io inited");
+  let userdata = null;
+  socket.on("join", (data) => {
+    userdata = data;
+    const { csrf, userId } = userdata;
+    if (utils.users[userId]) {
+      if (!utils.users[userId].includes(csrf)) utils.users[userId].push(csrf);
+    } else utils.users[userId] = [csrf];
+    let count = Object.keys(userdata).length;
+    console.log(`${userdata.userId} joined now ${count} users online`);
+  });
+  socket.on("disconnect", () => {
+    if (!userdata) return;
+    const { csrf, userId } = userdata;
+    if (utils.users[userId]) {
+      utils.users[userId] = utils.users[userId].filter((itm) => itm !== csrf);
+      if (!utils.users[userId].length) delete utils.users[userId];
+    }
+    let count = Object.keys(userdata).length;
+    console.log(`${userdata.userId} left now ${count} users online`);
+  });
 });

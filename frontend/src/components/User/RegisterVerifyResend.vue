@@ -7,6 +7,7 @@
         w-input#email.mb4(
           label="E-MAIL",
           name="email",
+          inputmode="email",
           v-model="user.email",
           :disabled="sending",
           :validators="[valid.email]",

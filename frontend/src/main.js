@@ -5,27 +5,24 @@ import store from "./store/index";
 import VueSocketIO from "vue-socket.io";
 import config from "./config.js";
 
-Vue.config.productionTip = false;
-export const bus = new Vue();
-/* remove below? */
-/*
-Vue.prototype.$http = Axios;
-const accessToken = localStorage.getItem("access_token");
-if (accessToken) {
-  Vue.prototype.$http.defaults.headers.common["Authorization"] = accessToken;
-}
-*/
-/* eslint-disable no-new */
-Vue.use(
-  new VueSocketIO({
-    debug: false,
-    connection: config.backend
-  })
-);
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 if (isSafari) {
   document.body.className = "is-safari";
 }
+
+Vue.config.productionTip = false;
+export const bus = new Vue();
+
+/*
+Vue.use(
+  new VueSocketIO({
+    debug: false,
+    connection: config.backend,
+    path: "/socket",
+    transports: ["websocket"]
+  })
+);
+*/
 Vue.mixin({
   computed: {
     listAdmin() {
@@ -75,7 +72,3 @@ new Vue({
   components: { App },
   template: "<App/>"
 });
-
-//Vue.prototype.socket = io("http://10.0.0.199:3003", {
-//  withCredentials: true
-//});

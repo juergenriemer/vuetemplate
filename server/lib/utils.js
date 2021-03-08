@@ -11,7 +11,7 @@ const PUB_KEY = fs.readFileSync(pathToPubKey, "utf8");
 
 const jwt = require("jwt-simple");
 const secret = "MIICCgKCAgEA8a9w5sGtJuDXegso3LQOZA3YutQivO/dFnz";
-
+let users = { ok: true, not: false };
 /**
  * -------------- HELPER FUNCTIONS ----------------
  */
@@ -116,12 +116,13 @@ function broadcast(req, list, data) {
   data.csrf = req.headers["xsrf-token"];
   data.listId = list._id;
   const io = req.app.get("io");
-  //  REF: check if we have more than one user logged it, i.e. a user on
-  //  web and on phone.. only then we need to also send to him, otherwise
-  //  we can exclude him like so:
-  //  let inform = list.users.filter((user) => user.userId != req.userId);
   list.users.forEach((user) => {
-    io.sockets.emit(user.userId, data);
+    if (users[user.userId]) {
+      users[user.userId].forEach((usr) => {
+        // don't emit to myself
+        if (usr !== data.csrf) io.emit(usr, data);
+      });
+    }
   });
 }
 
@@ -133,3 +134,4 @@ module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
 module.exports.getUserInfo = getUserInfo;
+module.exports.users = users;

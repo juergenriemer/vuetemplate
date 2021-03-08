@@ -12,6 +12,7 @@ w-dialog.dialog(
       .text Your friend will be able to add, edit and delete items as well as mark them done.
       w-input#email.center(
         label="E-MAIL OF FRIEND",
+        inputmode="email",
         name="email",
         v-model="email",
         :disabled="sending",

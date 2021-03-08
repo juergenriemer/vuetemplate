@@ -2,7 +2,6 @@
   <div>
     <div id="box">
       <div class="left column" v-if="showLeft">
-        <user-socket></user-socket>
         <user-info class="header"></user-info>
         <list-add class="add"></list-add>
         <div>{{ windowWidth }}</div>
@@ -22,6 +21,7 @@
       <list-delete></list-delete>
       <list-share></list-share>
     </div>
+    <user-socket></user-socket>
   </div>
 </template>
   <script>

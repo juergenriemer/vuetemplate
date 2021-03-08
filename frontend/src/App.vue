@@ -1,6 +1,7 @@
 <template>
   <div id="wrapper">
-    <div id="backdrop"><div class="logo">!!</div></div>
+    <!--div id="console"></div>
+    <button id="console-clear" @click="clear">X</button-->
     <div id="app">
       <w-app>
         <router-view />
@@ -12,6 +13,24 @@
 <script>
 export default {
   name: "App",
+  methods: {
+    clear() {
+      document.querySelector("#console").innerHTML = "";
+    },
+  },
+  created() {
+    /*
+    window.console.log = (text) => {
+      document.querySelector("#console").innerHTML =
+        `${text}<br>` + document.querySelector("#console").innerHTML;
+    };
+    window.console.warn = (text) => {
+      document.querySelector("#console").innerHTML =
+        `<b color="red">${text}</b><br>` +
+        document.querySelector("#console").innerHTML;
+    };
+     */
+  },
 };
 </script>
 <style src="./css/form.css"></style>
@@ -22,6 +41,23 @@ export default {
 <style src="./css/misc.css"></style>
 
 <style>
+#console-clear {
+  position: fixed;
+  top: 0;
+  right: 400;
+  z-index: 2000;
+}
+#console {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: white;
+  z-index: 1000;
+  overflow: auto;
+  width: 400px;
+  height: 800px;
+  border: 2px solid black;
+}
 #wrapper {
   border: 1px solid transparent;
 }

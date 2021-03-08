@@ -25,8 +25,17 @@ body {
   height: 100vh;
   box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
 }
+/* IPAD issues */
+/* 100vh doen't work in ipad */
 .is-safari #box {
+  height: -webkit-fill-available;
 }
+/* keyboard overlaps bottom input */
+.is-safari #item-add:focus-within {
+  margin-bottom: 40px;
+  z-index: 100;
+}
+
 #single {
   min-width: 300px;
   max-width: 500px;
@@ -86,22 +95,18 @@ body {
   background: #fff;
 }
 .single.column {
-  xmin-width: 300px;
   flex: 1;
 }
 .left.column {
   order: 1;
-  xmin-width: 250px;
   flex: 3;
 }
 .middle.column {
   order: 2;
-  xmin-width: 250px;
   flex: 8;
 }
 .right.column {
   order: 3;
-  xmin-width: 250px;
   flex: 8;
 }
 

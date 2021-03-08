@@ -1,36 +1,45 @@
 <template>
-  <div>{{ socket }}</div>
+  <div></div>
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+// import io from "socket.io-client";
 export default {
   name: "UserSocket",
   data() {
-    return {
-      socket: "",
-    };
+    return {};
   },
-  sockets: {
+  xxxxsockets: {
     connect() {
       console.warn("CONNECTED");
     },
   },
   computed: mapGetters(["user", "lists"]),
   created() {
-    const userid = localStorage.getItem("userid");
-    this.sockets.subscribe(userid, (data) => {
-      if (data.csrf !== sessionStorage.getItem("csrf")) {
-        console.log(data);
+    this.waitFor().then(() => {
+      const socket = io("ws://192.168.1.27:3003");
+      const userId = localStorage.getItem("userid");
+      const csrf = sessionStorage.getItem("csrf");
+      socket.on("connect", () => {
+        socket.emit("join", { userId, csrf });
+      });
+      socket.on(csrf, (data) => {
         console.log("call: " + data.type + "Extern");
         this[`${data.type}Extern`](data);
-      } else {
-        console.log("I am trigger of socket message");
-      }
+      });
     });
   },
   methods: {
     ...mapActions(["addItemExtern", "updateItemExtern", "removeItemExtern"]),
-
+    waitFor() {
+      return new Promise(function (resolve, reject) {
+        (function waitForFoo() {
+          if (sessionStorage.getItem("csrf")) return resolve();
+          console.log("...wait for csrf to arrive");
+          setTimeout(waitForFoo, 30);
+        })();
+      });
+    },
     seenList(state, listId) {
       let missed = localStorage.getItem("missed");
       let list = state.lists.find((list) => list._id == listId);

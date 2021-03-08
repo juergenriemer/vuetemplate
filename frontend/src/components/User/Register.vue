@@ -22,6 +22,7 @@
         )
         w-input#email.mb4(
           label="E-MAIL",
+          inputmode="email",
           name="email",
           v-model="user.email",
           :disabled="sending",
