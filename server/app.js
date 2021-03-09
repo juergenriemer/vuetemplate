@@ -50,7 +50,7 @@ app.use(cors(corsConfig));
 
 // provide CSRF token service
 
-app.use(csrfProtection);
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> app.use(csrfProtection);
 app.get("/csrf", csrfProtection, function (req, res) {
   res.status(200).json({ csrf: req.csrfToken() });
 });
@@ -99,7 +99,8 @@ io.on("connection", (socket) => {
       if (!utils.users[userId].includes(csrf)) utils.users[userId].push(csrf);
     } else utils.users[userId] = [csrf];
     let count = Object.keys(userdata).length;
-    console.log(`${userdata.userId} joined now ${count} users online`);
+    let date = new Date().toLocaleString();
+    console.log(`${date}::${userdata.userId} joined now ${count} users online`);
   });
   socket.on("disconnect", () => {
     if (!userdata) return;
@@ -109,6 +110,7 @@ io.on("connection", (socket) => {
       if (!utils.users[userId].length) delete utils.users[userId];
     }
     let count = Object.keys(userdata).length;
-    console.log(`${userdata.userId} left now ${count} users online`);
+    let date = new Date().toLocaleString();
+    console.log(`${date}::${userdata.userId} left now ${count} users online`);
   });
 });

@@ -1,0 +1,35 @@
+.comments div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.bubble {
+  position: relative;
+  max-width: 70%;
+  margin: 10px;
+  padding: 2px;
+  border-radius: 5px;
+  border: solid white;
+  background: white;
+}
+.bubble:before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  right: 100%;
+  border-right: 10px solid white;
+}
+.bubble.right {
+  align-self: flex-end;
+}
+.bubble.right:before {
+  left: 100%;
+  border-left: 10px solid white;
+}
+
+.bubble div {
+}

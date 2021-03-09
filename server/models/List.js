@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const CommentSchema = new mongoose.Schema(
+  {
+    text: {
+      type: "String",
+      required: true,
+      minlength: 1,
+      maxlength: 1000,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  { timestamps: true }
+);
+
 const ItemSchema = new mongoose.Schema(
   {
     title: {
@@ -12,6 +28,7 @@ const ItemSchema = new mongoose.Schema(
       type: "Boolean",
       default: false,
     },
+    comments: [CommentSchema],
   },
   { timestamps: true }
 );

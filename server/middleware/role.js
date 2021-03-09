@@ -24,6 +24,7 @@ module.exports = (role) => {
     })
       .exec()
       .then((found) => {
+        console.log("found", found);
         if (found) next();
         // Q have only one 401 error message?h
         else throw new ApiError(401, "wrong-role");

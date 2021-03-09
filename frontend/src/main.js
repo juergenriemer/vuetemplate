@@ -2,7 +2,6 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router";
 import store from "./store/index";
-import VueSocketIO from "vue-socket.io";
 import config from "./config.js";
 
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -13,16 +12,6 @@ if (isSafari) {
 Vue.config.productionTip = false;
 export const bus = new Vue();
 
-/*
-Vue.use(
-  new VueSocketIO({
-    debug: false,
-    connection: config.backend,
-    path: "/socket",
-    transports: ["websocket"]
-  })
-);
-*/
 Vue.mixin({
   computed: {
     listAdmin() {

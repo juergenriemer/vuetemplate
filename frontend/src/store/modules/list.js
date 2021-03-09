@@ -1,6 +1,7 @@
 import List from "@/services/ListService";
 import Item from "@/services/ItemService";
 import Share from "@/services/ShareService";
+import Comment from "@/services/CommentService";
 import Vue from "vue";
 const state = {
   lists: []
@@ -42,9 +43,24 @@ const actions = {
   },
 
   async toggleAdmin({ commit }, params) {
-    console.warn(params);
     return Share.toggleAdmin(params).then(res => {
       commit("toggleAdmin", params);
+      return res;
+    });
+  },
+
+  /* comment */
+  async addComment({ commit }, { listId, itemId, comment }) {
+    return Comment.create(listId, itemId, comment).then(res => {
+      const comment = res.data.comment;
+      commit("addComment", { listId, itemId, comment });
+      return res;
+    });
+  },
+
+  async removeComment({ commit }, { listId, itemId, commentId }) {
+    return Comment.delete(listId, itemId, commentId).then(res => {
+      commit("removeComment", { listId, itemId, commentId });
       return res;
     });
   },
@@ -139,7 +155,7 @@ const mutations = {
   },
 
   approveInvites: (state, { lists }) => {
-    console.log("add lists!!");
+    //("add lists!!");
   },
   updateList: (state, item) => {
     const index = state.lists.findIndex(list => {
@@ -163,6 +179,16 @@ const mutations = {
     if (ix !== -1) {
       state.lists.splice(ix, 1, item);
     }
+  },
+  addComment: (state, { listId, itemId, comment }) => {
+    let list = state.lists.find(list => list._id == listId);
+    let item = list.items.find(item => item._id == itemId);
+    item.comments.push(comment);
+  },
+  removeComment: (state, { listId, itemId, commentId }) => {
+    let list = state.lists.find(list => list._id == listId);
+    let item = list.items.find(item => item._id == itemId);
+    item.comments = item.comments.filter(comment => comment._id != commentId);
   },
   addItem: (state, { listId, item }) => {
     let userId = localStorage.getItem("userid");

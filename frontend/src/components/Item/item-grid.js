@@ -1,8 +1,12 @@
+import ItemComment from "@/components/Item/ItemComment";
 import { mapGetters, mapActions } from "vuex";
 import { bus } from "../../main";
 
 export default {
   name: "ItemGrid",
+  components: {
+    ItemComment
+  },
   data() {
     return {
       itemCount: 0,
@@ -59,6 +63,19 @@ export default {
   },
   methods: {
     ...mapActions(["fetchLists", "filterItems", "deleteItem", "updateItem"]),
+    toggleComment(itemId) {
+      const comment = this.$refs[itemId][0];
+      const isHidden = comment.classList.contains("hide");
+      this.$el.querySelectorAll(".comments").forEach(com => {
+        com.classList.add("hide");
+      });
+      if (isHidden) {
+        comment && comment.classList.remove("hide");
+        bus.$emit("showComment", itemId);
+      } else {
+        bus.$emit("hideComment", itemId);
+      }
+    },
     seeList() {
       let missed = localStorage.getItem("missed");
       if (missed) {

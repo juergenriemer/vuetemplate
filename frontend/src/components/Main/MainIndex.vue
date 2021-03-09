@@ -14,7 +14,8 @@
       <div class="middle column" v-if="showMiddle">
         <item-list-menu class="header"></item-list-menu>
         <item-grid class="content"></item-grid>
-        <item-add class="add"></item-add>
+        <item-add class="add" v-show="!showComment"></item-add>
+        <comment-add class="add" v-show="showComment"></comment-add>
       </div>
     </div>
     <div>
@@ -38,6 +39,7 @@ import UserInfo from "@/components/User/UserInfo";
 import UserSocket from "@/components/User/UserSocket";
 import InfoHeader from "@/components/Info/InfoHeader";
 import ListInfo from "@/components/Info/ListInfo";
+import CommentAdd from "@/components/Item/CommentAdd";
 import { bus } from "../../main";
 
 export default {
@@ -56,6 +58,7 @@ export default {
     ApproveInvites,
     InfoHeader,
     ListInfo,
+    CommentAdd,
   },
   data() {
     return {
@@ -63,6 +66,7 @@ export default {
       windowWidth: window.innerWidth,
       infoTitle: "",
       infoComponent: "",
+      showComment: false,
       showInfo: false,
       infos: {
         "approve-invites": "Approve Invitations",
@@ -95,6 +99,8 @@ export default {
       this.showInfo = true;
     });
     bus.$on("closeInfo", () => (this.showInfo = false));
+    bus.$on("showComment", () => (this.showComment = true));
+    bus.$on("hideComment", () => (this.showComment = false));
   },
 };
 </script>

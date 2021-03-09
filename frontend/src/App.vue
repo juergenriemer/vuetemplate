@@ -39,6 +39,7 @@ export default {
 <style src="./css/menu.css"></style>
 <style src="./css/dialog.css"></style>
 <style src="./css/misc.css"></style>
+<style src="./css/comment.css"></style>
 
 <style>
 #console-clear {

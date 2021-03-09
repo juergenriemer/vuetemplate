@@ -214,7 +214,6 @@ router.get("/verifyInvitation/:token", (req, res) => {
           res.status(404).json({ error: "unknown" });
         } else {
           const userId = user._id;
-          console.log(user);
           List.findOneAndUpdate(
             { $and: [{ _id: listId }, { "invitees.email": email }] },
             {
