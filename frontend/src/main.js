@@ -3,6 +3,7 @@ import App from "./App";
 import router from "./router";
 import store from "./store/index";
 import config from "./config.js";
+import { formatDistance } from "date-fns";
 
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 if (isSafari) {
@@ -14,6 +15,9 @@ export const bus = new Vue();
 
 Vue.mixin({
   computed: {
+    curListId() {
+      return this.$route.params.id;
+    },
     listAdmin() {
       if (this.list) {
         let user = this.list.users.find(
@@ -25,9 +29,32 @@ Vue.mixin({
     }
   },
   methods: {
+    userById(userId, listId = this.curListId) {
+      return store.getters.userById(listId, userId);
+    },
+    userIsMe(userId) {
+      return userId == localStorage.getItem("userid");
+    },
+    date(date) {
+      date = date ? new Date(date) : new Date();
+      return formatDistance(date, new Date());
+    },
     showError({ status, message, uid }) {
       console.log(status, message, uid);
       if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
+    },
+    userColor(userId) {
+      const str = this.userById(userId).name;
+      const s = 30;
+      const l = 80;
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      var h = hash % 360;
+      var textColor = l > 70 ? "#555" : "#fff";
+      let color = "hsl(" + h + ", " + s + "%, " + l + "%)";
+      return color;
     },
     avatarColor(str) {
       if (!str) str = "XXX";

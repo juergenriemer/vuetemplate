@@ -1,14 +1,13 @@
-<template>
-  <form id="item-add" @submit.prevent="add">
-    <input
-      type="text"
-      name="title"
-      @blur="delayedAdd"
-      placeholder="A NEW ITEM"
-      v-model="item.title"
-    />
-    <i class="fas fa-times clear" @click="clear()" />
-  </form>
+<template lang="pug">
+form#item-add(@submit.prevent="add")
+  input(
+    type="text",
+    name="title",
+    @blur="delayedAdd",
+    placeholder="ADD NEW ITEM",
+    v-model="item.title"
+  )
+  i.fas.fa-times.clear(@click="clear()")
 </template>
 
 <script>
@@ -17,7 +16,7 @@ export default {
   name: "ItemAdd",
   data() {
     return {
-      item: { title: "", done: false },
+      item: { title: "", done: false, comments: [] },
     };
   },
   computed: {
@@ -36,7 +35,6 @@ export default {
       }, 250);
     },
     async add() {
-      console.log(this.item.title);
       if (!this.item.title) return;
       const params = {
         listId: this.listId,
@@ -54,28 +52,3 @@ export default {
   },
 };
 </script>
-
-<style>
-#item-add {
-  height: 60px;
-  background: #e0e0e0;
-  border-top: 1px solid #c0c0c0;
-}
-
-#item-add input {
-  font-size: 1.3em;
-  background: #fff;
-  width: calc(100% - 40px);
-  margin: 10px;
-  padding: 10px;
-  border: 0;
-}
-
-#item-add input:focus {
-  outline: none;
-}
-
-#item-add button {
-  display: none;
-}
-</style>

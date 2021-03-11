@@ -1,14 +1,13 @@
-<template>
-  <form id="comment-add" @submit.prevent="add">
-    <input
-      type="text"
-      name="text"
-      @blur="delayedAdd"
-      placeholder="NEW COMMENT"
-      v-model="comment.text"
-    />
-    <i class="fas fa-times clear" @click="clear()" />
-  </form>
+<template lang="pug">
+form#comment-add.comment-background(@submit.prevent="add")
+  input(
+    type="text",
+    name="text",
+    @blur="delayedAdd",
+    placeholder="ADD NEW COMMENT",
+    v-model="comment.text"
+  )
+  i.fas.fa-times.clear(@click="clear()")
 </template>
 
 <script>
@@ -18,13 +17,13 @@ export default {
   name: "CommentAdd",
   data() {
     return {
-      itemId : null,
+      itemId: null,
       comment: { text: "" },
     };
   },
   created() {
-    bus.$on("showComment", (itemId) => this.itemId = itemId );
-    bus.$on("hideComment", () => this.itemId = null );
+    bus.$on("showComment", (itemId) => (this.itemId = itemId));
+    bus.$on("hideComment", () => (this.itemId = null));
   },
   computed: {
     listId() {
@@ -35,6 +34,7 @@ export default {
     ...mapActions(["addComment"]),
     clear() {
       this.comment.text = "";
+      bus.$emit("hideComment");
     },
     delayedAdd() {
       setTimeout(() => {
@@ -60,28 +60,3 @@ export default {
   },
 };
 </script>
-
-<style>
-#item-add {
-  height: 60px;
-  background: #e0e0e0;
-  border-top: 1px solid #c0c0c0;
-}
-
-#item-add input {
-  font-size: 1.3em;
-  background: #fff;
-  width: calc(100% - 40px);
-  margin: 10px;
-  padding: 10px;
-  border: 0;
-}
-
-#item-add input:focus {
-  outline: none;
-}
-
-#item-add button {
-  display: none;
-}
-</style>

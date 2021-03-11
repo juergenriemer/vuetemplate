@@ -23,9 +23,12 @@ module.exports = (role) => {
       ],
     })
       .exec()
-      .then((found) => {
-        console.log("found", found);
-        if (found) next();
+      .then((list) => {
+        req.list = list;
+        req.role = req.list.users.find(
+          (user) => user.userId == req.userId
+        ).role;
+        if (list) next();
         // Q have only one 401 error message?h
         else throw new ApiError(401, "wrong-role");
       })

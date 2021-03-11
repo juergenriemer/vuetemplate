@@ -24,6 +24,7 @@ export default {
     bus.$on("editListItems", data => {
       this.editListItems = data;
     });
+    bus.$on("hideComment", () => this.closeComments());
   },
   computed: {
     ...mapGetters(["lists", "user"]),
@@ -63,15 +64,22 @@ export default {
   },
   methods: {
     ...mapActions(["fetchLists", "filterItems", "deleteItem", "updateItem"]),
+    closeComments() {
+      this.$el
+        .querySelectorAll(".comment-background")
+        .forEach(node => node.classList.remove("comment-background"));
+      this.$el
+        .querySelectorAll(".comments")
+        .forEach(node => node.classList.add("hide"));
+    },
     toggleComment(itemId) {
       const comment = this.$refs[itemId][0];
       const isHidden = comment.classList.contains("hide");
-      this.$el.querySelectorAll(".comments").forEach(com => {
-        com.classList.add("hide");
-      });
+      this.closeComments();
       if (isHidden) {
-        comment && comment.classList.remove("hide");
+        comment.classList.remove("hide");
         bus.$emit("showComment", itemId);
+        comment.previousElementSibling.classList.add("comment-background");
       } else {
         bus.$emit("hideComment", itemId);
       }

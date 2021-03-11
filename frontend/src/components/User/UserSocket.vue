@@ -9,11 +9,6 @@ export default {
   data() {
     return {};
   },
-  xxxxsockets: {
-    connect() {
-      console.warn("CONNECTED");
-    },
-  },
   computed: mapGetters(["user", "lists"]),
   created() {
     this.waitFor().then(() => {
@@ -30,7 +25,13 @@ export default {
     });
   },
   methods: {
-    ...mapActions(["addItemExtern", "updateItemExtern", "removeItemExtern"]),
+    ...mapActions([
+      "addItemExtern",
+      "updateItemExtern",
+      "removeItemExtern",
+      "addCommentExtern",
+      "removeCommentExtern",
+    ]),
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {

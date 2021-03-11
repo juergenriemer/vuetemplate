@@ -10,6 +10,12 @@ const state = {
 const getters = {
   lists: state => {
     return state.lists;
+  },
+  listById: state => listId => {
+    return state.lists.find(list => list._id == listId);
+  },
+  userById: (state, getters) => (listId, userId) => {
+    return getters.listById(listId).users.find(usr => usr.userId == userId);
   }
 };
 
@@ -126,6 +132,14 @@ const actions = {
     });
   },
 
+  addCommentExtern({ commit }, data) {
+    commit("addCommentExtern", data);
+  },
+
+  removeCommentExtern({ commit }, data) {
+    commit("removeComment", data);
+  },
+
   addItemExtern({ commit }, data) {
     commit("addItemExtern", data);
   },
@@ -190,6 +204,11 @@ const mutations = {
     let item = list.items.find(item => item._id == itemId);
     item.comments = item.comments.filter(comment => comment._id != commentId);
   },
+  removeCommentExtern: (state, { listId, itemId, commentId }) => {
+    let list = state.lists.find(list => list._id == listId);
+    let item = list.items.find(item => item._id == itemId);
+    item.comments = item.comments.filter(comment => comment._id != commentId);
+  },
   addItem: (state, { listId, item }) => {
     let userId = localStorage.getItem("userid");
     let list = state.lists.find(list => list._id == listId);
@@ -215,6 +234,12 @@ const mutations = {
     let { listId, item } = data;
     let list = state.lists.find(list => list._id == listId);
     list.items.push(item);
+  },
+  addCommentExtern: (state, data) => {
+    let { listId, itemId, comment } = data;
+    let list = state.lists.find(list => list._id == listId);
+    let item = list.items.find(item => item._id == itemId);
+    item.comments.push(comment);
   },
   updateItemExtern: (state, updated) => {
     let list = state.lists.find(list => list._id == updated.listId);

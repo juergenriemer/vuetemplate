@@ -4,7 +4,6 @@
       <div v-for="item in items" :id="item._id" :key="item._id">
         <form
           @submit.prevent="saveInput(item)"
-          @dblclick="done(item)"
           class="row"
           :class="[
             item._id == idEdit ? 'focus' : '',

@@ -6,6 +6,7 @@
 .bubble {
   position: relative;
   max-width: 70%;
+  min-width: 30%;
   margin: 10px;
   padding: 2px;
   border-radius: 5px;
@@ -18,18 +19,79 @@
   top: 0px;
   width: 0;
   height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  border-style: solid;
+  border-width: 5px 13px 5px 0;
+  border-color: transparent #fff transparent transparent;
   right: 100%;
-  border-right: 10px solid white;
 }
 .bubble.right {
   align-self: flex-end;
 }
+
 .bubble.right:before {
   left: 100%;
-  border-left: 10px solid white;
+  border-width: 5px 0 5px 13px;
+  border-color: transparent transparent transparent #fff;
 }
 
-.bubble div {
+.bubble.right:before {
+  xleft: 100%;
+  xborder-left: 10px solid white;
+  xborder: 1px solid black;
+}
+
+.bubble {
+  align-items: stretch !important;
+  xjustify-content: stretch !important;
+}
+.bubble .bubble-content {
+  xdisplay: flex;
+  xalign-self: flex-end;
+}
+.bubble .bubble-content {
+  xposition: relative;
+  display: flex;
+
+  xborder: 1px solid green;
+  xflex-direction: column;
+  xjustify-content: flex-start;
+  justify-content: stretch !important;
+  xalign-items: flex-start;
+  background: white;
+  xalign-self: flex-end;
+}
+
+.bubble .bubble-content .top {
+  justify-content: stretch !important;
+  display: flex;
+  width: 100%;
+  xalign-items: stretch;
+  flex-direction: row;
+  xbackground: red;
+  flex-wrap: nowrap;
+}
+.bubble .bubble-content .top .name {
+  font-weight: bold;
+  font-size: 0.8em;
+  flex-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 10;
+}
+
+.bubble .bubble-content .top i {
+  font-weight: bold;
+  font-size: 0.8em;
+  padding: 3px;
+  xjustify-self: flex-end;
+  xalign-self: flex-end;
+}
+.bubble .bubble-content .date {
+  font-size: 0.8em;
+  align-self: flex-end;
+  color: #aaa;
+}
+
+.comment-background {
+  background: #ffe3cd !important;
 }

@@ -52,48 +52,26 @@ router.delete(
   userInfo,
   role("user"),
   (req, res, next) => {
+    // get data
     const { listId, itemId, commentId } = req.params;
-
-    console.log("listId:" + listId);
-    console.log("itemId:" + itemId);
-    console.log("commentId:" + commentId);
-    //List.find({ _id: listId, "items._id": itemId, "comments._id": commentId })
-    List.find(
-      { _id: listId, "items._id": itemId },
-      { users: 1, items: 1, comments: 1 }
-    )
-      .exec()
-      .then((result) => {
-        const items = result[0].items;
-        const users = result[0].users;
-        const role = users.find((user) => user.userId == req.userId).role;
-        const item = items.find((item) => item._id == itemId);
-        const comment = item.comments.find(
-          (comment) => comment._id == commentId
-        );
-        if (req.userId == comment.userId) {
-          console.log("its the same user");
-        }
-        if (role == "admin" || role == "owner") {
-          console.log("its admin");
-        }
-        throw new ApiError(422, "is-not-your-comment");
-      })
-      .then(() => {
-        return List.findByIdAndUpdate(
-          { _id: listId, "items._id": itemId },
-          {
-            $pull: {
-              comments: { _id: commentId },
-            },
-          }
-        ).exec();
-      })
-
+    let item = req.list.items.find((itm) => itm._id == itemId);
+    // check if allowed to delete
+    if (!["admin", "owner"].includes(req.role)) {
+      const comment = item.comments.find((cmt) => cmt._id == commentId);
+      if (!comment) throw new ApiError(404, "no-item");
+      if (!(req.userId == comment.userId))
+        throw new ApiError(403, "not-item-creator");
+    }
+    // delete comment
+    item.comments = item.comments.filter((cmt) => cmt._id != commentId);
+    req.list
+      .save()
       .then((list) => {
         res.status(200).json();
         utils.broadcast(req, list, {
           type: "removeComment",
+          listId,
+          itemId,
           commentId,
         });
       })
@@ -113,24 +91,14 @@ router.post(
   (req, res, next) => {
     const { listId, itemId } = req.params;
     const userId = req.userId;
-    console.log(">>>>>>>>>>", userId);
-    console.log("listId " + listId);
-    console.log("itemId " + itemId);
     let comment = req.body;
     comment._id = new mongoose.mongo.ObjectId();
     comment.userId = userId;
-    console.log(comment);
-    List.findOneAndUpdate(
-      { _id: listId, "items._id": itemId },
-      {
-        $push: {
-          "items.$.comments": comment,
-        },
-      },
-      { new: true } //, upsert: true }
-    )
-      .exec()
-      .then(() => {
+    let item = req.list.items.find((itm) => itm._id == itemId);
+    item.comments.push(comment);
+    req.list
+      .save()
+      .then((list) => {
         res.status(200).json({ comment });
         utils.broadcast(req, list, {
           type: "addComment",
