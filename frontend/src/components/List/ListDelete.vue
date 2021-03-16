@@ -41,7 +41,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions(["deleteList"]),
+    ...mapActions(["removeList"]),
     showNextList(deleteId) {
       let count = this.lists.length;
       let nextId = "";
@@ -58,61 +58,8 @@ export default {
     async submit() {
       let deleteId = this.listId;
       this.showNextList(deleteId);
-      this.deleteList(deleteId).catch((err) => this.showError(err));
+      this.removeList(deleteId).catch((err) => this.showError(err));
     },
   },
 };
 </script>
-<style scoped>
-.modal.deleteForm {
-  width: 400px;
-  height: 170px;
-  margin-left: -200px;
-  margin-top: -85px;
-  animation-name: growDeleteForm;
-  animation-duration: 0.1s;
-}
-@keyframes growDeleteForm {
-  from {
-    width: 0px;
-    height: 0px;
-    margin-left: 0px;
-    margin-top: 0px;
-  }
-  to {
-    height: 170px;
-    width: 400px;
-    margin-left: -200px;
-    margin-top: -85px;
-  }
-}
-.modal.deleteForm {
-  width: 400px;
-  height: 300px;
-  margin-left: -200px;
-  margin-top: -150px;
-  animation-name: growDeleteForm;
-  animation-duration: 0.1s;
-}
-@keyframes growDeleteForm {
-  from {
-    width: 0px;
-    height: 0px;
-    margin-left: 0px;
-    margin-top: 0px;
-  }
-  to {
-    height: 30px;
-    width: 400px;
-    margin-left: -200px;
-    margin-top: -150px;
-  }
-}
-.modal input {
-  padding: 0.5em;
-  display: block;
-  font-size: 1em;
-  width: 75%;
-  margin: auto;
-}
-</style>>

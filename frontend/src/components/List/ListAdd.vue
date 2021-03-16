@@ -27,9 +27,15 @@ export default {
     ...mapActions(["addList"]),
     async add() {
       if (!this.list.title) return;
-      this.addList({
-        list: this.list,
-      })
+      let list = Object.assign(
+        {
+          _id: this.objectId(),
+          users: [{ userId: this.myUserId, role: "owner" }],
+          items: [],
+        },
+        this.list
+      );
+      this.addList({ list })
         .then(() => (this.list.title = ""))
         .catch((err) => this.showError(err));
     },

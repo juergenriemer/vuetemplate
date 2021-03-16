@@ -3,23 +3,31 @@ import App from "./App";
 import router from "./router";
 import store from "./store/index";
 import config from "./config.js";
-import { formatDistance } from "date-fns";
+import { format, formatDistance } from "date-fns";
 
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 if (isSafari) {
   document.body.className = "is-safari";
 }
-
 Vue.config.productionTip = false;
 export const bus = new Vue();
+document.body.addEventListener("mouseup", evt => {
+  bus.$emit("mouseup", evt);
+});
+document.body.addEventListener("keydown", evt => {
+  bus.$emit("keydown", evt);
+});
 
 Vue.mixin({
   computed: {
+    myUserId() {
+      return localStorage.getItem("userid");
+    },
     curListId() {
       return this.$route.params.id;
     },
     listAdmin() {
-      if (this.list) {
+      if (this.list && this.list.users) {
         let user = this.list.users.find(
           usr => usr.userId == localStorage.getItem("userid")
         );
@@ -37,11 +45,24 @@ Vue.mixin({
     },
     date(date) {
       date = date ? new Date(date) : new Date();
+      return format(date, "dd MMMM yyyy");
+    },
+    ago(date) {
+      date = date ? new Date(date) : new Date();
       return formatDistance(date, new Date());
     },
-    showError({ status, message, uid }) {
-      console.log(status, message, uid);
-      if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
+    objectId() {
+      return btoa(new Date());
+    },
+    showError(message) {
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      console.warn(message);
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
+      //if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
     },
     userColor(userId) {
       const str = this.userById(userId).name;

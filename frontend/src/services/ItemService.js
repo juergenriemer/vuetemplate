@@ -12,8 +12,8 @@ class Item {
     return Api().post(`${this.root}/${listId}`, item);
   }
 
-  update(listId, itemId, params) {
-    return Api().put(`${this.root}/${listId}/${itemId}`, params);
+  update(listId, itemId, item) {
+    return Api().put(`${this.root}/${listId}/${itemId}`, item);
   }
 
   delete(listId, itemId) {

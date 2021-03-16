@@ -39,13 +39,13 @@
   display: flex;
   flex-wrap: nowrap;
 }
-.buttons i {
+i {
   color: #777;
   font-size: 1em;
   padding-left: 5px;
 }
 
-.buttons i:hover {
+i:hover {
   color: #000;
 }
 
@@ -81,6 +81,7 @@
 }
 
 .avatar .admin {
+  padding: 0;
   position: absolute;
   font-size: 0.6em;
   color: #16821d;
@@ -92,6 +93,10 @@
   color: goldenrod;
 }
 
+.row .title input {
+  /* don't know why I need 1em for input?? */
+  font-size: 1em;
+}
 .row .title {
   font-size: 1.3em;
 }

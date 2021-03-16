@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const List = mongoose.model("List");
-//const User = mongoose.model("User");
 const passport = require("passport");
-//const utils = require("../lib/utils");
 const userInfo = require("../middleware/userInfo.js");
 const validateIds = require("../middleware/validateIds.js");
 const role = require("../middleware/role.js");
+const utils = require("../lib/utils");
+const ApiError = require("../middleware/ApiError");
 
-//
-//
-// LIST ROUTES
-//
 // uncheck all items
 router.put(
   "/reset/:listId",
@@ -20,48 +16,54 @@ router.put(
   validateIds,
   role("user"),
   (req, res, next) => {
-    List.findById(req.params.listId)
+    const { listId } = req.params;
+    req.list.items.forEach((item) => (item.done = false));
+    req.list
+      .save()
       .then((list) => {
-        list.items.forEach((item) => {
-          item.done = false;
+        utils.broadcast(req, list, {
+          type: "resetList",
+          data: {
+            listId,
+          },
         });
-        return list.save();
-      })
-      .then(() => {
-        res.status(200).json({ ok: true });
+        res.status(200).json();
       })
       .catch((err) => {
         next(err);
       });
   }
 );
-// LAST SEEN UPDATES
 
+// set last seen date for user
 router.put(
   "/sawList/:listId",
   passport.authenticate("jwt", { session: false }),
   userInfo,
-  //put back role("user"),
+  role("user"),
   (req, res, next) => {
-    const listId = req.params.listId;
-    const userId = req.userId;
-    const lastSeen = new Date();
-    List.findOneAndUpdate(
-      { _id: listId, "users.userId": userId },
-      {
-        $set: { "users.$.lastSeen": lastSeen },
-      },
-      { new: true, upsert: true }
-    )
-      .then((found) => {
-        if (!found) throw new ApiError(500, "user-not-in-list");
-        res.status(200).json({ lastSeen });
+    const { listId } = req.params;
+    const userIx = req.list.users.findIndex((usr) => usr.userId == req.userId);
+    if (userIx < 0) throw new ApiError(500, "user-not-in-list");
+    req.list.users[userIx].lastSeen = new Date();
+    req.list
+      .save()
+      .then((list) => {
+        /* use this to indicate who is currently in a list 
+        utils.broadcast(req, list, {
+          type: "sawList",
+          listId,
+          req.userId
+        });
+        */
+        res.status(200).json();
       })
-      .catch((error) => {
-        next(error);
+      .catch((err) => {
+        next(err);
       });
   }
 );
+
 // get all lists a user can see
 router.get(
   "/",
@@ -71,14 +73,13 @@ router.get(
     List.find({ "users.userId": req.userId })
       .exec()
       .then((lists) => {
-        res.status(200).json(lists);
+        res.status(200).json({ lists });
       })
       .catch((err) => {
         next(err);
       });
   }
 );
-//
 
 // create list
 router.post(
@@ -86,7 +87,9 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    let list = new List(req.body);
+    const data = (({ title }) => ({ title }))(req.body);
+    let list = new List(data);
+    list._id = new mongoose.mongo.ObjectId();
     list.users = [
       {
         userId: req.userId,
@@ -96,19 +99,23 @@ router.post(
         role: "owner",
       },
     ];
-    list._id = new mongoose.mongo.ObjectId();
     list
       .save()
       .then((list) => {
-        res.status(200).json(list);
+        utils.broadcast(req, list, {
+          type: "addList",
+          data: {
+            list,
+          },
+        });
+        res.status(200).json({ list });
       })
       .catch((err) => {
         next(err);
       });
   }
 );
-//
-//
+
 // delete list
 router.delete(
   "/:listId",
@@ -117,21 +124,18 @@ router.delete(
   validateIds,
   role("owner"),
   (req, res, next) => {
-    List.remove({
-      _id: req.params.listId,
-    })
+    req.list
+      .remove()
       .then(() => {
-        res.status(200).json({ ok: true });
+        res.status(200).json();
       })
       .catch((err) => {
         next(err);
       });
   }
 );
-//
-// update list
-// REF: just update list title
 
+// REF: just update list title
 router.put(
   "/:listId",
   passport.authenticate("jwt", { session: false }),
@@ -139,13 +143,22 @@ router.put(
   validateIds,
   role("owner"),
   (req, res, next) => {
-    List.findById(req.params.listId)
+    const { listId } = req.params;
+    const update = (({ title, description }) => ({ title, description }))(
+      req.body
+    );
+    Object.assign(req.list, update);
+    req.list
+      .save()
       .then((list) => {
-        Object.assign(list, req.body);
-        return list.save();
-      })
-      .then(() => {
-        res.status(200).json({ ok: true });
+        utils.broadcast(req, list, {
+          type: "updateList",
+          data: {
+            listId,
+            list: update,
+          },
+        });
+        res.status(200).json();
       })
       .catch((err) => {
         next(err);

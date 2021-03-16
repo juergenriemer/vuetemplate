@@ -1,20 +1,16 @@
 <template lang="pug">
 .form
-  h3 {{ list.title }}
+  h4 {{ list.title }}
   p(v-if="list.description") {{ list.description }}
   p(v-else)
     em No description available
-  p Created by {{ owner }} on {{ list.createdAt }}
-  h3 Current Members
-    .row(v-for="user in list.users", :key="user._id")
-      .avatar(:style="{ background: avatarColor(user.short) }") {{ user.short }}
-        i.fas.fa-crown.admin.owner(v-if="user.role == 'owner'")
-        i.fas.fa-crown.admin(v-if="user.role == 'admin'")
-      div {{ user.name }} {{ user.role }}
-  h3(v-if="listAdmin") Pending invitations
-    .rows
-      .row(v-for="user in list.invitees", :key="user._id")
-        .title {{ user.email }}
+  p Created by {{ owner }} on {{ date(list.createdAt) }}
+  h4 Current Members
+  .row(v-for="user in list.users", :key="user._id")
+    .avatar(:style="{ background: avatarColor(user.short) }") {{ user.short }}
+      i.fas.fa-crown.admin.owner(v-if="user.role == 'owner'")
+      i.fas.fa-crown.admin(v-if="user.role == 'admin'")
+    .title {{ user.name }}
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
@@ -22,17 +18,12 @@ import { bus } from "../../main";
 import Form from "@/mixins/Form";
 
 export default {
-  name: "ManageList",
+  name: "ListInfo",
   mixins: [Form],
   data() {
     return {
       listId: null,
       description: "bla fah sel",
-      roles: [
-        { label: "User", value: "user" },
-        { label: "Admin", value: "admin" },
-        { label: "Owner", value: "owner" },
-      ],
     };
   },
   created() {},
@@ -51,14 +42,12 @@ export default {
     setListId() {
       this.listId = this.$route.params.id;
     },
+    /*
     close() {
       bus.$emit("manageList", false);
+      bus.$emit("manageMembers", false);
     },
-    async add() {
-      this.updateList({
-        list,
-      }).catch((err) => this.showError(err));
-    },
+     */
   },
   created() {
     this.setListId();

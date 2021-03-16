@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import Vue from "vue";
-import list from "./modules/list";
-import user from "./modules/user";
+import list from "./modules/list/index";
+import user from "./modules/user/index";
 
 Vue.use(Vuex);
 

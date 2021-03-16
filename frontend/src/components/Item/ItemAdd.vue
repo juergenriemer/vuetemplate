@@ -36,11 +36,11 @@ export default {
     },
     async add() {
       if (!this.item.title) return;
-      const params = {
+      let item = Object.assign({ _id: this.objectId() }, this.item);
+      this.addItem({
         listId: this.listId,
-        item: this.item,
-      };
-      this.addItem(params)
+        item,
+      })
         .then(() => {
           this.item.title = "";
           this.$el.querySelector("input").focus();

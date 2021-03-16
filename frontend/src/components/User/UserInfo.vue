@@ -1,29 +1,21 @@
-<template>
-  <div id="user-info">
-    <div class="avatar" :style="{ background: avatarColor(short) }">
-      {{ short }}
-    </div>
-    <div class="title">{{ firstName }} {{ lastName }}</div>
-    <div class="menu buttons">
-      <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
-      <div
-        id="menu"
-        v-if="showMenu"
-        style="transform-origin: right top; transform: scale(1); opacity: 1"
-      >
-        <ul @click="menu($event)">
-          <li data-link="invites">My Invitations</li>
-          <li data-link="logout">Logout</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<template lang="pug">
+#user-info
+  .avatar(:style="{ background: avatarColor(short) }") {{ short }}
+  .title {{ firstName }} {{ lastName }}
+  .menu
+    i.fas.fa-ellipsis-v
+    ul(@click="menu($event)")
+      li(data-link="invites") My Invitations
+      li(data-link="logout") Logout
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { bus } from "../../main";
+import Menu from "@/mixins/Menu";
+import { bus } from "@/main";
+
 export default {
   name: "UserInfo",
+  mixins: [Menu],
   data() {
     return {
       showMenu: false,

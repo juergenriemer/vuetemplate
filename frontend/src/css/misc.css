@@ -54,3 +54,11 @@ i.clear {
 .add button {
   display: none;
 }
+h3 {
+  font-size: 1.3em;
+}
+
+h4 {
+  font-size: 1.15em;
+  margin-bottom: 10px;
+}

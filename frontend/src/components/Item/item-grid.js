@@ -1,9 +1,11 @@
 import ItemComment from "@/components/Item/ItemComment";
 import { mapGetters, mapActions } from "vuex";
 import { bus } from "../../main";
+import Menu from "@/mixins/Menu";
 
 export default {
   name: "ItemGrid",
+  mixins: [Menu],
   components: {
     ItemComment
   },
@@ -25,6 +27,12 @@ export default {
       this.editListItems = data;
     });
     bus.$on("hideComment", () => this.closeComments());
+    bus.$on("keydown", evt => {
+      if (evt.key == "Escape") {
+        this.closeInput();
+        bus.$emit("hideComment");
+      }
+    });
   },
   computed: {
     ...mapGetters(["lists", "user"]),
@@ -63,7 +71,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["fetchLists", "filterItems", "deleteItem", "updateItem"]),
+    ...mapActions(["fetchLists", "filterItems", "removeItem", "updateItem"]),
     closeComments() {
       this.$el
         .querySelectorAll(".comment-background")
@@ -113,6 +121,7 @@ export default {
       this.idEdit = this.idEdit == item._id ? null : item._id;
       this.newTitle = item.title;
       setTimeout(() => {
+        this.hideAllPanels();
         const input = row.querySelector("input");
         input && input.focus();
       }, 0); /* need to wait for element to render */
@@ -121,27 +130,30 @@ export default {
       let result = await this.fetchLists();
     },
     async remove(itemId) {
-      await this.deleteItem({
+      this.removeItem({
         listId: this.listId,
         itemId
+      }).catch(err => {
+        this.showError(err);
       });
     },
     async done(item) {
       item.done = !item.done;
-      await this.updateItem({
-        listId: this.listId,
-        itemId: item._id,
-        item
-      });
+      this.saveInput(item);
     },
     async saveInput(item) {
       if (this.newTitle) item.title = this.newTitle;
-      await this.updateItem({
+      this.updateItem({
         listId: this.listId,
         itemId: item._id,
         item
-      });
-      this.closeInput();
+      })
+        .then(() => {
+          this.closeInput();
+        })
+        .catch(err => {
+          this.showError(err);
+        });
     }
   }
 };

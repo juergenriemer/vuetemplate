@@ -8,7 +8,7 @@ const CommentSchema = new mongoose.Schema(
       minlength: 1,
       maxlength: 1000,
     },
-    userId: {
+    creatorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
@@ -29,6 +29,10 @@ const ItemSchema = new mongoose.Schema(
       default: false,
     },
     comments: [CommentSchema],
+    creatorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

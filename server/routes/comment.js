@@ -8,8 +8,8 @@ const role = require("../middleware/role.js");
 const validateIds = require("../middleware/validateIds.js");
 const ApiError = require("../middleware/ApiError");
 
-// LISTITEM ROUTES
-router.put(
+// create comment
+router.post(
   "/:listId/:itemId",
   passport.authenticate("jwt", { session: false }),
   validateIds,
@@ -17,24 +17,22 @@ router.put(
   role("user"),
   (req, res, next) => {
     const { listId, itemId } = req.params;
-    let item = req.body;
-    List.findOneAndUpdate(
-      { _id: listId, items: { $elemMatch: { _id: itemId } } },
-      {
-        $set: {
-          "items.$.title": item.title,
-          "items.$.done": item.done,
-        },
-      },
-      { new: true, safe: true, upsert: true }
-    )
-      .exec()
+    let comment = (({ text }) => ({ text }))(req.body);
+    comment._id = new mongoose.mongo.ObjectId();
+    comment.creatorId = req.userId;
+    let item = req.list.items.find((itm) => itm._id == itemId);
+    item.comments.push(comment);
+    req.list
+      .save()
       .then((list) => {
-        item.updatedAt = new Date(); // set date to show as new
-        res.status(200).json(item);
+        res.status(200).json({ comment });
         utils.broadcast(req, list, {
-          type: "updateItem",
-          item,
+          type: "addComment",
+          data: {
+            listId,
+            itemId,
+            comment,
+          },
         });
       })
       .catch((error) => {
@@ -43,7 +41,6 @@ router.put(
   }
 );
 
-//
 // delete comment
 router.delete(
   "/:listId/:itemId/:commentId",
@@ -59,7 +56,7 @@ router.delete(
     if (!["admin", "owner"].includes(req.role)) {
       const comment = item.comments.find((cmt) => cmt._id == commentId);
       if (!comment) throw new ApiError(404, "no-item");
-      if (!(req.userId == comment.userId))
+      if (!(req.userId == comment.creatorId))
         throw new ApiError(403, "not-item-creator");
     }
     // delete comment
@@ -70,41 +67,11 @@ router.delete(
         res.status(200).json();
         utils.broadcast(req, list, {
           type: "removeComment",
-          listId,
-          itemId,
-          commentId,
-        });
-      })
-      .catch((error) => {
-        next(error);
-      });
-  }
-);
-
-// create comment
-router.post(
-  "/:listId/:itemId",
-  passport.authenticate("jwt", { session: false }),
-  validateIds,
-  userInfo,
-  role("user"),
-  (req, res, next) => {
-    const { listId, itemId } = req.params;
-    const userId = req.userId;
-    let comment = req.body;
-    comment._id = new mongoose.mongo.ObjectId();
-    comment.userId = userId;
-    let item = req.list.items.find((itm) => itm._id == itemId);
-    item.comments.push(comment);
-    req.list
-      .save()
-      .then((list) => {
-        res.status(200).json({ comment });
-        utils.broadcast(req, list, {
-          type: "addComment",
-          listId,
-          itemId,
-          comment,
+          data: {
+            listId,
+            itemId,
+            commentId,
+          },
         });
       })
       .catch((error) => {

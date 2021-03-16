@@ -7,13 +7,9 @@ class List {
     this.name = name;
   }
 
-  async sawList(listId) {
-    return await Api().put(`${this.root}/sawList/${listId}`);
-  }
+  async sawList(listId) {}
 
-  list = async () => {
-    return await Api().get(`${this.root}/`);
-  };
+  list = async () => {};
 
   approveInvites(listIds) {
     return Api().post(`${this.root}/approveInvitations`, listIds);
@@ -29,22 +25,14 @@ class List {
 
   create(params) {
     //   return Csrf().then(() => {
-    return Api().post(this.root, params);
     //   });
   }
 
-  reset(listId) {
-    return Api().put(`${this.root}/reset/${listId}`);
-  }
+  reset(listId) {}
 
-  update(params) {
-    let id = params.id || params._id;
-    return Api().put(`${this.root}/${id}`, params);
-  }
+  update(params) {}
 
-  delete(listId) {
-    return Api().delete(`${this.root}/${listId}`);
-  }
+  delete(listId) {}
 }
 
 var test = async function() {

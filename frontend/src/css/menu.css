@@ -1,25 +1,31 @@
-.buttons.menu {
+.menu {
   padding-left: 10px;
   padding-right: 10px;
   position: relative;
 }
-#menu {
+
+.menu > ul {
   position: absolute;
+  display: none;
   background: #fff;
   z-index: 100;
-  right: 20px;
-  top: 10px;
-  width: 200px;
+  min-width: 200px;
   border: 1px solid #c0c0c0;
   border-radius: 3px;
   box-shadow: 0 2px 5px 0 #c0c0c0, 0 2px 10px 0 #c0c0c0;
-}
-#menu ul {
   margin: 0;
   padding: 0;
   width: 100%;
 }
-#menu li {
+.menu > ul {
+  top: 30%;
+  right: 70%;
+}
+.menu > ul.right {
+  top: 30%;
+  left: 70%;
+}
+.menu > ul > li {
   font-size: 1.1em;
   line-height: 2.1em;
   list-style: none;
@@ -28,6 +34,6 @@
   padding-bottom: 3px;
   cursor: pointer;
 }
-#menu li:hover {
+.menu > ul > li:hover {
   background: whitesmoke;
 }

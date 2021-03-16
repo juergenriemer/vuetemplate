@@ -7,10 +7,26 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "UserSocket",
   data() {
-    return {};
+    return {
+      allowedActions: [
+        "addList",
+        "updateList",
+        "updateItem",
+        "addItem",
+        "removeItem",
+        "addComment",
+        "removeComment",
+        "resetList",
+        "toggleAdmin",
+        "unshare",
+      ],
+    };
   },
-  computed: mapGetters(["user", "lists"]),
+  computed: {
+    ...mapGetters(["user", "lists"]),
+  },
   created() {
+    //this.test = ["updateItem"];
     this.waitFor().then(() => {
       const socket = io("ws://192.168.1.27:3003");
       const userId = localStorage.getItem("userid");
@@ -18,20 +34,15 @@ export default {
       socket.on("connect", () => {
         socket.emit("join", { userId, csrf });
       });
-      socket.on(csrf, (data) => {
-        console.log("call: " + data.type + "Extern");
-        this[`${data.type}Extern`](data);
+      socket.on(csrf, (res) => {
+        let { type, data } = res;
+        data.socket = true;
+        if (this.allowedActions.includes(type))
+          this.$store.dispatch(type, data);
       });
     });
   },
   methods: {
-    ...mapActions([
-      "addItemExtern",
-      "updateItemExtern",
-      "removeItemExtern",
-      "addCommentExtern",
-      "removeCommentExtern",
-    ]),
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {

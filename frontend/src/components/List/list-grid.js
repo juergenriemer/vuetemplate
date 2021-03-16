@@ -5,10 +5,6 @@ export default {
   //  mixins: [Filter],
   data() {
     return {
-      filterName: "listing",
-      filter: {
-        query: {}
-      },
       items: [],
       idEdit: null
     };
@@ -34,7 +30,8 @@ export default {
       let userId = localStorage.getItem("userid");
       let missed = this.lists.reduce((map, list) => {
         let lastSeen = list.users.find(user => user.userId == userId).lastSeen;
-        let count = list.items.filter(item => item.updatedAt > lastSeen).length;
+        let newItems = list.items.filter(item => item.updatedAt > lastSeen);
+        let count = newItems ? newItems.length : 0;
         map[list._id] = count < 100 ? count : 99;
         return map;
       }, {});
@@ -50,14 +47,7 @@ export default {
     this.$el.scrollTop = 0; //this.$el.scrollHeight;
   },
   methods: {
-    ...mapActions([
-      //    "checkForUpdates",
-      "sawList",
-      "fetchLists",
-      "filterLists",
-      "deleteList",
-      "updateList"
-    ]),
+    ...mapActions(["sawList", "fetchLists", "deleteList", "updateList"]),
     to(listId) {
       self.location.href = "/#/main/" + listId;
     },
@@ -67,9 +57,8 @@ export default {
           if (this.listId) {
             return this.sawList(this.listId);
           }
-          return Promise.resolve(true);
         })
-        .catch(err => this.showError("xxxx" + err));
+        .catch(err => this.showError(err));
     },
     async remove(id) {
       let result = await this.deleteList(id);

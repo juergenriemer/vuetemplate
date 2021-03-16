@@ -34,6 +34,7 @@ import ItemAdd from "@/components/Item/ItemAdd";
 import ItemGrid from "@/components/Item/ItemGrid";
 import ItemListMenu from "@/components/Item/ItemListMenu";
 import ManageList from "@/components/List/ManageList";
+import ManageMembers from "@/components/List/ManageMembers";
 import ApproveInvites from "@/components/User/ApproveInvites";
 import UserInfo from "@/components/User/UserInfo";
 import UserSocket from "@/components/User/UserSocket";
@@ -55,6 +56,7 @@ export default {
     ItemAdd,
     ItemListMenu,
     ManageList,
+    ManageMembers,
     ApproveInvites,
     InfoHeader,
     ListInfo,
@@ -71,7 +73,8 @@ export default {
       infos: {
         "approve-invites": "Approve Invitations",
         "list-info": "List information",
-        "manage-list": "Mange this list",
+        "manage-list": "Mange list",
+        "manage-members": "Mange members",
       },
     };
   },

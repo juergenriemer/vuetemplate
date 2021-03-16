@@ -43,12 +43,15 @@ export default {
     },
     async add() {
       if (!this.comment.text) return;
-      const params = {
+      let comment = Object.assign(
+        { _id: this.objectId(), creatorId: this.myUserId },
+        this.comment
+      );
+      this.addComment({
         listId: this.listId,
         itemId: this.itemId,
-        comment: this.comment,
-      };
-      this.addComment(params)
+        comment,
+      })
         .then(() => {
           this.comment.text = "";
           //this.$el.querySelector("input").focus();

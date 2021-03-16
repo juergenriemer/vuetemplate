@@ -1,42 +1,29 @@
-<template>
-  <div id="item-list-menu">
-    <div class="buttons">
-      <i class="fas fa-arrow-left" @click="backToList()"></i>
-    </div>
-    <div class="avatar" @click="showInfo" v-if="listId">
-      <svg width="100%" height="100%" :data-jdenticon-value="list.title"></svg>
-    </div>
-    <div class="title" @click="showInfo" v-if="listId">{{ list.title }}</div>
-    <div class="buttons menu" v-if="listId">
-      <i class="fas fa-ellipsis-v" @click="showMenu = !showMenu"></i>
-      <div
-        id="menu"
-        v-if="showMenu"
-        xxxxstyle="transform-origin: right top; transform: scale(1); opacity: 1"
-      >
-        <ul @click="menu($event)">
-          <li data-link="info">List info</li>
-          <li v-if="listAdmin" data-link="manage">Manage list</li>
-          <li data-link="editItems" :class="editListItems ? 'bold' : ''">
-            Edit list items
-          </li>
-          <li data-link="reset">Uncheck all items</li>
-          <li v-if="listAdmin" data-link="share">Share list</li>
-          <li v-if="listAdmin" data-link="delete">Delete list</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<template lang="pug">
+#item-list-menu
+  .buttons
+    i.fas.fa-arrow-left(@click="backToList()")
+  .avatar(@click="showInfo", v-if="listId")
+    svg(width="100%", height="100%", :data-jdenticon-value="list.title")
+  .title(@click="showInfo", v-if="listId") {{ list.title }}
+  .menu(v-if="listId")
+    i.fas.fa-ellipsis-v
+    ul(@click="menu($event)")
+      li(data-link="info") List info
+      li(data-link="manage-list", v-if="listAdmin") Manage list
+      li(data-link="manage-members", v-if="listAdmin") Manage members
+      li(data-link="reset") Uncheck all items
+      li(data-link="share", v-if="listAdmin") Share list
+      li(data-link="delete", v-if="listAdmin") Delete list
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+import Menu from "@/mixins/Menu";
 import { bus } from "../../main";
 export default {
   name: "ItemListMenu",
+  mixins: [Menu],
   data: () => ({
     infoShown: false,
-    showMenu: false,
-    editListItems: false,
   }),
   computed: {
     ...mapGetters(["lists"]),
@@ -58,6 +45,14 @@ export default {
   },
   methods: {
     ...mapActions(["deleteList", "resetList"]),
+    showMenu(evt) {
+      const menu = evt.target.querySelector("#menu");
+      const isClosed = menu.classList.contains("hide");
+      document
+        .querySelectorAll("#menu")
+        .forEach((node) => node.classList.add("hide"));
+      if (isClosed) menu.classList.remove("hide");
+    },
     backToList() {
       self.location.href = "/#/";
     },
@@ -68,12 +63,8 @@ export default {
     menu(evt) {
       const link = evt.target.getAttribute("data-link");
       switch (link) {
-        case "editItems":
-          this.editListItems = !this.editListItems;
-          bus.$emit("editListItems", this.editListItems);
-          break;
         case "reset":
-          this.resetList(this.listId);
+          this.resetList({ listId: this.listId });
           break;
         case "share":
           bus.$emit("shareList");
@@ -84,8 +75,11 @@ export default {
         case "info":
           bus.$emit("showInfo", "list-info");
           break;
-        case "manage":
+        case "manage-list":
           bus.$emit("showInfo", "manage-list");
+          break;
+        case "manage-members":
+          bus.$emit("showInfo", "manage-members");
           break;
       }
       this.showMenu = false;
