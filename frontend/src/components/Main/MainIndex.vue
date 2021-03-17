@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="info" v-if="showOffline">!OFFLINE MODE!</div>
     <div id="box">
       <div class="left column" v-if="showLeft">
         <user-info class="header"></user-info>
@@ -41,7 +42,7 @@ import UserSocket from "@/components/User/UserSocket";
 import InfoHeader from "@/components/Info/InfoHeader";
 import ListInfo from "@/components/Info/ListInfo";
 import CommentAdd from "@/components/Item/CommentAdd";
-import { bus } from "../../main";
+import { bus } from "@/main";
 
 export default {
   name: "DashboardIndex",
@@ -68,6 +69,7 @@ export default {
       windowWidth: window.innerWidth,
       infoTitle: "",
       infoComponent: "",
+      showOffline: false,
       showComment: false,
       showInfo: false,
       infos: {
@@ -104,6 +106,7 @@ export default {
     bus.$on("closeInfo", () => (this.showInfo = false));
     bus.$on("showComment", () => (this.showComment = true));
     bus.$on("hideComment", () => (this.showComment = false));
+    bus.$on("showOffline", (offline) => (this.showOffline = offline));
   },
 };
 </script>

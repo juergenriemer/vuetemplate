@@ -3,7 +3,8 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-// import io from "socket.io-client";
+import { bus } from "@/main";
+
 export default {
   name: "UserSocket",
   data() {
@@ -23,24 +24,30 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["user", "lists"]),
+    ...mapGetters(["userId", "isLocal", "lists"]),
   },
   created() {
-    //this.test = ["updateItem"];
-    this.waitFor().then(() => {
-      const socket = io("ws://192.168.1.27:3003");
-      const userId = localStorage.getItem("userid");
-      const csrf = sessionStorage.getItem("csrf");
-      socket.on("connect", () => {
-        socket.emit("join", { userId, csrf });
+    if (!this.isLocal) {
+      this.waitFor().then(() => {
+        const socket = io("ws://192.168.1.27:3003");
+        const csrf = sessionStorage.getItem("csrf");
+        socket.on("connect", () => {
+          bus.$emit("showOffline", false);
+          self.offline = false;
+          socket.emit("join", { userId: this.userId, csrf });
+        });
+        socket.on(csrf, (res) => {
+          let { type, data } = res;
+          data.socket = true;
+          if (this.allowedActions.includes(type))
+            this.$store.dispatch(type, data);
+        });
+        socket.on("disconnect", () => {
+          bus.$emit("showOffline", true);
+          self.offline = true;
+        });
       });
-      socket.on(csrf, (res) => {
-        let { type, data } = res;
-        data.socket = true;
-        if (this.allowedActions.includes(type))
-          this.$store.dispatch(type, data);
-      });
-    });
+    }
   },
   methods: {
     waitFor() {
@@ -53,6 +60,25 @@ export default {
       });
     },
     seenList(state, listId) {
+      console.warn("usersocket:seenlist>>>>>>>>>>>>>>>>>>>>>>>");
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
       let missed = localStorage.getItem("missed");
       let list = state.lists.find((list) => list._id == listId);
       if (list) {
@@ -72,6 +98,27 @@ export default {
       }
     },
     checkForUpdates(state) {
+      console.warn(
+        "usersocket:checkforudpes>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
+      console.warn(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+      );
       let missed = localStorage.getItem("missed");
       missed = missed ? JSON.parse(missed) : {};
       state.lists.forEach((list) => {

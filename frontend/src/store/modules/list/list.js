@@ -1,14 +1,16 @@
 import Api from "@/services/Api";
+const wire = Api.wire;
+const http = Api.http;
 
 const root = "/list";
 
 const getters = {};
 
 const actions = {
-  async addList({ commit }, { list, socket }) {
+  async addList({ commit }, { list }) {
     commit("addList", { list });
-    if (!socket)
-      return Api()
+    if (wire(arguments))
+      return http()
         .post(`${root}`, list)
         .then(res => {
           // second update for the ID of the item
@@ -20,42 +22,45 @@ const actions = {
         });
   },
 
-  async updateList({ commit }, { listId, list, socket }) {
+  async updateList({ commit }, { listId, list }) {
     commit("updateList", { listId, list });
-    if (!socket) return Api().put(`/list/${listId}`, list);
+    if (wire(arguments)) return http().put(`/list/${listId}`, list);
   },
 
-  async removeList({ commit }, { listId, socket }) {
+  async removeList({ commit }, { listId }) {
     commit("removeList", listId);
-    if (!socket) return Api().delete(`${root}/${listId}`);
+    if (wire(arguments)) return http().delete(`${root}/${listId}`);
   },
 
   async fetchLists({ commit }) {
-    return Api()
-      .get(`${root}`)
-      .then(res => {
-        commit("fetchLists", { lists: res.data.lists });
-        return res;
-      });
+    if (wire(arguments))
+      return http()
+        .get(`${root}`)
+        .then(res => {
+          commit("fetchLists", { lists: res.data.lists });
+          return res;
+        });
   },
 
-  async sawList({ commit }, listId) {
-    commit("sawList", { listId });
-    return Api().put(`${root}/sawList/${listId}`);
+  async sawList({ commit }, { listId, userId }) {
+    commit("sawList", { listId, userId });
+    if (wire(arguments)) return http().put(`${root}/sawList/${listId}`);
   },
 
-  async resetList({ commit }, { listId, socket }) {
+  async resetList({ commit }, { listId }) {
     commit("resetList", { listId });
-    if (!socket) return Api().put(`${root}/reset/${listId}`);
+    if (wire(arguments)) return http().put(`${root}/reset/${listId}`);
   },
 
   async toggleAdmin({ commit }, { listId, userId, isAdmin }) {
     commit("toggleAdmin", { listId, userId, isAdmin });
-    return Api().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
+    if (!self.isLocal)
+      return http().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
   }
 };
 
 const mutations = {
+  clearLists: state => (state.lists = []),
   fetchLists: (state, { lists }) => (state.lists = lists),
   addList: (state, { list }) => state.lists.unshift(list),
   updateList: (state, { listId, list }) => {
@@ -64,9 +69,8 @@ const mutations = {
   },
   removeList: (state, { listId }) =>
     (state.lists = state.lists.filter(lst => lst._id !== listId)),
-  sawList: (state, { listId }) => {
+  sawList: (state, { listId, userId }) => {
     const list = state.lists.find(list => list._id == listId);
-    const userId = localStorage.getItem("userid");
     let user = list.users.find(usr => usr.userId == userId);
     user.lastSeen = new Date();
   },

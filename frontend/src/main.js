@@ -1,9 +1,12 @@
 import Vue from "vue";
 import App from "./App";
 import router from "./router";
-import store from "./store/index";
 import config from "./config.js";
 import { format, formatDistance } from "date-fns";
+import store from "@/store/index";
+const userId = store.getters["userId"];
+
+self.isLocal = localStorage.getItem("token") == "local";
 
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 if (isSafari) {
@@ -20,17 +23,24 @@ document.body.addEventListener("keydown", evt => {
 
 Vue.mixin({
   computed: {
+    firstTimer() {
+      return !!!localStorage.getItem("last-visit");
+    },
+    isLoggedIn() {
+      return localStorage.getItem("token");
+    },
+    isLocal() {
+      return self.isLocal; //localStorage.getItem("token") == "local";
+    },
     myUserId() {
-      return localStorage.getItem("userid");
+      return userId;
     },
     curListId() {
       return this.$route.params.id;
     },
     listAdmin() {
       if (this.list && this.list.users) {
-        let user = this.list.users.find(
-          usr => usr.userId == localStorage.getItem("userid")
-        );
+        let user = this.list.users.find(usr => usr.userId == userId);
         return user.role != "user";
       }
       return null;
@@ -40,8 +50,8 @@ Vue.mixin({
     userById(userId, listId = this.curListId) {
       return store.getters.userById(listId, userId);
     },
-    userIsMe(userId) {
-      return userId == localStorage.getItem("userid");
+    userIsMe(id) {
+      return id == userId;
     },
     date(date) {
       date = date ? new Date(date) : new Date();
@@ -55,6 +65,7 @@ Vue.mixin({
       return btoa(new Date());
     },
     showError(message) {
+      //debugger;
       console.log(">>>>>>>>>>>>>>>>>>>>>>>");
       console.log(">>>>>>>>>>>>>>>>>>>>>>>");
       console.log(">>>>>>>>>>>>>>>>>>>>>>>");
@@ -65,7 +76,7 @@ Vue.mixin({
       //if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
     },
     userColor(userId) {
-      const str = this.userById(userId).name;
+      const str = this.userById(userId).name || "Listle";
       const s = 30;
       const l = 80;
       var hash = 0;

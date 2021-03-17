@@ -9,6 +9,7 @@ import ApproveInvitesSingle from "@/components/User/ApproveInvitesSingle";
 import RegisterVerify from "@/components/User/RegisterVerify";
 import VerifyInvitation from "@/components/List/ShareVerify";
 import Login from "@/components/User/Login";
+const isLoggedIn = () => localStorage.getItem("token");
 
 Vue.use(Router);
 
@@ -20,8 +21,7 @@ export default new Router({
       name: "VerifyInvitation",
       component: VerifyInvitation,
       beforeEnter: (to, from, next) => {
-        console.log(localStorage.getItem("userid"));
-        if (!localStorage.getItem("userid")) next("/login");
+        if (!isLoggedIn()) next("/login");
         next();
       }
     },
@@ -65,7 +65,9 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        if (!localStorage.getItem("userid")) next("/login");
+        console.log(1, self.isLocal);
+        console.log(2, isLoggedIn);
+        if (!isLoggedIn()) next("/login");
         next();
       }
     },
@@ -74,7 +76,7 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        if (!localStorage.getItem("userid")) next("/login");
+        if (!isLoggedIn()) next("/login");
         next();
       }
     },
@@ -83,7 +85,7 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        if (!localStorage.getItem("userid")) next("/login");
+        if (!isLoggedIn()) next("/login");
         next();
       }
     }

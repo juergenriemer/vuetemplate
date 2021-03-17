@@ -1,13 +1,16 @@
 import Api from "@/services/Api";
+const wire = Api.wire;
+const http = Api.http;
 
 const root = "/item";
 
 const getters = {};
+
 const actions = {
-  async addItem({ commit }, { listId, item, socket }) {
+  async addItem({ commit }, { listId, item }) {
     commit("addItem", { listId, item });
-    if (!socket)
-      return Api()
+    if (wire(arguments)) {
+      return http()
         .post(`/item/${listId}`, item)
         .then(res => {
           // second update for the ID of the item
@@ -18,16 +21,17 @@ const actions = {
           });
           return res;
         });
+    }
   },
 
-  async updateItem({ commit }, { listId, itemId, item, socket }) {
+  async updateItem({ commit }, { listId, itemId, item }) {
     commit("updateItem", { listId, itemId, item });
-    if (!socket) return Api().put(`/item/${listId}/${itemId}`, item);
+    if (wire(arguments)) return http().put(`/item/${listId}/${itemId}`, item);
   },
 
-  async removeItem({ commit }, { listId, itemId, socket }) {
+  async removeItem({ commit }, { listId, itemId }) {
     commit("removeItem", { listId, itemId });
-    if (!socket) Api().delete(`${root}/${listId}/${itemId}`);
+    if (wire(arguments)) http().delete(`${root}/${listId}/${itemId}`);
   }
 };
 

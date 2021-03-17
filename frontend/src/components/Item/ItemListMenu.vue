@@ -9,10 +9,10 @@
     i.fas.fa-ellipsis-v
     ul(@click="menu($event)")
       li(data-link="info") List info
-      li(data-link="manage-list", v-if="listAdmin") Manage list
-      li(data-link="manage-members", v-if="listAdmin") Manage members
+      li(data-link="manage-list", v-if="listAdmin && !isLocal") Manage list
+      li(data-link="manage-members", v-if="listAdmin && !isLocal") Manage members
       li(data-link="reset") Uncheck all items
-      li(data-link="share", v-if="listAdmin") Share list
+      li(data-link="share", v-if="listAdmin && !isLocal") Share list
       li(data-link="delete", v-if="listAdmin") Delete list
 </template>
 <script>

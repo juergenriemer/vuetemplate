@@ -6,9 +6,13 @@ const state = {
 };
 
 const getters = {
-  user: state => {
-    return state.user;
-  }
+  user: state => state.user,
+  userId: state => (state.user ? state.user._id : null),
+  isLoggedIn: () => localStorage.getItem("token"),
+  isLocal: () => localStorage.getItem("token") == "local",
+  short: state =>
+    state.user.firstName.charAt(0) + state.user.lastName.charAt(0),
+  token: () => localStorage.getItem("token")
 };
 
 const actions = {
@@ -22,7 +26,7 @@ const actions = {
 
   async registerVerify({ commit }, token) {
     return User.registerVerify(token).then(res => {
-      commit("addUser", res.data.token);
+      commit("fetchUser", res.data.token);
       commit("setToken", res.data.token);
       return res;
     });
@@ -34,7 +38,7 @@ const actions = {
 
   async resetPasswordVerify({ commit }, token) {
     return User.resetPasswordVerify(token).then(res => {
-      commit("addUser", res.data.token);
+      commit("fetchUser", res.data.userdata);
       commit("setToken", res.data.token);
       return res;
     });
@@ -43,61 +47,66 @@ const actions = {
   async login({ commit }, data) {
     return User.login(data).then(res => {
       if (res && res.data) {
-        commit("addUser", res.data.userdata);
+        commit("fetchUser", res.data.userdata);
         commit("setToken", res.data.token);
       }
       return res;
     });
   },
 
-  async info({ commit }) {
-    // do I need this method? I should have everything in local storage, no?
-    // need it because name might have changed on pc _and_ lsatSeen data?
-    const userid = localStorage.getItem("userid");
-    return User.info(userid).then(res => {
+  async info({ commit, getters }) {
+    return User.info(getters.userId).then(res => {
       if (res && res.data) {
-        commit("addUser", res.data.userdata);
+        commit("fetchUser", res.data.userdata);
       }
       return res;
     });
   },
 
   async logout({ commit }) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("firstName");
-    localStorage.removeItem("lastName");
-    localStorage.removeItem("userid");
-    commit("removeUser");
     self.location.hash = "#/login";
+    setTimeout(() => {
+      commit("clearLists");
+      commit("clearUser");
+      commit("logout");
+    }, 500);
+  },
+
+  offlineUser({ commit }) {
+    commit("offlineUser");
   }
 };
 
 const mutations = {
-  addUser: (state, user) => {
-    state.user = user;
-    localStorage.setItem("firstName", user.firstName);
-    localStorage.setItem("lastName", user.lastName);
-    localStorage.setItem("userid", user._id);
-  },
-  setToken: (state, token) => {
-    console.log(token);
-    localStorage.setItem("token", token);
-    //Authorization: localStorage.getItem("token"),
-    Api().defaults.headers.common["Authorization"] = token;
-    console.log(localStorage.getItem("token"));
-  },
+  fetchUser: (state, user) => (state.user = user),
   removeUser: state => (state.user = null),
-  updateUser: (state, item) => {
-    console.warn(item);
-    const index = state.todos.findIndex(todo => {
-      console.log(todo);
-      return todo._id == item._id;
-    });
-    if (index !== -1) {
-      state.todos.splice(index, 1, item);
-    }
+  setToken: (state, token) => {
+    self.isLocal = false;
+    localStorage.setItem("last-visit", new Date());
+    localStorage.setItem("token", token);
+  },
+  clearUser: state => (state.user = {}),
+  logout: state => {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("csrf");
+    var mydate = new Date();
+    mydate.setTime(mydate.getTime() - 1);
+    document.cookie = "_csrf=; expires=" + mydate.toGMTString();
+  },
+  offlineUser: state => {
+    self.isLocal = true;
+    const user = {
+      name: "me",
+      firstName: "Local",
+      lastName: "Listle",
+      _id: "local"
+    };
+    state.user = user;
+    localStorage.setItem("token", "local");
+    localStorage.setItem("last-visit", new Date());
   }
 };
+//Api().defaults.headers.common["Authorization"] = token;
 
 export default {
   state,

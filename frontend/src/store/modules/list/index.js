@@ -1,11 +1,7 @@
-import List from "@/services/ListService";
-import Item from "@/services/ItemService";
-import Share from "@/services/ShareService";
 import list from "@/store/modules/list/list";
 import item from "@/store/modules/list/item";
 import share from "@/store/modules/list/share";
 import comment from "@/store/modules/list/comment";
-import Vue from "vue";
 
 const state = {
   lists: []
@@ -26,27 +22,7 @@ const actions = {
   ...list.actions,
   ...item.actions,
   ...comment.actions,
-  ...share.actions,
-  async xxxlistInvites({ commit }) {
-    return Share.listInvites().then(res => res);
-  },
-
-  async xxxapproveInvites({ commit }, { approves, lists }) {
-    return Share.approveInvites(approves).then(res => {
-      commit("approveInvites", { lists });
-      return res;
-    });
-  },
-
-  async xxxinviteList({ commit }, { listId, email, role }) {
-    return Share.invite(listId, email, role).then(res => res);
-  },
-
-  async verifyInvitation({ commit }, token) {
-    return Share.verifyInvitation(token).then(res => res);
-  }
-
-  // ITEMS
+  ...share.actions
 };
 
 const mutations = {

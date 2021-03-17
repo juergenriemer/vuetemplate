@@ -1,8 +1,8 @@
 import axios from "axios";
 import appConfig from "../config.js";
-var firstload = true;
+import { bus } from "@/main";
 window.csrf = null;
-import Api from "@/services/Api";
+
 const http = axios.create({
   baseURL: appConfig.backend,
   withCredentials: true,
@@ -13,6 +13,7 @@ const http = axios.create({
     mode: "cors"
   }
 });
+
 const getCsrfToken = async () => {
   let csrf = sessionStorage.getItem("csrf");
   if (csrf) {
@@ -33,6 +34,7 @@ const getCsrfToken = async () => {
     return true;
   }
 };
+const isLocal = () => localStorage.getItem("token") == "local";
 
 http.interceptors.request.use(
   async config => {
@@ -49,6 +51,11 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   res => res,
   err => {
+    if (/Network Error/.test(err)) {
+      bus.$emit("showOffline", true);
+      self.offline = true;
+      return Promise.reject({ status: 0, message: "network-error" });
+    }
     const status = err && err.response && err.response.status;
     if (status == 401) {
       self.location.hash = "#/login";
@@ -61,7 +68,16 @@ http.interceptors.response.use(
     return Promise.reject({ status, message, uid });
   }
 );
+const wire = args => {
+  console.log(args);
+  if (self.isLocal || self.offline) return false;
+  if (args && args[1] && args[1].socket) return false;
+  return true;
+};
 
-export default () => {
-  return http;
+export default {
+  http: () => {
+    return http;
+  },
+  wire
 };

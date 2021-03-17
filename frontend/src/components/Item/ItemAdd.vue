@@ -36,7 +36,10 @@ export default {
     },
     async add() {
       if (!this.item.title) return;
-      let item = Object.assign({ _id: this.objectId() }, this.item);
+      let item = Object.assign(
+        { _id: this.objectId(), comments: [] },
+        this.item
+      );
       this.addItem({
         listId: this.listId,
         item,

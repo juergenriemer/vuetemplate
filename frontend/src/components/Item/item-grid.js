@@ -21,7 +21,7 @@ export default {
     };
   },
   created() {
-    this.fetch();
+    //this.fetch();
     this.seeList();
     bus.$on("editListItems", data => {
       this.editListItems = data;
@@ -35,7 +35,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(["lists", "user"]),
+    ...mapGetters(["lists", "userId"]),
     listId() {
       return this.$route.params.id;
     },
@@ -49,9 +49,8 @@ export default {
       return this.list.items || [];
     },
     lastSeen() {
-      const userId = localStorage.getItem("userid");
       const lastSeen = this.lists.reduce((map, list) => {
-        let user = list.users.find(user => user.userId == userId);
+        let user = list.users.find(user => user.userId == this.userId);
         map[list._id] = user.lastSeen;
         return map;
       }, {});
@@ -93,6 +92,7 @@ export default {
       }
     },
     seeList() {
+      console.log("????????????????????????????????????");
       let missed = localStorage.getItem("missed");
       if (missed) {
         let missed2 = JSON.parse(missed);
@@ -108,6 +108,7 @@ export default {
     editInput(evt, item) {
       switch (evt.key) {
         case "Escape":
+          // use bus for this
           this.closeInput();
           break;
         case "Enter":
@@ -127,7 +128,7 @@ export default {
       }, 0); /* need to wait for element to render */
     },
     async fetch() {
-      let result = await this.fetchLists();
+      //let result = await this.fetchLists();
     },
     async remove(itemId) {
       this.removeItem({
