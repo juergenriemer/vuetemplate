@@ -1,8 +1,8 @@
 <template>
   <div id="wrapper">
-    <!--div id="console"></div>
-    <button id="console-clear" @click="clear">X</button-->
+    <div id="backdrop"><div class="logo">LL</div></div>
     <div id="app">
+      <div id="info" v-if="showOffline">!OFFLINE MODE!</div>
       <w-app>
         <router-view />
       </w-app>
@@ -11,25 +11,21 @@
 </template>
 
 <script>
+import { bus } from "@/main";
 export default {
   name: "App",
+  data() {
+    return {
+      showOffline: false,
+    };
+  },
+  created() {
+    bus.$on("showOffline", (offline) => (this.showOffline = offline));
+  },
   methods: {
     clear() {
       document.querySelector("#console").innerHTML = "";
     },
-  },
-  created() {
-    /*
-    window.console.log = (text) => {
-      document.querySelector("#console").innerHTML =
-        `${text}<br>` + document.querySelector("#console").innerHTML;
-    };
-    window.console.warn = (text) => {
-      document.querySelector("#console").innerHTML =
-        `<b color="red">${text}</b><br>` +
-        document.querySelector("#console").innerHTML;
-    };
-     */
   },
 };
 </script>
@@ -42,25 +38,15 @@ export default {
 <style src="./css/comment.css"></style>
 
 <style>
-#console-clear {
-  position: fixed;
-  top: 0;
-  right: 400;
-  z-index: 2000;
-}
-#console {
-  position: fixed;
-  top: 0;
-  right: 0;
-  background: white;
-  z-index: 1000;
-  overflow: auto;
-  width: 400px;
-  height: 800px;
-  border: 2px solid black;
-}
 #wrapper {
   border: 1px solid transparent;
+}
+#info {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.3em;
+  color: #fff;
+  padding: 4px;
 }
 #backdrop {
   position: fixed;

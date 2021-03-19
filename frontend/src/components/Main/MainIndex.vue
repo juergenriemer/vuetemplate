@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="info" v-if="showOffline">!OFFLINE MODE!</div>
     <div id="box">
       <div class="left column" v-if="showLeft">
         <user-info class="header"></user-info>
@@ -106,7 +105,6 @@ export default {
     bus.$on("closeInfo", () => (this.showInfo = false));
     bus.$on("showComment", () => (this.showComment = true));
     bus.$on("hideComment", () => (this.showComment = false));
-    bus.$on("showOffline", (offline) => (this.showOffline = offline));
   },
 };
 </script>

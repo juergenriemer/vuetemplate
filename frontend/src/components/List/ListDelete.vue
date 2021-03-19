@@ -56,9 +56,9 @@ export default {
       });
     },
     async submit() {
-      let deleteId = this.listId;
-      this.showNextList(deleteId);
-      this.removeList(deleteId).catch((err) => this.showError(err));
+      let listId = this.listId;
+      this.showNextList(listId);
+      this.removeList({ listId }).catch((err) => this.showError(err));
     },
   },
 };

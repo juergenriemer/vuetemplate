@@ -35,7 +35,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(["lists", "userId"]),
+    ...mapGetters(["lists", "userId", "isAdmin"]),
     listId() {
       return this.$route.params.id;
     },

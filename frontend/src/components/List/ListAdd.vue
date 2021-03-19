@@ -9,7 +9,7 @@ form#list-add(@submit.prevent="add")
   )
 </template>
 <script>
-import { mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "ListAdd",
@@ -19,6 +19,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["userId"]),
     listId() {
       return this.$route.params.id;
     },
@@ -27,10 +28,12 @@ export default {
     ...mapActions(["addList"]),
     async add() {
       if (!this.list.title) return;
+      let now = new Date();
       let list = Object.assign(
         {
           _id: this.objectId(),
-          users: [{ userId: this.myUserId, role: "owner" }],
+          createdAt: now,
+          users: [{ userId: this.userId, role: "owner", lastSeen: now }],
           items: [],
         },
         this.list

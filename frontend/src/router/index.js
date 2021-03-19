@@ -65,8 +65,6 @@ export default new Router({
       name: "MainIndex",
       component: MainIndex,
       beforeEnter: (to, from, next) => {
-        console.log(1, self.isLocal);
-        console.log(2, isLoggedIn);
         if (!isLoggedIn()) next("/login");
         next();
       }

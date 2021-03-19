@@ -53,7 +53,6 @@ http.interceptors.response.use(
   err => {
     if (/Network Error/.test(err)) {
       bus.$emit("showOffline", true);
-      self.offline = true;
       return Promise.reject({ status: 0, message: "network-error" });
     }
     const status = err && err.response && err.response.status;
@@ -69,7 +68,6 @@ http.interceptors.response.use(
   }
 );
 const wire = args => {
-  console.log(args);
   if (self.isLocal || self.offline) return false;
   if (args && args[1] && args[1].socket) return false;
   return true;

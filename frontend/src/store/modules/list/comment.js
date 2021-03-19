@@ -4,8 +4,6 @@ const http = Api.http;
 
 const root = "/comment";
 
-const getters = {};
-
 const actions = {
   async addComment({ commit }, { listId, itemId, comment }) {
     commit("addComment", { listId, itemId, comment });

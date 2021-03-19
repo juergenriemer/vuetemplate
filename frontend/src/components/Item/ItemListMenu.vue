@@ -9,11 +9,11 @@
     i.fas.fa-ellipsis-v
     ul(@click="menu($event)")
       li(data-link="info") List info
-      li(data-link="manage-list", v-if="listAdmin && !isLocal") Manage list
-      li(data-link="manage-members", v-if="listAdmin && !isLocal") Manage members
+      li(data-link="manage-list", v-if="isAdmin && !isLocal") Manage list
+      li(data-link="manage-members", v-if="isAdmin && !isLocal") Manage members
       li(data-link="reset") Uncheck all items
-      li(data-link="share", v-if="listAdmin && !isLocal") Share list
-      li(data-link="delete", v-if="listAdmin") Delete list
+      li(data-link="share", v-if="isAdmin && !isLocal") Share list
+      li(data-link="delete", v-if="isAdmin") Delete list
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
@@ -26,7 +26,7 @@ export default {
     infoShown: false,
   }),
   computed: {
-    ...mapGetters(["lists"]),
+    ...mapGetters(["lists", "isAdmin"]),
     listId() {
       return this.$route.params.id;
     },

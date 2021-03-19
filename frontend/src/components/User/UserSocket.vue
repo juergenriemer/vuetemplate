@@ -33,7 +33,6 @@ export default {
         const csrf = sessionStorage.getItem("csrf");
         socket.on("connect", () => {
           bus.$emit("showOffline", false);
-          self.offline = false;
           socket.emit("join", { userId: this.userId, csrf });
         });
         socket.on(csrf, (res) => {
@@ -44,7 +43,6 @@ export default {
         });
         socket.on("disconnect", () => {
           bus.$emit("showOffline", true);
-          self.offline = true;
         });
       });
     }

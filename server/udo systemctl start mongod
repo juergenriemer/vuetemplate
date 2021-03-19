@@ -1,0 +1,11 @@
+[0;1;31m*[0m mongod.service - MongoDB Database Server
+   Loaded: loaded (/lib/systemd/system/mongod.service; disabled; vendor preset: enabled)
+   Active: [0;1;31mfailed[0m (Result: exit-code) since Fri 2021-03-19 09:38:08 UTC; 3h 13min ago
+     Docs: https://docs.mongodb.org/manual
+  Process: 204 ExecStart=/usr/bin/mongod --config /etc/mongod.conf [0;1;31m(code=exited, status=14)[0m
+ Main PID: 204 (code=exited, status=14)
+
+Mar 12 23:53:46 papadev systemd[1]: Started MongoDB Database Server.
+Mar 19 09:38:08 papadev mongod[204]: {"t":{"$date":"2021-03-19T09:38:08.131+00:00"},"s":"F",  "c":"CONTROL",  "id":4522200, "ctx":"ftdc","msg":"Writing to log file failed, aborting application","attr":{"files":[]}}
+Mar 19 09:38:08 papadev systemd[1]: [0;1;39m[0;1;31m[0;1;39mmongod.service: Main process exited, code=exited, status=14/n/a[0m
+Mar 19 09:38:08 papadev systemd[1]: [0;1;39m[0;1;31m[0;1;39mmongod.service: Failed with result 'exit-code'.[0m

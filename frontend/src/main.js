@@ -4,7 +4,6 @@ import router from "./router";
 import config from "./config.js";
 import { format, formatDistance } from "date-fns";
 import store from "@/store/index";
-const userId = store.getters["userId"];
 
 self.isLocal = localStorage.getItem("token") == "local";
 
@@ -32,9 +31,6 @@ Vue.mixin({
     isLocal() {
       return self.isLocal; //localStorage.getItem("token") == "local";
     },
-    myUserId() {
-      return userId;
-    },
     curListId() {
       return this.$route.params.id;
     },
@@ -48,6 +44,7 @@ Vue.mixin({
   },
   methods: {
     userById(userId, listId = this.curListId) {
+      console.log(userId, listId);
       return store.getters.userById(listId, userId);
     },
     userIsMe(id) {
@@ -62,7 +59,7 @@ Vue.mixin({
       return formatDistance(date, new Date());
     },
     objectId() {
-      return btoa(new Date());
+      return "id" + new Date().getTime();
     },
     showError(message) {
       //debugger;
@@ -76,7 +73,8 @@ Vue.mixin({
       //if (status !== 401) alert("An error happened, corrid:\n\n" + uid);
     },
     userColor(userId) {
-      const str = this.userById(userId).name || "Listle";
+      const user = this.userById(userId);
+      const str = user ? user.name : "Listle";
       const s = 30;
       const l = 80;
       var hash = 0;

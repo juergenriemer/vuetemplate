@@ -16,6 +16,12 @@ const getters = {
   },
   userById: (state, getters) => (listId, userId) => {
     return getters.listById(listId).users.find(usr => usr.userId == userId);
+  },
+  isAdmin: (state, getters) => (listId, userId) => {
+    const user = getters
+      .listById(listId)
+      .users.find(usr => usr.userId == userId);
+    return user.role == "admin" || user.role == "owner";
   }
 };
 const actions = {

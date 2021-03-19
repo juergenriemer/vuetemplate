@@ -28,7 +28,7 @@ const actions = {
   },
 
   async removeList({ commit }, { listId }) {
-    commit("removeList", listId);
+    commit("removeList", { listId });
     if (wire(arguments)) return http().delete(`${root}/${listId}`);
   },
 

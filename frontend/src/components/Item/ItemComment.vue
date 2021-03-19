@@ -2,13 +2,13 @@
 div
   .bubble(
     v-for="comment in item.comments",
-    :class="userIsMe(comment.creatorId) ? 'right' : ''",
+    :class="userId == comment.creatorId ? 'right' : ''",
     :key="comment._id"
   )
     .bubble-content
       .top
         .name(:style="{ color: userColor(comment.creatorId) }")
-          | {{ userById(comment.creatorId).name }}
+          | {{ userName(comment.creatorId) }}
         i.fas.fa-times(v-on:click="remove(comment._id)")
       .text {{ comment.text }}
       .date {{ ago(comment.updatedAt) }}
@@ -24,7 +24,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(["lists", "user"]),
+    ...mapGetters(["lists", "user", "userId"]),
     list() {
       const list = this.lists.find((list) => list._id == this.listId);
       return list || {};
@@ -36,6 +36,10 @@ export default {
   },
   methods: {
     ...mapActions(["removeComment"]),
+    userName(userId) {
+      const user = this.userById(userId);
+      return user && user.name ? user.name : "";
+    },
     async remove(commentId) {
       this.removeComment({
         listId: this.listId,

@@ -142,11 +142,10 @@ export default {
     toOffline() {
       this.offlineUser();
       setTimeout(() => {
-        console.log(localStorage.getItem("token"));
         this.$root.$router.push({
           path: `/main`,
         });
-      }, 500);
+      }, 1500);
     },
     async submit() {
       this.status = "sending";

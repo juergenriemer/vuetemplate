@@ -45,6 +45,9 @@ const ListSchema = new mongoose.Schema(
       minlength: 1,
       maxlength: 150,
     },
+    description: {
+      type: "String",
+    },
     items: [ItemSchema],
     users: [
       {
