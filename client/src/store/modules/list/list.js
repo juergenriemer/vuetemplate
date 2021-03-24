@@ -27,8 +27,8 @@ const actions = {
     if (wire(arguments)) return http().put(`/list/${listId}`, list);
   },
 
-  async removeList({ commit }, { listId }) {
-    commit("removeList", { listId });
+  async deleteList({ commit }, { listId }) {
+    commit("deleteList", { listId });
     if (wire(arguments)) return http().delete(`${root}/${listId}`);
   },
 
@@ -67,7 +67,7 @@ const mutations = {
     const listIx = state.lists.findIndex((lst) => lst._id == listId);
     Object.assign(state.lists[listIx], list);
   },
-  removeList: (state, { listId }) =>
+  deleteList: (state, { listId }) =>
     (state.lists = state.lists.filter((lst) => lst._id !== listId)),
   sawList: (state, { listId, userId }) => {
     const list = state.lists.find((list) => list._id == listId);

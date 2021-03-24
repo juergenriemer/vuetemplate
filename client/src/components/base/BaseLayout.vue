@@ -6,16 +6,24 @@
           <ion-back-button
             :default-href="pageDefaultBackLink"
           ></ion-back-button>
+          <slot name="title"></slot>
         </ion-buttons>
-        <ion-title>{{ pageTitle }}</ion-title>
+        <ion-title>
+          {{ pageTitle }}
+        </ion-title>
         <ion-buttons slot="end">
           <slot name="actions-end"></slot>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <slot />
+      <slot name="content" />
     </ion-content>
+    <IonFooter>
+      <IonToolbar>
+        <slot name="footer" />
+      </IonToolbar>
+    </IonFooter>
   </ion-page>
 </template>
 
@@ -23,6 +31,7 @@
 import {
   IonPage,
   IonHeader,
+  IonFooter,
   IonToolbar,
   IonTitle,
   IonContent,
@@ -35,6 +44,7 @@ export default {
   components: {
     IonPage,
     IonHeader,
+    IonFooter,
     IonToolbar,
     IonTitle,
     IonContent,

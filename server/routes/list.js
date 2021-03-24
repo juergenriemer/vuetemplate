@@ -93,6 +93,7 @@ router.post(
     list.users = [
       {
         userId: req.userId,
+        email: req.email,
         name: req.name,
         short: req.short,
         lastSeen: new Date(),

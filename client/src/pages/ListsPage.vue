@@ -1,25 +1,35 @@
 <template>
-  <base-layout page-title="All Lists">
+  <base-layout page-title="Listle">
+    <template v-slot:title>
+      <avatar size="large" :user-id="user._id"></avatar>
+    </template>
     <template v-slot:actions-end>
       <ion-button router-link="/lists/add">
         <ion-icon slot="icon-only" :icon="add"></ion-icon>
       </ion-button>
     </template>
-
-    <lists-list v-if="lists" :lists="lists"></lists-list>
-    <div v-if="!lists">loading</div>
+    <template v-slot:content>
+      <lists-list
+        v-if="lists"
+        :lists="lists"
+        @delete-list="deleteList"
+        @update-list="updateList"
+      ></lists-list>
+      <div v-if="!lists">loading</div>
+    </template>
+    <template v-slot:footer></template>
   </base-layout>
 </template>
 
 <script>
 import { IonButton, IonIcon } from "@ionic/vue";
 import { add } from "ionicons/icons";
-import { mapGetters, mapActions } from "vuex";
-
-import ListsList from "../components/list/ListsList.vue";
+import Avatar from "@/components/base/Avatar.vue";
+import ListsList from "@/components/list/ListsList.vue";
 
 export default {
   components: {
+    Avatar,
     ListsList,
     IonButton,
     IonIcon,
@@ -28,19 +38,28 @@ export default {
     return { add };
   },
   mounted() {
-    setTimeout(() => {
-      console.log(this.fetchLists);
-      this.fetchLists();
-    }, 2000);
+    this.fetch();
   },
   computed: {
-    ...mapGetters(["lists"]),
+    user() {
+      return this.$store.getters.user;
+    },
+    lists() {
+      return this.$store.getters.lists;
+    },
   },
   methods: {
-    ...mapActions(["sawList", "fetchLists", "deleteList", "updateList"]),
+    updateList(listId) {},
+    deleteList(listId) {
+      this.$store
+        .dispatch("deleteList", { listId })
+        .then((res) => res)
+        .catch((err) => alert(err));
+    },
     async fetch() {
       if (!self.isLocal)
-        this.fetchLists()
+        this.$store
+          .dispatch("fetchLists")
           .then(() => {
             if (this.listId) {
               return this.sawList({ listId: this.listId, userId: this.userId });

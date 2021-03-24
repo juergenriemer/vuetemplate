@@ -63,17 +63,12 @@ Dear ${email},
 
 ${invitingUser} has invited you to collaborate on this listle list "${listTitle}"!`,
     };
-    if (!req.list.invitees.find((usr) => usr.email == email))
-      req.list.invitees.push({
-        email,
-        role: roles[role],
-      });
-    req.list
-      .save()
-      .then(() => {
-        return User.findOne({ email });
-      })
+
+    User.findOne({ email })
       .then((user) => {
+        console.log("USSSSSSSSSSER");
+        console.log(user);
+
         if (user && user.is_verified) {
           mail.text += `
 Please visit 
@@ -105,7 +100,25 @@ to create an account, the lists will be shared with you automatically.
         console.log(">>> MAIL >>>");
         console.log(mail);
         console.log("<<< MAIL <<<");
+        return user;
         //return transport.sendMail(mail);
+      })
+      .then((user) => {
+        console.log(user);
+        if (!req.list.invitees.find((usr) => usr.email == email))
+          req.list.invitees.push({
+            email,
+            userId: user ? user.userId : email,
+            name: user ? user.firstName + " " + user.lastName : email,
+            // REF REFACTOR!!!! we do this in utils as well
+            short: user
+              ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+              : "@",
+            role: roles[role],
+          });
+        else console.log("arleady");
+        console.log(req.list.invitees);
+        return req.list.save();
       })
       .then(() => {
         return res.status(200).json();
@@ -138,6 +151,7 @@ router.post(
                 let role = lst.invitees.find((inv) => inv.email == email).role;
                 lst.users.push({
                   userId: req.userId,
+                  email: req.email,
                   name: req.name,
                   short: req.short,
                   lastSeen: new Date(),

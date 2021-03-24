@@ -25,6 +25,8 @@ import "@ionic/vue/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
+// define an app that uses this mixin
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)

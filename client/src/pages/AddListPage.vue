@@ -1,6 +1,8 @@
 <template>
   <base-layout page-title="Add List" page-default-back-link="/lists">
-    <create-list-form @save-list="saveList"></create-list-form>
+    <template v-slot:content>
+      <create-list-form @save-list="saveList"></create-list-form>
+    </template>
   </base-layout>
 </template>
 

@@ -12,12 +12,12 @@ const actions = {
     if (wire(arguments)) {
       return http()
         .post(`/item/${listId}`, item)
-        .then(res => {
+        .then((res) => {
           // second update for the ID of the item
           commit("updateItem", {
             listId,
             itemId: item._id,
-            item: res.data.item
+            item: res.data.item,
           });
           return res;
         });
@@ -29,32 +29,32 @@ const actions = {
     if (wire(arguments)) return http().put(`/item/${listId}/${itemId}`, item);
   },
 
-  async removeItem({ commit }, { listId, itemId }) {
-    commit("removeItem", { listId, itemId });
+  async deleteItem({ commit }, { listId, itemId }) {
+    commit("deleteItem", { listId, itemId });
     if (wire(arguments)) http().delete(`${root}/${listId}/${itemId}`);
-  }
+  },
 };
 
 const mutations = {
   addItem: (state, { listId, item }) => {
-    const list = state.lists.find(lst => lst._id == listId);
+    const list = state.lists.find((lst) => lst._id == listId);
     list.items.push(item);
     /* update list lastSeen!!!  with item updatedAt? */
   },
   updateItem: (state, { listId, itemId, item }) => {
-    const list = state.lists.find(lst => lst._id == listId);
-    const itemIx = list.items.findIndex(itm => itm._id == itemId);
+    const list = state.lists.find((lst) => lst._id == listId);
+    const itemIx = list.items.findIndex((itm) => itm._id == itemId);
     Object.assign(list.items[itemIx], item);
   },
-  removeItem: (state, { listId, itemId }) => {
-    const list = state.lists.find(lst => lst._id == listId);
-    list.items = list.items.filter(itm => itm._id != itemId);
-  }
+  deleteItem: (state, { listId, itemId }) => {
+    const list = state.lists.find((lst) => lst._id == listId);
+    list.items = list.items.filter((itm) => itm._id != itemId);
+  },
 };
 
 export default {
   //  state,
   //  getters,
   actions,
-  mutations
+  mutations,
 };

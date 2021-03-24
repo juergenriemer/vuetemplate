@@ -1,13 +1,13 @@
 <template>
   <ion-item>
-    <avatar
-      :router-link="`/lists/${list._id}`"
-      size="medium"
-      :list-title="list.title"
-    ></avatar>
-    <ion-label :router-link="`/lists/${list._id}`" class="title">
-      {{ list.title }}
-    </ion-label>
+    <IonAvatar
+      @click="updateItem(item)"
+      class="checkbox"
+      :class="item.done ? 'done' : ''"
+    >
+      <ion-icon :icon="checkmark" xsize="small"></ion-icon>
+    </IonAvatar>
+    <ion-label class="title"> {{ item.title }} </ion-label>
     <ion-buttons slot="end">
       <ion-button @click="showMenu">
         <ion-icon
@@ -21,44 +21,61 @@
 </template>
 
 <script>
-import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
+import {
+  IonAvatar,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonButtons,
+  IonPopover,
+  IonToolbar,
+} from "@ionic/vue";
 import {
   chevronForward,
   ellipsisVertical,
   settings,
+  checkmark,
   trash,
   create,
 } from "ionicons/icons";
-import { popoverController, alertController } from "@ionic/core";
-import Avatar from "@/components/base/Avatar.vue";
-import ListMenu from "@/components/list/ListMenu.vue";
-
+import ItemMenu from "@/components/item/ItemMenu.vue";
+import { alertController, popoverController } from "@ionic/core";
 export default {
-  props: ["list"],
+  props: ["item"],
   data() {
     return {
-      chevronForward,
+      menu: null,
       ellipsisVertical,
+      checkmark,
+      chevronForward,
       trash,
       settings,
     };
   },
   components: {
-    IonButton,
-    IonButtons,
-    Avatar,
+    IonToolbar,
+    ItemMenu,
+    IonAvatar,
     IonIcon,
     IonItem,
     IonLabel,
+    IonButtons,
+    IonButton,
+    IonPopover,
   },
   mounted() {},
   methods: {
+    updateItem() {
+      this.item.done = !this.item.done;
+      this.$emit("update-item", this.item);
+    },
     async showMenu(evt) {
       popoverController
         .create({
-          component: ListMenu,
+          component: ItemMenu,
           componentProps: {
-            list: this.list,
+            item: this.item,
             action: (evt) => this.menuAction(evt),
           },
           cssClass: "my-custom-class",
@@ -75,18 +92,15 @@ export default {
       const action = evt.target.getAttribute("data");
       switch (action) {
         case "delete":
-          this.deleteList();
+          this.deleteItem();
           break;
       }
     },
-    listSettings(listId) {
-      alert("settings for " + listId);
-    },
-    async deleteList() {
+    async deleteItem() {
       alertController
         .create({
-          header: "Delete list?",
-          message: "Are you sure you want to delete this list?",
+          header: "Delete item?",
+          message: "Are you sure you want to delete this item?",
           buttons: [
             {
               text: "Cancel",
@@ -94,7 +108,7 @@ export default {
             },
             {
               text: "OK",
-              handler: () => this.$emit("delete-list", this.list._id),
+              handler: () => this.$emit("delete-item", this.item._id),
             },
           ],
         })
@@ -104,6 +118,9 @@ export default {
 };
 </script>
 <style>
+.jdicon {
+  padding: 4px;
+}
 .title {
   font-size: 1.3em;
 }

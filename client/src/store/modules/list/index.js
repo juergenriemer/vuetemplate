@@ -1,8 +1,10 @@
+import router from "@/router";
 import list from "@/store/modules/list/list";
-// import item from "@/store/modules/list/item";
-//import share from "@/store/modules/list/share";
+import item from "@/store/modules/list/item";
+import share from "@/store/modules/list/share";
 //import comment from "@/store/modules/list/comment";
 
+var members = null;
 const state = {
   lists: [],
 };
@@ -12,10 +14,23 @@ const getters = {
     return state.lists;
   },
   listById: (state) => (listId) => {
-    return state.lists.find((list) => list._id == listId);
+    return state.lists.find((list) => list._id == listId) || [];
   },
   userById: (state, getters) => (listId, userId) => {
     return getters.listById(listId).users.find((usr) => usr.userId == userId);
+  },
+  // create new store!!!
+  members: (state) => {
+    return members;
+  },
+  getMember: (state) => (memberId) => {
+    if (!members) {
+      members = {};
+      state.lists.forEach((lst) =>
+        lst.users.forEach((usr) => (members[usr.userId] = usr))
+      );
+    }
+    return members[memberId];
   },
   isAdmin: (state, getters) => (listId, userId) => {
     const user = getters
@@ -26,15 +41,15 @@ const getters = {
 };
 const actions = {
   ...list.actions,
-  //...item.actions,
+  ...item.actions,
+  ...share.actions,
   //  ...comment.actions,
-  //...share.actions,
 };
 
 const mutations = {
   ...list.mutations,
-  //...item.mutations,
-  //...share.mutations,
+  ...item.mutations,
+  ...share.mutations,
   //  ...comment.mutations
 };
 

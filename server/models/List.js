@@ -55,6 +55,7 @@ const ListSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
+        email: String,
         name: String,
         short: String,
         lastSeen: Date,
@@ -63,6 +64,8 @@ const ListSchema = new mongoose.Schema(
     ],
     invitees: [
       {
+        short: String,
+        name: String,
         email: String,
         role: String,
       },

@@ -1,6 +1,6 @@
 import Vuex from "vuex";
 import Vue from "vue";
-//import list from "./modules/list/index";
+import list from "./modules/list/index";
 import user from "./modules/user/index";
 import VuexPersist from "vuex-persist";
 

@@ -1,6 +1,8 @@
 <template>
   <ion-list>
     <lists-list-item
+      @delete-list="deleteList"
+      @update-list="updateList"
       v-for="list in lists"
       :key="list._id"
       :list="list"
@@ -17,6 +19,14 @@ export default {
   components: {
     IonList,
     ListsListItem,
+  },
+  methods: {
+    deleteList(listId) {
+      this.$emit("delete-list", listId);
+    },
+    updateList(listId) {
+      this.$emit("update-list", list);
+    },
   },
 };
 </script>
