@@ -39,10 +39,14 @@ router.post("/register", (req, res, next) => {
       const saltHash = utils.genPassword(password);
       const salt = saltHash.salt;
       const hash = saltHash.hash;
+      const name = `${firstName} ${lastName}`;
+      const short = `${firstName.charAt(0)}${lastName.charAt(0)}`;
       const user = new User({
         firstName,
         lastName,
+        name,
         email,
+        short,
         hash,
         salt,
         is_verified: false,

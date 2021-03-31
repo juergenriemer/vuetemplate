@@ -1,7 +1,7 @@
 <template>
-  <ion-avatar id="avatar" :class="size" :style="{ background: color(userId) }">
-    <div v-if="userId" v-html="initials"></div>
+  <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
     <div v-if="listTitle" v-html="jdIcon"></div>
+    <div v-else v-html="initials"></div>
     <ion-icon
       v-if="role == 'owner' || role == 'admin'"
       :class="role"
@@ -15,7 +15,7 @@ import { toSvg } from "jdenticon";
 import { star, build } from "ionicons/icons";
 
 export default {
-  props: ["size", "role", "userId", "listTitle"],
+  props: ["size", "role", "short", "userId", "listTitle"],
   components: {
     IonAvatar,
     IonIcon,
@@ -25,18 +25,18 @@ export default {
   },
   computed: {
     initials() {
+      if (this.short) return this.short;
       let user = this.$store.getters.getMember(this.userId);
       return user && user.short ? user.short : "";
     },
     jdIcon() {
-      console.log(this.listTitle);
       return toSvg(this.listTitle, 40);
     },
   },
   methods: {
     color() {
-      if (this.initials) return this.avatarColor(this.userId);
-      else "#c0c0c0";
+      if (this.initials) return this.avatarColor(this.initials);
+      return "whitesmoke";
     },
     avatarColor(str) {
       if (!str) str = "XXX";

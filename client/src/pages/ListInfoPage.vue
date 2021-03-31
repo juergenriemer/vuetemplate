@@ -4,47 +4,33 @@
       <avatar size="large" :list-title="list.title"></avatar>
     </template>
     <template v-slot:content>
-      <ion-list>
+      <ion-list lines="none">
         <ion-list-header> Information </ion-list-header>
-        <ion-item v-if="list.description">{{ list.description }}</ion-item>
+        <ion-item lines="none" v-if="list.description">{{
+          list.description
+        }}</ion-item>
         <ion-item>Created on {{ list.createdAt }}</ion-item>
         <ion-item>Created by {{ owner }}</ion-item>
         <ion-item>List type: Checklist</ion-item>
-        <ion-list-header> Current Members </ion-list-header>
-        <ion-item v-for="user in list.users" :key="list._id">
-          <avatar
-            size="medium"
-            :role="user.role"
-            :user-id="user.userId"
-          ></avatar>
-          <ion-label class="title">
-            {{ user.name }}
-          </ion-label>
-          <ion-icon slot="end" :icon="chevronForward" size="small"></ion-icon>
-        </ion-item>
+        <members-list :items="list.users"></members-list>
       </ion-list>
     </template>
     <template v-slot:footer> </template>
   </base-layout>
 </template>
 <script>
-//import
-//import CreateListForm from "../components/list/CreateListForm.vue";
 import { IonListHeader, IonList, IonItem, IonLabel, IonIcon } from "@ionic/vue";
-import { build, chevronForward } from "ionicons/icons";
 import Avatar from "@/components/base/Avatar.vue";
+import MembersList from "@/components/member/MembersList.vue";
 
 export default {
   components: {
     Avatar,
+    MembersList,
     IonListHeader,
     IonList,
     IonItem,
     IonLabel,
-    IonIcon,
-  },
-  data() {
-    return { build, chevronForward };
   },
   computed: {
     list() {
@@ -55,6 +41,5 @@ export default {
       return user && user.name ? user.name : "n/a";
     },
   },
-  methods: {},
 };
 </script>

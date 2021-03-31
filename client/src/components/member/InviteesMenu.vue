@@ -1,6 +1,6 @@
 <template>
-  <ion-list @click="action($event)">
-    <ion-item data="delete">Remove User</ion-item>
+  <ion-list lines="none" @click="action($event)">
+    <ion-item button="true" data="uninvite">Withdraw Invitation</ion-item>
   </ion-list>
 </template>
 <script>

@@ -9,16 +9,13 @@
 <script>
 import CreateListForm from "../components/list/CreateListForm.vue";
 
-import { mapGetters, mapActions } from "vuex";
 export default {
   components: {
     CreateListForm,
   },
-  data() {},
   methods: {
-    ...mapActions(["addList"]),
     async saveList(list) {
-      this.addList({ list }).then(() => {
+      this.$store.dispatch("addList", { list }).then(() => {
         this.$router.replace("/lists");
       });
     },

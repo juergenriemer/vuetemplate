@@ -65,7 +65,7 @@ router.delete(
       .then((list) => {
         res.status(200).json();
         utils.broadcast(req, list, {
-          type: "removeItem",
+          type: "deleteItem",
           data: {
             listId,
             itemId,

@@ -1,31 +1,48 @@
 <template>
   <ion-list>
-    <items-list-item
-      @delete-item="deleteItem"
-      @update-item="updateItem"
-      v-for="item in items"
-      :key="item._id"
-      :item="item"
-    ></items-list-item>
+    <ion-reorder-group
+      @ionItemReorder="reorder($event)"
+      :disabled="!reorderMode"
+    >
+      <items-list-item
+        @edit-item="editItem"
+        @delete-item="deleteItem"
+        @update-item="updateItem"
+        v-for="item in items"
+        :key="item._id"
+        :item="item"
+        :reorderMode="reorderMode"
+      ></items-list-item>
+    </ion-reorder-group>
   </ion-list>
 </template>
 
 <script>
-import { IonList } from "@ionic/vue";
+import { IonList, IonReorderGroup } from "@ionic/vue";
 import ItemsListItem from "./ItemsListItem.vue";
 
 export default {
-  props: ["items"],
+  emits: ["reorder-list", "delete-item", "update-item", "edit-item"],
+  props: ["items", "reorderMode"],
   components: {
     IonList,
+    IonReorderGroup,
     ItemsListItem,
   },
   methods: {
+    reorder(evt) {
+      const { from, to } = evt.detail;
+      this.$emit("reorder-list", { from, to });
+      evt.detail.complete();
+    },
     deleteItem(itemId) {
       this.$emit("delete-item", itemId);
     },
     updateItem(item) {
       this.$emit("update-item", item);
+    },
+    editItem(item) {
+      this.$emit("edit-item", item);
     },
   },
 };

@@ -1,28 +1,32 @@
 <template>
-  <ion-list>
-    <item
-      @delete-item="deleteItem"
-      @update-item="updateItem"
-      v-for="item in items"
-      :key="item._id"
-      :item="item"
-    ></item>
-  </ion-list>
+  <div v-if="items">
+    <ion-list-header>Pending invitations</ion-list-header>
+    <ion-list>
+      <item
+        @uninvite="uninvite"
+        v-for="item in items"
+        :key="item._id"
+        :item="item"
+      ></item>
+    </ion-list>
+  </div>
 </template>
 
 <script>
-import { IonList } from "@ionic/vue";
+import { IonListHeader, IonList } from "@ionic/vue";
 import Item from "./InviteesListItem.vue";
 
 export default {
+  emits: ["uninvite"],
   props: ["items"],
   components: {
+    IonListHeader,
     IonList,
     Item,
   },
   methods: {
-    deleteItem(itemId) {
-      this.$emit("delete", itemId);
+    uninvite(email) {
+      this.$emit("uninvite", email);
     },
   },
 };

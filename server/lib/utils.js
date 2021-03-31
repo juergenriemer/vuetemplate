@@ -64,13 +64,10 @@ function getUserInfo(token) {
  */
 function issueJWT(user) {
   const _id = user._id;
-  const name = `${user.firstName} ${user.lastName}`;
-  const short = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
-  const email = user.email;
   const expiresIn = "1m"; //1d';
   const payload = {
     //sub: _id,
-    sub: { _id, name, short, email },
+    sub: { _id, name: user.name, short: user.short, email: user.email },
     iat: Date.now(),
   };
   const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
@@ -86,12 +83,13 @@ function issueJWT(user) {
 const clientToken = (user) => {
   const token = issueJWT(user);
   return {
-    ok: true,
-    userdata: {
+    user: {
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
+      name: user.name,
+      short: user.short,
       email: user.email,
-      _id: user._id,
     },
     token: token.token,
     expiresIn: token.expires,

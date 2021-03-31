@@ -1,7 +1,7 @@
 <template>
   <base-layout page-title="Listle">
     <template v-slot:title>
-      <avatar size="large" :user-id="user._id"></avatar>
+      <avatar size="large" :user-id="userId"></avatar>
     </template>
     <template v-slot:actions-end>
       <ion-button router-link="/lists/add">
@@ -38,11 +38,12 @@ export default {
     return { add };
   },
   mounted() {
-    this.fetch();
+    //    this.fetch();
   },
   computed: {
-    user() {
-      return this.$store.getters.user;
+    userId() {
+      let user = this.$store.getters.user;
+      return user ? user._id : "";
     },
     lists() {
       return this.$store.getters.lists;
@@ -57,6 +58,8 @@ export default {
         .catch((err) => alert(err));
     },
     async fetch() {
+      // no longer needed if we call on app.js level!!!!!
+      // saw list should be triggerd in ItemsPage
       if (!self.isLocal)
         this.$store
           .dispatch("fetchLists")

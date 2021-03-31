@@ -7,7 +7,7 @@ const root = "/list";
 const getters = {};
 
 const actions = {
-  async addList({ commit }, { list }) {
+  async addList({ commit, rootState }, { list }) {
     commit("addList", { list });
     if (wire(arguments))
       return http()
@@ -47,9 +47,9 @@ const actions = {
     if (wire(arguments)) return http().put(`${root}/sawList/${listId}`);
   },
 
-  async resetList({ commit }, { listId }) {
-    commit("resetList", { listId });
-    if (wire(arguments)) return http().put(`${root}/reset/${listId}`);
+  async toggleList({ commit }, { listId, done }) {
+    commit("toggleList", { listId, done });
+    if (wire(arguments)) return http().put(`${root}/toggle/${listId}/${done}`);
   },
 
   async toggleAdmin({ commit }, { listId, userId, isAdmin }) {
@@ -57,12 +57,20 @@ const actions = {
     if (!self.isLocal)
       return http().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
   },
+
+  async reorderList({ commit }, { listId, from, to }) {
+    commit("reorderList", { listId, from, to });
+    if (wire(arguments))
+      return http().put(`${root}/reorder/${listId}/${from}/${to}`);
+  },
 };
 
 const mutations = {
   clearLists: (state) => (state.lists = []),
   fetchLists: (state, { lists }) => (state.lists = lists),
-  addList: (state, { list }) => state.lists.unshift(list),
+  addList: (state, { list }) => {
+    state.lists.unshift(list);
+  },
   updateList: (state, { listId, list }) => {
     const listIx = state.lists.findIndex((lst) => lst._id == listId);
     Object.assign(state.lists[listIx], list);
@@ -74,14 +82,19 @@ const mutations = {
     let user = list.users.find((usr) => usr.userId == userId);
     user.lastSeen = new Date();
   },
-  resetList: (state, { listId }) => {
+  toggleList: (state, { listId, done }) => {
     const list = state.lists.find((list) => list._id == listId);
-    list.items.forEach((item) => (item.done = false));
+    list.items.forEach((item) => (item.done = done));
   },
   toggleAdmin: (state, { listId, userId, isAdmin }) => {
     const list = state.lists.find((list) => list._id == listId);
     let user = list.users.find((usr) => usr.userId == userId);
     user.role = isAdmin ? "admin" : "user";
+  },
+  reorderList: (state, { listId, from, to }) => {
+    const list = state.lists.find((lst) => lst._id == listId);
+    const draggedItem = list.items.splice(from, 1)[0];
+    list.items.splice(to, 0, draggedItem);
   },
 };
 

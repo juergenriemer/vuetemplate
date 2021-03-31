@@ -1,14 +1,19 @@
 <template>
-  <ion-item>
+  <ion-item button="true">
     <IonAvatar
       @click="updateItem(item)"
       class="checkbox"
       :class="item.done ? 'done' : ''"
     >
-      <ion-icon :icon="checkmark" xsize="small"></ion-icon>
+      <ion-icon
+        title="USE CHECKMARK-CIRCLE"
+        :icon="checkmark"
+        xsize="small"
+      ></ion-icon>
     </IonAvatar>
     <ion-label class="title"> {{ item.title }} </ion-label>
-    <ion-buttons slot="end">
+    <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
+    <ion-buttons v-if="!reorderMode" slot="end">
       <ion-button @click="showMenu">
         <ion-icon
           slot="icon-only"
@@ -23,6 +28,7 @@
 <script>
 import {
   IonAvatar,
+  IonReorder,
   IonIcon,
   IonItem,
   IonLabel,
@@ -42,7 +48,8 @@ import {
 import ItemMenu from "@/components/item/ItemMenu.vue";
 import { alertController, popoverController } from "@ionic/core";
 export default {
-  props: ["item"],
+  props: ["item", "reorderMode"],
+  emits: ["delete-item", "update-item", "edit-item"],
   data() {
     return {
       menu: null,
@@ -54,6 +61,7 @@ export default {
     };
   },
   components: {
+    IonReorder,
     IonToolbar,
     ItemMenu,
     IonAvatar,
@@ -91,8 +99,11 @@ export default {
       this.menu.dismiss();
       const action = evt.target.getAttribute("data");
       switch (action) {
-        case "delete":
+        case "delete-item":
           this.deleteItem();
+          break;
+        case "edit-item":
+          this.$emit("edit-item", this.item);
           break;
       }
     },

@@ -1,11 +1,12 @@
+import Vue from "vue";
 import { createApp } from "vue";
 import App from "./App.vue";
 import BaseLayout from "./components/base/BaseLayout.vue";
 import router from "./router";
 import store from "./store";
-
 import { IonicVue } from "@ionic/vue";
 
+// bus: https://stackoverflow.com/a/64019074/463676
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/vue/css/core.css";
 
@@ -25,7 +26,8 @@ import "@ionic/vue/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-// define an app that uses this mixin
+store.dispatch("info");
+store.dispatch("fetchLists");
 
 const app = createApp(App)
   .use(IonicVue)

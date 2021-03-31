@@ -15,8 +15,7 @@ const getters = {
   },
   isLoggedIn: () => localStorage.getItem("token"),
   isLocal: () => localStorage.getItem("token") == "local",
-  short: state =>
-    state.user.firstName.charAt(0) + state.user.lastName.charAt(0),
+  short: state => state.short,
   token: () => localStorage.getItem("token")
 };
 
@@ -62,7 +61,7 @@ const actions = {
   async info({ commit, getters }) {
     return User.info(getters.userId).then(res => {
       if (res && res.data) {
-        commit("fetchUser", res.data.userdata);
+        commit("fetchUser", res.data.user);
       }
       return res;
     });

@@ -4,7 +4,7 @@ import item from "@/store/modules/list/item";
 import share from "@/store/modules/list/share";
 //import comment from "@/store/modules/list/comment";
 
-var members = null;
+//var members = {};
 const state = {
   lists: [],
 };
@@ -21,15 +21,19 @@ const getters = {
   },
   // create new store!!!
   members: (state) => {
+    let members = {};
+    if (state.lists)
+      state.lists.forEach((lst) => {
+        lst.users.forEach((usr) => (members[usr.userId] = usr));
+      });
     return members;
   },
   getMember: (state) => (memberId) => {
-    if (!members) {
-      members = {};
-      state.lists.forEach((lst) =>
-        lst.users.forEach((usr) => (members[usr.userId] = usr))
-      );
-    }
+    let members = {};
+    if (state.lists)
+      state.lists.forEach((lst) => {
+        return lst.users.forEach((usr) => (members[usr.userId] = usr));
+      });
     return members[memberId];
   },
   isAdmin: (state, getters) => (listId, userId) => {

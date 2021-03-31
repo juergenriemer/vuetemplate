@@ -1,31 +1,35 @@
 <template>
+  <ion-list-header>Current Members</ion-list-header>
   <ion-list>
     <item
-      @delete-item="deleteItem"
-      @update-item="updateItem"
+      @toggle-admin="toggleAdmin"
+      @unshare="unshare"
       v-for="item in items"
       :key="item._id"
       :item="item"
+      :admin="admin"
     ></item>
   </ion-list>
 </template>
 
 <script>
-import { IonList } from "@ionic/vue";
+import { IonListHeader, IonList } from "@ionic/vue";
 import Item from "./MembersListItem.vue";
 
 export default {
-  props: ["items"],
+  emits: ["toggle-admin", "unshare"],
+  props: ["items", "admin"],
   components: {
+    IonListHeader,
     IonList,
     Item,
   },
   methods: {
-    deleteItem(itemId) {
-      this.$emit("delete", itemId);
+    unshare(itemId) {
+      this.$emit("unshare", itemId);
     },
-    updateItem(item) {
-      this.$emit("update", item);
+    toggleAdmin(itemId, isAdmin) {
+      this.$emit("toggle-admin", itemId, isAdmin);
     },
   },
 };

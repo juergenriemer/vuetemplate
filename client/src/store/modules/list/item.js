@@ -11,7 +11,7 @@ const actions = {
     commit("addItem", { listId, item });
     if (wire(arguments)) {
       return http()
-        .post(`/item/${listId}`, item)
+        .post(`${root}/${listId}`, item)
         .then((res) => {
           // second update for the ID of the item
           commit("updateItem", {
@@ -26,7 +26,7 @@ const actions = {
 
   async updateItem({ commit }, { listId, itemId, item }) {
     commit("updateItem", { listId, itemId, item });
-    if (wire(arguments)) return http().put(`/item/${listId}/${itemId}`, item);
+    if (wire(arguments)) return http().put(`${root}/${listId}/${itemId}`, item);
   },
 
   async deleteItem({ commit }, { listId, itemId }) {

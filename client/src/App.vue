@@ -1,11 +1,13 @@
 <template>
   <ion-app>
+    <socket />
     <ion-router-outlet />
   </ion-app>
 </template>
 
 <script lang="ts">
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
+import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -13,13 +15,14 @@ export default defineComponent({
   components: {
     IonApp,
     IonRouterOutlet,
+    Socket
   },
 });
 </script>
 <style>
 /* item checkboxes */
 .checkbox {
-  background: grey;
+  background: #c0c0c0;
   font-size: 2em;
   max-width: 40px;
   min-width: 40px;
@@ -35,4 +38,9 @@ export default defineComponent({
   width: 30px;
   height: 30px;
 }
+
+
+.title {
+    padding-left:10px;
+  }
 </style>

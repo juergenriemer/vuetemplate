@@ -44,11 +44,22 @@ router.get(
     const invitingUser = req.name;
     const listTitle = req.list.title;
     const role = roles[req.params.role] || "user";
+    if (req.list.users.find((usr) => usr.email == email))
+      throw new ApiError(422, "user-already-member");
+    if (req.list.invitees.find((usr) => usr.email == email))
+      throw new ApiError(422, "user-already-invited");
     const info = {
       listId,
       email,
       role,
       expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    };
+    let invitee = {
+      email,
+      userId: email,
+      name: email,
+      short: "@",
+      role: roles[role],
     };
     var transport = nodemailer.createTransport({
       port: 25,
@@ -63,7 +74,6 @@ Dear ${email},
 
 ${invitingUser} has invited you to collaborate on this listle list "${listTitle}"!`,
     };
-
     User.findOne({ email })
       .then((user) => {
         console.log("USSSSSSSSSSER");
@@ -104,24 +114,21 @@ to create an account, the lists will be shared with you automatically.
         //return transport.sendMail(mail);
       })
       .then((user) => {
-        console.log(user);
-        if (!req.list.invitees.find((usr) => usr.email == email))
-          req.list.invitees.push({
+        if (user) {
+          invitee = {
             email,
-            userId: user ? user.userId : email,
-            name: user ? user.firstName + " " + user.lastName : email,
-            // REF REFACTOR!!!! we do this in utils as well
-            short: user
-              ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
-              : "@",
+            userId: user.userId,
+            name: user.name,
+            short: user.short,
             role: roles[role],
-          });
-        else console.log("arleady");
-        console.log(req.list.invitees);
+          };
+        }
+        if (!req.list.invitees.find((usr) => usr.email == email))
+          req.list.invitees.push(invitee);
         return req.list.save();
       })
       .then(() => {
-        return res.status(200).json();
+        return res.status(200).json({ invitee });
       })
       .catch((error) => {
         next(error);
@@ -176,11 +183,13 @@ router.put(
   passport.authenticate("jwt", { session: false }),
   validateIds,
   userInfo,
-  role("admin"),
+  role("owner"),
   (req, res, next) => {
     let listId = req.params.listId;
     let userId = req.params.userId;
     let isAdmin = req.params.isAdmin == "true";
+    const owner = req.list.users.find((usr) => usr.role == "owner");
+    if (owner.userId == userId) throw new ApiError(500, "cannot-remove-owner");
     const role = isAdmin ? "admin" : "user";
     List.findOneAndUpdate(
       { _id: listId, "users.userId": userId },
@@ -206,7 +215,6 @@ router.put(
       });
   }
 );
-
 // unshare list
 router.delete(
   "/unshare/:listId/:userId",
@@ -241,71 +249,34 @@ router.delete(
   }
 );
 
-/*
-const validToken = (token, secret) => {
-  try {
-    return jwt.decode(token, secret);
-  } catch (error) {
-    return null;
-  }
-};
-
-// verify via token
-router.get("/verifyInvitation/:token", (req, res) => {
-  // change to put? or put csrf token here?
-  var token = req.params.token;
-  const data = validToken(token, secret);
-  if (data) {
-    if (new Date(data.expiry) > new Date()) {
-      const { listId, email, role } = data;
-      User.findOne({ email }).exec((error, user) => {
-        if (error) {
-          res.status(500).json(error);
-        } else if (!user) {
-          res.status(404).json({ error: "unknown" });
-        } else {
-          const userId = user._id;
-          List.findOneAndUpdate(
-            { $and: [{ _id: listId }, { "invitees.email": email }] },
-            {
-              $pull: { invitees: { email } },
-              $push: {
-                users: {
-                  userId,
-                  lastSeen: new Date(),
-                  role: roles[role],
-                },
-              },
-            },
-            { new: true },
-            (error, list) => {
-              // 1. check if list is null!!! there is no error if 404
-              if (error) {
-                res.status(500).json(error);
-              } else {
-                if (list) {
-                inform all users? at least admin and owners!
-                var io = req.app.get("io");
-                let data = {
-                  type: "invitationAccepted",
-                  listId,
-                };
-                io.sockets.emit(userId, data);
-                  res.status(200).json({ listId, userId });
-                } else {
-                  res.status(500).json({ error: "uninvited" });
-                }
-              }
-            }
-          );
-        }
+// uninvite from list
+router.delete(
+  "/uninvite/:listId/:email",
+  passport.authenticate("jwt", { session: false }),
+  validateIds,
+  userInfo,
+  role("admin"),
+  (req, res, next) => {
+    const { listId, email } = req.params;
+    const userToDelete = req.list.invitees.find((usr) => usr.email == email);
+    if (!userToDelete) throw new ApiError(422, "unkown-user");
+    utils.broadcast(req, req.list, {
+      type: "uninvite",
+      data: {
+        listId,
+        email,
+      },
+    });
+    req.list.invitees = req.list.invitees.filter((usr) => usr.email != email);
+    req.list
+      .save()
+      .then((found) => {
+        res.status(200).json();
+      })
+      .catch((error) => {
+        next(error);
       });
-    } else {
-      res.status(500).json({ error: "expired" });
-    }
-  } else {
-    res.status(500).json({ error: "invalid" });
   }
-});
-*/
+);
+
 module.exports = router;

@@ -1,8 +1,8 @@
 <template>
-  <ion-list @click="action($event)">
-    <ion-item data='edit'>Edit item</ion-item>
-    <ion-item data='comment'>Add comment</ion-item>
-    <ion-item data='delete'>Delete item</ion-item>
+  <ion-list lines="none" @click="action($event)">
+    <ion-item button="true" data="edit-item">Edit this item</ion-item>
+    <ion-item button="true" data="comment-item">Add a comment</ion-item>
+    <ion-item button="true" data="delete-item">Delete this item</ion-item>
   </ion-list>
 </template>
 <script>

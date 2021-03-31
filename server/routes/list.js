@@ -10,21 +10,23 @@ const ApiError = require("../middleware/ApiError");
 
 // uncheck all items
 router.put(
-  "/reset/:listId",
+  "/toggle/:listId/:done",
   passport.authenticate("jwt", { session: false }),
   userInfo,
   validateIds,
   role("user"),
   (req, res, next) => {
-    const { listId } = req.params;
-    req.list.items.forEach((item) => (item.done = false));
+    let { listId, done } = req.params;
+    done = done == "true"; // done is string, convert to bool
+    req.list.items.forEach((item) => (item.done = done));
     req.list
       .save()
       .then((list) => {
         utils.broadcast(req, list, {
-          type: "resetList",
+          type: "toggleList",
           data: {
             listId,
+            done,
           },
         });
         res.status(200).json();
@@ -125,6 +127,12 @@ router.delete(
   validateIds,
   role("owner"),
   (req, res, next) => {
+    utils.broadcast(req, req.list, {
+      type: "deleteList",
+      data: {
+        listId: req.list._id,
+      },
+    });
     req.list
       .remove()
       .then(() => {
@@ -135,7 +143,6 @@ router.delete(
       });
   }
 );
-
 // REF: just update list title
 router.put(
   "/:listId",
@@ -157,6 +164,36 @@ router.put(
           data: {
             listId,
             list: update,
+          },
+        });
+        res.status(200).json();
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+);
+
+// reorder items
+router.put(
+  "/reorder/:listId/:from/:to",
+  passport.authenticate("jwt", { session: false }),
+  userInfo,
+  validateIds,
+  role("user"),
+  (req, res, next) => {
+    const { listId, from, to } = req.params;
+    const draggedItem = req.list.items.splice(from, 1)[0];
+    req.list.items.splice(to, 0, draggedItem);
+    req.list
+      .save()
+      .then((list) => {
+        utils.broadcast(req, list, {
+          type: "reorderList",
+          data: {
+            listId,
+            from,
+            to,
           },
         });
         res.status(200).json();

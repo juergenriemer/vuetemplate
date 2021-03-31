@@ -1,6 +1,17 @@
 <template>
-  <form class="ion-padding" @submit.prevent="submitForm">
-    <input type="text" placeholder="NEW ITEM" required v-model="item.title" />
+  <form class="ion-padding" @submit.prevent="submit">
+    <ion-toolbar>
+      <ion-input
+        placeholder="NEW ITEM"
+        v-model="form.title"
+        clear-input
+      ></ion-input>
+      <ion-buttons slot="end">
+        <ion-button :disabled="saveDisabled" @click="submit">
+          <ion-icon rules="required" :icon="send" size="medium"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
   </form>
 </template>
 
@@ -11,34 +22,48 @@ import {
   IonLabel,
   IonInput,
   IonTextarea,
+  IonToolbar,
+  IonButtons,
   IonButton,
   IonIcon,
 } from "@ionic/vue";
 
+import { camera, send, close } from "ionicons/icons";
 export default {
-  emits: ["save-memory"],
+  emits: ["save-item"],
   components: {
     IonList,
     IonItem,
     IonLabel,
     IonInput,
     IonTextarea,
+    IonToolbar,
+    IonButtons,
     IonButton,
     IonIcon,
   },
   data() {
     return {
-      item: {
+      camera,
+      send,
+      close,
+      form: {
         title: "",
       },
     };
   },
+  computed: {
+    saveDisabled() {
+      return !this.form.title;
+    },
+  },
   methods: {
-    submitForm() {
-      let item = Object.assign({ _id: 123 }, this.item);
+    submit() {
+      // REF: create ObjectID method
+      let item = Object.assign({ _id: Math.random() }, this.form);
       this.$emit("save-item", item);
       setTimeout(() => {
-        this.item.title = "";
+        this.form.title = "";
       }, 0);
     },
   },

@@ -1,7 +1,7 @@
 <template>
-  <ion-list @click="action($event)">
-    <ion-item data="edit">Make Admin</ion-item>
-    <ion-item data="delete">Remove User</ion-item>
+  <ion-list lines="none" @click="action($event)">
+    <ion-item button="true" data="toggle-admin">Toggle Admin</ion-item>
+    <ion-item button="true" data="unshare">Remove User</ion-item>
   </ion-list>
 </template>
 <script>

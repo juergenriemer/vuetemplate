@@ -16,14 +16,26 @@
       <items-list
         v-if="list"
         :items="list.items"
+        :reorderMode="reorderMode"
         @save-item="saveItem"
+        @reorder-list="reorderList"
         @delete-item="deleteItem"
         @update-item="updateItem"
+        @edit-item="editItem"
       ></items-list>
       <div v-if="!list.items">loading</div>
     </template>
     <template v-slot:footer>
-      <create-item-form @save-item="saveItem"></create-item-form>
+      <edit-item-form
+        v-if="mode == 'edit'"
+        :form="edit"
+        @update-item="updateItem"
+        @stop-editing="mode = 'create'"
+      ></edit-item-form>
+      <create-item-form
+        v-if="mode == 'create'"
+        @save-item="saveItem"
+      ></create-item-form>
     </template>
   </base-layout>
 </template>
@@ -42,6 +54,7 @@ import { ellipsisVertical } from "ionicons/icons";
 
 import ItemsList from "../components/item/ItemsList.vue";
 import CreateItemForm from "../components/item/CreateItemForm.vue";
+import EditItemForm from "../components/item/EditItemForm.vue";
 import Avatar from "../components/base/Avatar.vue";
 import AllItemsMenu from "@/components/item/AllItemsMenu.vue";
 
@@ -50,6 +63,7 @@ export default {
     Avatar,
     ItemsList,
     CreateItemForm,
+    EditItemForm,
     IonContent,
     IonFooter,
     IonToolbar,
@@ -58,7 +72,13 @@ export default {
     IonIcon,
   },
   data() {
-    return { ellipsisVertical };
+    return {
+      mode: "create",
+      edit: {},
+      toggleMode: false,
+      reorderMode: false,
+      ellipsisVertical,
+    };
   },
   computed: {
     list() {
@@ -72,6 +92,8 @@ export default {
           component: AllItemsMenu,
           componentProps: {
             list: this.list,
+            reorderMode: this.reorderMode,
+            toggleMode: this.toggleMode,
             action: (evt) => this.menuAction(evt),
           },
           cssClass: "my-custom-class",
@@ -87,10 +109,23 @@ export default {
       this.menu.dismiss();
       const action = evt.target.getAttribute("data");
       switch (action) {
-        case "delete":
-          this.deleteList();
+        case "reorderMode":
+          this.reorderMode = !this.reorderMode;
+          break;
+        case "toggleMode":
+          this.toggleMode = !this.toggleMode;
+          this.toggleList(this.toggleMode);
           break;
       }
+    },
+    editItem(item) {
+      this.mode = "edit";
+      this.edit = item;
+    },
+    async reorderList({ from, to }) {
+      this.$store
+        .dispatch("reorderList", { listId: this.list._id, from, to })
+        .then((res) => {});
     },
     async saveItem(item) {
       this.$store
@@ -98,6 +133,8 @@ export default {
         .then((res) => {});
     },
     updateItem(item) {
+      this.mode = "create";
+      this.edit = {};
       this.$store
         .dispatch("updateItem", {
           listId: this.list._id,
@@ -110,6 +147,11 @@ export default {
       this.$store
         .dispatch("deleteItem", { listId: this.list._id, itemId })
         .then((res) => res)
+        .catch((err) => alert(err));
+    },
+    async toggleList(done) {
+      this.$store
+        .dispatch("toggleList", { listId: this.list._id, done })
         .catch((err) => alert(err));
     },
   },

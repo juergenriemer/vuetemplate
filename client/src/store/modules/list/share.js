@@ -8,14 +8,18 @@ const getters = {};
 
 const actions = {
   async invite({ commit }, { listId, email, role }) {
-    commit("invite", { listId, email, role });
-    return http().get(`${root}/invite/${listId}/${email}/${role}`);
+    return http()
+      .get(`${root}/invite/${listId}/${email}/${role}`)
+      .then((res) => {
+        commit("invite", { listId, invitee: res.data.invitee });
+        return res;
+      });
   },
 
   async approveInvites({ commit }, { approves, lists }) {
     return http()
       .post(`${root}/approveInvitations`, approves)
-      .then(res => {
+      .then((res) => {
         commit("approveInvites", { lists });
         return res;
       });
@@ -31,46 +35,62 @@ const actions = {
       return http().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
   },
 
-  async unshare({ commit }, { listId, userId, socket }) {
-    if (socket) commit("unshare", { listId, userId });
+  async uninvite({ commit }, { listId, email }) {
+    if (!wire(arguments)) commit("uninvite", { listId, email });
+    else
+      return http()
+        .delete(`${root}/uninvite/${listId}/${email}`)
+        .then((res) => {
+          commit("uninvite", { listId, email });
+          return res;
+        });
+  },
+
+  async unshare({ commit, getters }, { listId, userId }) {
+    if (!wire(arguments)) commit("unshare", { listId, userId });
     else
       return http()
         .delete(`${root}/unshare/${listId}/${userId}`)
-        .then(res => {
+        .then((res) => {
           commit("unshare", { listId, userId });
           return res;
         });
-  }
+    // in case its the user that got unshared remove the list
+    // DIDNT TEST THIS IN NEW ENV
+    if (userId == getters.userId) {
+      commit("deleteList", { listId });
+      if (new RegExp(listId).test(self.location.hash))
+        self.location.hash = "/main";
+      state.lists = state.lists.filter((lst) => lst._id != listId);
+    }
+  },
 };
 
 const mutations = {
   toggleAdmin: (state, { listId, userId, isAdmin }) => {
-    const list = state.lists.find(list => list._id == listId);
-    let user = list.users.find(usr => usr.userId == userId);
+    const list = state.lists.find((list) => list._id == listId);
+    let user = list.users.find((usr) => usr.userId == userId);
     user.role = isAdmin ? "admin" : "user";
   },
   approveInvites: (state, { lists }) => {
-    console.log(lists);
     state.lists.push(lists);
   },
-  invite: (state, { listId, email, role }) => {
-    const list = state.lists.find(list => list._id == listId);
-    list.invitees.push({ email, role });
+  invite: (state, { listId, invitee }) => {
+    const list = state.lists.find((list) => list._id == listId);
+    list.invitees.push(invitee);
   },
-  unshare: (state, getters, { listId, userId }) => {
-    const list = state.lists.find(list => list._id == listId);
-    list.users = list.users.filter(usr => usr.userId != userId);
-    // in case its the user that got unshared remove the list
-    if (userId == getters.userId) {
-      if (new RegExp(listId).test(self.location.hash))
-        self.location.hash = "/main";
-      state.lists = state.lists.filter(lst => lst._id != listId);
-    }
-  }
+  unshare: (state, { listId, userId }) => {
+    const list = state.lists.find((list) => list._id == listId);
+    list.users = list.users.filter((usr) => usr.userId != userId);
+  },
+  uninvite: (state, { listId, email }) => {
+    const list = state.lists.find((list) => list._id == listId);
+    list.invitees = list.invitees.filter((usr) => usr.email != email);
+  },
 };
 
 export default {
   getters,
   actions,
-  mutations
+  mutations,
 };

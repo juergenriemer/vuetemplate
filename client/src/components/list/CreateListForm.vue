@@ -1,20 +1,34 @@
 <template>
-  <form class="ion-padding" @submit.prevent="submitForm">
+  <form class="ion-padding" @submit.prevent="validate">
     <ion-list>
       <ion-item>
         <ion-label position="floating">Title</ion-label>
-        <ion-input type="text" required v-model="list.title" />
+        <ion-input
+          name="title"
+          type="text"
+          v-model="form.title"
+          rules="required"
+        />
       </ion-item>
+      <form-error :error="errors.title"></form-error>
       <ion-item>
         <ion-label position="floating">Description</ion-label>
-        <ion-textarea rows="5" v-model="list.description"></ion-textarea>
+        <ion-textarea
+          name="description"
+          rows="5"
+          v-model="form.description"
+        ></ion-textarea>
       </ion-item>
     </ion-list>
-    <ion-button type="submit" expand="block">Save</ion-button>
+    <ion-button :disabled="submitting" type="submit" expand="block"
+      >Save</ion-button
+    >
   </form>
 </template>
 
 <script>
+import FormError from "@/components/base/FormError.vue";
+import Form from "@/mixins/Form";
 import {
   IonList,
   IonItem,
@@ -26,8 +40,10 @@ import {
 } from "@ionic/vue";
 
 export default {
-  emits: ["save-memory"],
+  mixins: [Form],
+  emits: ["save-list"],
   components: {
+    FormError,
     IonList,
     IonItem,
     IonLabel,
@@ -38,15 +54,28 @@ export default {
   },
   data() {
     return {
-      list: {
+      form: {
         title: "",
         description: "",
       },
     };
   },
   methods: {
-    submitForm() {
-      this.$emit("save-list", this.list);
+    submit() {
+      // add additional info for offline usage, this data will get changed
+      // and/or filled by the server, hence a second update mutation info
+      // vuex store
+      const creator = Object.assign(
+        { role: "owner" },
+        this.$store.getters.user
+      );
+      // REF: extract to OjectID method
+      let list = Object.assign(
+        { _id: Math.random(), users: [creator] },
+        this.form
+      );
+      console.log("input ", list);
+      this.$emit("save-list", list);
     },
   },
 };

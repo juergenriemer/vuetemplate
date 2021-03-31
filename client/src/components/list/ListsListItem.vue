@@ -1,5 +1,5 @@
 <template>
-  <ion-item>
+  <ion-item button="true">
     <avatar
       :router-link="`/lists/${list._id}`"
       size="medium"

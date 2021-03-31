@@ -24,11 +24,13 @@ module.exports = (role) => {
     })
       .exec()
       .then((list) => {
-        req.list = list;
-        req.role = req.list.users.find(
-          (user) => user.userId == req.userId
-        ).role;
-        if (list) next();
+        if (list) {
+          req.list = list;
+          req.role = req.list.users.find(
+            (user) => user.userId == req.userId
+          ).role;
+          next();
+        }
         // Q have only one 401 error message?h
         else throw new ApiError(401, "wrong-role");
       })
