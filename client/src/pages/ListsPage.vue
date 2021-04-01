@@ -4,7 +4,7 @@
       <avatar size="large" :user-id="userId"></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button router-link="/lists/add">
+      <ion-button @click="nav(`/list/add`)">
         <ion-icon slot="icon-only" :icon="add"></ion-icon>
       </ion-button>
     </template>
@@ -17,7 +17,6 @@
       ></lists-list>
       <div v-if="!lists">loading</div>
     </template>
-    <template v-slot:footer></template>
   </base-layout>
 </template>
 
@@ -36,9 +35,6 @@ export default {
   },
   data() {
     return { add };
-  },
-  mounted() {
-    //    this.fetch();
   },
   computed: {
     userId() {

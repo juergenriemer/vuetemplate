@@ -1,15 +1,11 @@
 <template>
-  <ion-item button="true">
-    <avatar
-      :router-link="`/lists/${list._id}`"
-      size="medium"
-      :list-title="list.title"
-    ></avatar>
-    <ion-label :router-link="`/lists/${list._id}`" class="title">
+  <ion-item @click="nav(`/list/items/${list._id}`)" button="true">
+    <avatar size="medium" :list-title="list.title"></avatar>
+    <ion-label class="title">
       {{ list.title }}
     </ion-label>
     <ion-buttons slot="end">
-      <ion-button @click="showMenu">
+      <ion-button @click="showMenu($event)">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
@@ -22,13 +18,7 @@
 
 <script>
 import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
-import {
-  chevronForward,
-  ellipsisVertical,
-  settings,
-  trash,
-  create,
-} from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { popoverController, alertController } from "@ionic/core";
 import Avatar from "@/components/base/Avatar.vue";
 import ListMenu from "@/components/list/ListMenu.vue";
@@ -37,23 +27,21 @@ export default {
   props: ["list"],
   data() {
     return {
-      chevronForward,
       ellipsisVertical,
-      trash,
-      settings,
     };
   },
   components: {
+    Avatar,
     IonButton,
     IonButtons,
-    Avatar,
     IonIcon,
     IonItem,
     IonLabel,
   },
-  mounted() {},
   methods: {
     async showMenu(evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
       popoverController
         .create({
           component: ListMenu,

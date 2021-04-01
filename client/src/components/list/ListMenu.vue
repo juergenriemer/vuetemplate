@@ -1,16 +1,12 @@
 <template>
   <ion-list lines="none" @click="action">
-    <ion-item
-      button="true"
-      data="info"
-      :router-link="`/lists/info/${list._id}`"
-    >
+    <ion-item button="true" data="info" @click="nav(`/list/info/${list._id}`)">
       List Info
     </ion-item>
     <ion-item
       button="true"
       data="members"
-      :router-link="`/lists/members/${list._id}`"
+      @click="nav(`/list/members/${list._id}`)"
     >
       Share List
     </ion-item>

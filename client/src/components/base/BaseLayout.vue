@@ -1,9 +1,10 @@
 <template>
-  <ion-page>
+  <page>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-back-button
+            @click="nav(pageDefaultBackLink)"
             :default-href="pageDefaultBackLink"
           ></ion-back-button>
           <slot name="title"></slot>
@@ -19,12 +20,12 @@
     <ion-content>
       <slot name="content" />
     </ion-content>
-    <IonFooter>
+    <IonFooter v-if="$slots.footer">
       <IonToolbar>
         <slot name="footer" />
       </IonToolbar>
     </IonFooter>
-  </ion-page>
+  </page>
 </template>
 
 <script>
@@ -38,11 +39,14 @@ import {
   IonBackButton,
   IonButtons,
 } from "@ionic/vue";
-
+import WebPage from "./MyPage.vue";
+// REf: get viewMode or make caseinsensivtive regex
+const viewMode = /^\/web\//.test(self.location.pathname);
+const Page = viewMode ? WebPage : IonPage;
 export default {
   props: ["pageTitle", "pageDefaultBackLink"],
   components: {
-    IonPage,
+    Page,
     IonHeader,
     IonFooter,
     IonToolbar,

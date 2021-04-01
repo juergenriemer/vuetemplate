@@ -15,7 +15,6 @@
         <members-list :items="list.users"></members-list>
       </ion-list>
     </template>
-    <template v-slot:footer> </template>
   </base-layout>
 </template>
 <script>
