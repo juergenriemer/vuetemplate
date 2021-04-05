@@ -76,9 +76,6 @@ ${invitingUser} has invited you to collaborate on this listle list "${listTitle}
     };
     User.findOne({ email })
       .then((user) => {
-        console.log("USSSSSSSSSSER");
-        console.log(user);
-
         if (user && user.is_verified) {
           mail.text += `
 Please visit 

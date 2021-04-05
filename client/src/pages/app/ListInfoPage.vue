@@ -1,5 +1,5 @@
 <template>
-  <base-layout :page-title="list.title" page-default-back-link="/lists">
+  <base-layout :page-title="list.title" link="/app/list">
     <template v-slot:title>
       <avatar size="large" :list-title="list.title"></avatar>
     </template>
@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     list() {
-      return this.$store.getters.listById(this.$route.params.listId);
+      return this.$store.getters.listById(this.$route.params.id);
     },
     owner() {
       let user = this.list.users.find((usr) => usr.role == "owner");

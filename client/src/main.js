@@ -27,19 +27,8 @@ import "@ionic/vue/css/display.css";
 import "./theme/variables.css";
 
 import mitt from "mitt";
-
 window.emitter = mitt();
-window.emitter.on("navigate", (data) => {
-  console.warn("Navigate");
-  console.log(router);
-  let root = /^\/mob\//.test(router.currentRoute._value.path) ? "mob" : "web";
-  let path = `/${root}/${data.path}`;
-  console.log(path);
-  router.push({ path: path });
-});
-
-store.dispatch("info");
-store.dispatch("fetchLists");
+window.emitter.on("navigate", (data) => {});
 
 const app = createApp(App)
   .use(IonicVue)
@@ -50,7 +39,7 @@ app.component("base-layout", BaseLayout);
 
 app.mixin({
   computed: {
-    listId() {
+    xxxlistId() {
       let route = router.currentRoute._value;
       return route && route.params && route.params.listId
         ? route.params.listId
@@ -63,7 +52,8 @@ app.mixin({
   methods: {
     nav(path) {
       const x = `/${this.viewMode}${path}`;
-      router.push({ path: x });
+      //router.push({ path: x });
+      router.push({ path: path });
       //window.emitter.emit("navigate", data);
     },
   },

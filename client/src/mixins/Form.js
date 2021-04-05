@@ -19,22 +19,23 @@ export default {
       let valid = true;
       for (let field in this.form) {
         const val = this.form[field];
-        let validator = this.$el
-          .querySelector(`[name='${field}']`)
-          .closest("[rules]");
-        if (validator) {
-          const rules = validator.getAttribute("rules").split(",");
+        let node = this.$el.querySelector(`[name='${field}']`);
+        let rules = node ? node.closest("[rules]") : null;
+        if (node && rules) {
           this.errors[field] = "";
-          rules.forEach((rule) => {
-            if (!this.errors[field]) {
-              let result = this.validationRule(rule, val);
-              console.log(field, rule, result);
-              if (result !== true) {
-                this.errors[field] = result;
-                valid = false;
+          rules
+            .getAttribute("rules")
+            .split(",")
+            .forEach((rule) => {
+              if (!this.errors[field]) {
+                let result = this.validationRule(rule, val);
+                console.log(field, rule, result);
+                if (result !== true) {
+                  this.errors[field] = result;
+                  valid = false;
+                }
               }
-            }
-          });
+            });
         }
       }
       return valid;
@@ -44,7 +45,7 @@ export default {
     },
     validationRule(rule, val, add) {
       if (/^equal:/.test(rule)) {
-        let name = rule.split(":")[1];
+        var name = rule.split(":")[1];
         var other = this.$el.querySelector(`[name='${name}']`).value;
         rule = "equal";
       }
@@ -64,7 +65,9 @@ export default {
           return /x/.test(val) || "x felt";
           break;
         case "equal":
-          return other == val || "Does not match with " + other;
+          return (
+            other == val || "Does not match with your " + name.toUpperCase()
+          );
           break;
       }
     },

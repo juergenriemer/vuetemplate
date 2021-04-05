@@ -1,11 +1,8 @@
 <template>
   <ion-list lines="none" @click="action($event)">
-    <ion-item button="true" data="toggleMode"
-      >Mark all items {{ toggleText }}</ion-item
-    >
-    <ion-item button="true" data="reorderMode"
-      >Turn {{ reorderText }} reorder mode</ion-item
-    >
+    <ion-item button="true" data="showMode">{{ showText }}</ion-item>
+    <ion-item button="true" data="toggleMode">{{ toggleText }}</ion-item>
+    <ion-item button="true" data="reorderMode">{{ reorderText }}</ion-item>
   </ion-list>
 </template>
 <script>
@@ -18,11 +15,14 @@ export default {
     IonItem,
   },
   computed: {
+    showText() {
+      return this.showMode ? "Hide done items" : "Show all items";
+    },
     reorderText() {
-      return this.reorderMode ? "off" : "on";
+      return this.reorderMode ? "Stop reodering" : "Reorder items";
     },
     toggleText() {
-      return this.toggleMode ? "undone" : "done";
+      return this.toggleMode ? "Mark all items undone" : "Mark all items done";
     },
   },
 };

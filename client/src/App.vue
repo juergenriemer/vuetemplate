@@ -6,6 +6,9 @@
 </template>
 
 <script lang="ts">
+// global functions
+window.isWeb = false;
+
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
@@ -15,7 +18,7 @@ export default defineComponent({
   components: {
     IonApp,
     IonRouterOutlet,
-    Socket
+    Socket,
   },
 });
 </script>
@@ -39,8 +42,7 @@ export default defineComponent({
   height: 30px;
 }
 
-
 .title {
-    padding-left:10px;
-  }
+  padding-left: 10px;
+}
 </style>

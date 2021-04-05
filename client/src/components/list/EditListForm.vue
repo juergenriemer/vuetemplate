@@ -40,8 +40,9 @@ import {
 } from "@ionic/vue";
 
 export default {
+  props: ["form"],
   mixins: [Form],
-  emits: ["save-list"],
+  emits: ["update-list"],
   components: {
     FormError,
     IonList,
@@ -53,28 +54,11 @@ export default {
     IonIcon,
   },
   data() {
-    return {
-      form: {
-        title: "",
-        description: "",
-      },
-    };
+    return {};
   },
   methods: {
     submit() {
-      // add additional info for offline usage, this data will get changed
-      // and/or filled by the server, hence a second update mutation info
-      // vuex store
-      const creator = Object.assign(
-        { role: "owner" },
-        this.$store.getters.user
-      );
-      // REF: extract to OjectID method
-      let list = Object.assign(
-        { _id: Math.random(), users: [creator] },
-        this.form
-      );
-      this.$emit("save-list", list);
+      this.$emit("update-list", this.form);
     },
   },
 };

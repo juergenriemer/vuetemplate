@@ -132,15 +132,15 @@ router.post("/registerVerifyResend", (req, res, next) => {
 
 router.get("/registerVerify/:token", (req, res, next) => {
   const data = utils.validateToken(req.params.token);
-  if (!data) next(new ApiError(500, "token-invalid"));
+  if (!data) next(new ApiError(422, "token-invalid"));
   if (new Date(data.expiry) < new Date())
-    next(new ApiError(500, "token-expired"));
+    next(new ApiError(422, "token-expired"));
   let userdata = null;
   User.findOne({ _id: data._id, email: data.email })
     .exec()
     .then((user) => {
-      if (!user) throw new ApiError(500, "unkown-user");
-      if (user.is_verified) throw new ApiError(500, "user-already-verified");
+      if (!user) throw new ApiError(422, "unkown-user");
+      if (user.is_verified) throw new ApiError(422, "user-already-verified");
       user.is_verified = true;
       userdata = {
         firstName: user.firstName,
@@ -267,7 +267,7 @@ router.post("/resetPassword", (req, res, next) => {
 
 router.get("/resetPasswordVerify/:token", (req, res, next) => {
   const data = utils.validateToken(req.params.token);
-  if (!data) next(new ApiError(500, "token-invalid"));
+  if (!data) next(new ApiError(422, "token-invalid"));
   let invalidFields = [
     valid.email(data.email),
     valid.password(data.password),

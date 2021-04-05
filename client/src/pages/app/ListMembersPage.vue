@@ -1,11 +1,15 @@
 <template>
-  <base-layout :page-title="list.title" page-default-back-link="/lists">
+  <base-layout :page-title="list.title" link="/app/list">
     <template v-slot:title>
       <avatar size="large" :list-title="list.title"></avatar>
     </template>
     <template v-slot:content>
       <invitation-form :error="error" @invite="invite"></invitation-form>
-      <invitees-list @uninvite="uninvite" :items="invitees"></invitees-list>
+      <invitees-list
+        v-if="invitees && invitees.length"
+        @uninvite="uninvite"
+        :items="invitees"
+      ></invitees-list>
       <members-list
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
@@ -36,7 +40,7 @@ export default {
   },
   computed: {
     list() {
-      return this.$store.getters.listById(this.$route.params.listId) || [];
+      return this.$store.getters.listById(this.$route.params.id) || [];
     },
     invitees() {
       return this.list ? this.list.invitees : null;
@@ -69,6 +73,7 @@ export default {
         .catch((err) => alert(err));
     },
     invite(email) {
+      console.log(email);
       this.error = "";
       const errors = {
         "user-already-member": "This user is already a member.",

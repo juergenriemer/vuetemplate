@@ -3,10 +3,9 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button
-            @click="nav(pageDefaultBackLink)"
-            :default-href="pageDefaultBackLink"
-          ></ion-back-button>
+          <ion-button @click="back(link)" v-if="link">
+            <ion-icon slot="icon-only" :icon="icon" size="large"></ion-icon>
+          </ion-button>
           <slot name="title"></slot>
         </ion-buttons>
         <ion-title>
@@ -29,6 +28,7 @@
 </template>
 
 <script>
+import { close, arrowBack } from "ionicons/icons";
 import {
   IonPage,
   IonHeader,
@@ -36,15 +36,15 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonBackButton,
   IonButtons,
+  IonButton,
+  IonIcon,
 } from "@ionic/vue";
 import WebPage from "./MyPage.vue";
-// REf: get viewMode or make caseinsensivtive regex
-const viewMode = /^\/web\//.test(self.location.pathname);
-const Page = viewMode ? WebPage : IonPage;
+const Page = window.isWeb ? WebPage : IonPage;
+
 export default {
-  props: ["pageTitle", "pageDefaultBackLink"],
+  props: ["pageTitle", "link", "pageDefaultBackLink"],
   components: {
     Page,
     IonHeader,
@@ -52,8 +52,27 @@ export default {
     IonToolbar,
     IonTitle,
     IonContent,
-    IonBackButton,
     IonButtons,
+    IonButton,
+    IonIcon,
+  },
+  data() {
+    return { close, arrowBack };
+  },
+  computed: {
+    icon() {
+      return self.isWeb ? this.close : this.arrowBack;
+    },
+  },
+  methods: {
+    back(path) {
+      let link = `/app/list`;
+      if (self.isWeb) {
+        const listId = this.$route.params.id;
+        if (listId) link = `/app/items/${listId}`;
+      }
+      this.nav(link);
+    },
   },
 };
 </script>

@@ -26,8 +26,8 @@ base-layout(page-title="Login")
               :disabled="disabled"
             )
           form-error(:error="errors.password")
-        ion-button(type="submit", expand="block", :disabled="saveDisabled") LOGIN
-        button.hide(type="submit", :disabled="saveDisabled")
+        ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
+        button.hide(type="submit", :disabled="disabled")
 
       info-sheet(type="error", v-if="status == 'wrong-creds'")
         template(v-slot:content)
@@ -35,13 +35,13 @@ base-layout(page-title="Login")
             | Wrong e-mail or password.
           p
             | Please try again or if you are having troubles logging consider to reset your password.
-          a(href="/login", @click="status = 'idle'")
+          a(href="/user/login", @click="status = 'idle'")
             | Try again
           p
-          a(href="/reset-password")
+            a(href="/user/reset-password")
             | Reset your password
           p
-          a(href="/register")
+            a(href="/user/register")
             | Register a new account
 
       info-sheet(type="error", v-if="status == 'in-registration'")
@@ -50,7 +50,7 @@ base-layout(page-title="Login")
             | The account exists already but was not yet verified.
           p
             | In case you did not receive an e-mail we can send it again.
-          a(href="/resend-verification")
+            a(href="/user/resend-verification")
             | Resend registration verification
 
       info-sheet(type="error", v-if="status == 'login-locked'")
@@ -59,10 +59,10 @@ base-layout(page-title="Login")
             | You exeeded the maximum amount of tries.
           p
             | Please wait a minute and try again or request a new password.
-          a(href="/login", @click="status = 'idle'")
+            a(href="/user/login", @click="status = 'idle'")
             | Try again
           p
-          a(href="/reset-password")
+            a(href="/user/reset-password")
             | Request a new password
 
       info-sheet(type="success", v-if="status == 'OK'")
@@ -126,7 +126,7 @@ export default {
       this.offlineUser();
       setTimeout(() => {
         this.$root.$router.push({
-          path: `/`,
+          path: `/app/list`,
         });
       }, 1500);
     },
@@ -139,7 +139,7 @@ export default {
           this.showInfoSheet = true;
           setTimeout(() => {
             this.$root.$router.push({
-              path: `/`,
+              path: `/app/list`,
             });
           }, 500);
         })

@@ -1,5 +1,5 @@
 <template>
-  <ion-item @click="nav(`/list/items/${list._id}`)" button="true">
+  <ion-item @click="nav(`/app/items/${list._id}`)" button="true">
     <avatar size="medium" :list-title="list.title"></avatar>
     <ion-label class="title">
       {{ list.title }}
@@ -61,9 +61,19 @@ export default {
     menuAction(evt) {
       this.menu.dismiss();
       const action = evt.target.getAttribute("data");
+      const listId = this.list._id;
       switch (action) {
         case "delete":
           this.deleteList();
+          break;
+        case "info":
+          this.nav(`/app/info/${listId}`);
+          break;
+        case "members":
+          this.nav(`/app/members/${listId}`);
+          break;
+        case "edit":
+          this.nav(`/app/edit/${listId}`);
           break;
       }
     },

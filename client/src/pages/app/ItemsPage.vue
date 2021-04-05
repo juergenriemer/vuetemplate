@@ -1,5 +1,5 @@
 <template>
-  <base-layout :page-title="list.title" page-default-back-link="/lists">
+  <base-layout :page-title="list.title" :link="link">
     <template v-slot:title>
       <avatar size="large" :list-title="list.title"></avatar>
     </template>
@@ -52,10 +52,10 @@ import {
 import { popoverController } from "@ionic/core";
 import { ellipsisVertical } from "ionicons/icons";
 
-import ItemsList from "../components/item/ItemsList.vue";
-import CreateItemForm from "../components/item/CreateItemForm.vue";
-import EditItemForm from "../components/item/EditItemForm.vue";
-import Avatar from "../components/base/Avatar.vue";
+import ItemsList from "@/components/item/ItemsList.vue";
+import CreateItemForm from "@/components/item/CreateItemForm.vue";
+import EditItemForm from "@/components/item/EditItemForm.vue";
+import Avatar from "@/components/base/Avatar.vue";
 import AllItemsMenu from "@/components/item/AllItemsMenu.vue";
 
 export default {
@@ -81,8 +81,11 @@ export default {
     };
   },
   computed: {
+    link() {
+      return self.isWeb ? "" : "/app/list";
+    },
     list() {
-      return this.$store.getters.listById(this.$route.params.listId);
+      return this.$store.getters.listById(this.$route.params.id);
     },
   },
   methods: {

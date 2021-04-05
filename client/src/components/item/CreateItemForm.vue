@@ -57,7 +57,21 @@ export default {
       return !this.form.title;
     },
   },
+  mounted() {
+    this.setFocus();
+  },
+  watch: {
+    "$route.params.listId": function () {
+      this.setFocus();
+    },
+  },
   methods: {
+    setFocus() {
+      setTimeout(() => {
+        const input = this.$el.querySelector("input");
+        input.focus();
+      }, 500);
+    },
     submit() {
       // REF: create ObjectID method
       let item = Object.assign({ _id: Math.random() }, this.form);

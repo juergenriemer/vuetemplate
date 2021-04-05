@@ -1,12 +1,12 @@
 <template>
   <ion-list-header>Invite a friend</ion-list-header>
-  <form class="ion-padding" @submit.prevent="submitForm">
+  <form class="ion-padding" @submit.prevent="validate" novalidate>
     <ion-item>
       <ion-label position="floating">Email of friend</ion-label>
       <ion-input type="text" required v-model="invitation.email" />
     </ion-item>
     <form-error :error="error"></form-error>
-    <ion-button type="submit" expand="block">INVITE</ion-button>
+    <ion-button type="validate" expand="block">INVITE</ion-button>
   </form>
 </template>
 
@@ -22,9 +22,11 @@ import {
 } from "@ionic/vue";
 
 import FormError from "@/components/base/FormError.vue";
+import Form from "@/mixins/Form";
 
 export default {
   emits: ["invite"],
+  mixins: [Form],
   props: ["error"],
   components: {
     FormError,
@@ -45,6 +47,7 @@ export default {
   },
   methods: {
     submit() {
+      console.log("ooo");
       this.$emit("invite", this.invitation.email);
     },
   },

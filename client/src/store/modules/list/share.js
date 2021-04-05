@@ -73,7 +73,7 @@ const mutations = {
     user.role = isAdmin ? "admin" : "user";
   },
   approveInvites: (state, { lists }) => {
-    state.lists.push(lists);
+    state.lists = state.lists.concat(lists);
   },
   invite: (state, { listId, invitee }) => {
     const list = state.lists.find((list) => list._id == listId);
