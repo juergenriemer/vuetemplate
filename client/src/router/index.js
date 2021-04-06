@@ -55,6 +55,10 @@ const routes = self.isWeb
     ]
   : [
       {
+        path: "/",
+        redirect: "/app/list",
+      },
+      {
         path: "/app/list",
         component: ListsPage,
         beforeEnter: (to, from, next) => {
