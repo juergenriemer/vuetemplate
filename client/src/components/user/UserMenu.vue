@@ -1,6 +1,7 @@
 <template>
   <ion-list lines="none" @click="action($event)">
     <ion-item button="true" data="logout">Logout</ion-item>
+    <ion-item button="true" data="reset-password">Change Password</ion-item>
     <ion-item button="true" data="approve-invites"
       >Approve Invitations</ion-item
     >

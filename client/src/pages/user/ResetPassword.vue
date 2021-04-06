@@ -1,5 +1,5 @@
 <template lang="pug">
-base-layout(page-title="Reset Password")
+base-layout(page-title="Reset Password", :link="link")
   template(v-slot:title)
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
@@ -97,6 +97,12 @@ export default {
       retypedPassword: "Test!234",
     },
   }),
+  computed: {
+    // REF: move to baselayout.. same in ItemsPage.vue
+    link() {
+      return self.isWeb ? "" : "/app/list";
+    },
+  },
   methods: {
     async submit() {
       this.status = "sending";

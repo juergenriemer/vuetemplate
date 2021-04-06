@@ -56,7 +56,9 @@ app.mixin({
     nav(path) {
       const x = `/${this.viewMode}${path}`;
       //router.push({ path: x });
-      router.push({ path: path });
+      console.log(this.navCtrl);
+      console.log("path", path);
+      router.push(path);
       //window.emitter.emit("navigate", data);
     },
     /*

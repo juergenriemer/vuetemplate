@@ -23,7 +23,7 @@ export default {
       this.$store
         .dispatch("updateList", { listId: list._id, list })
         .then(() => {
-          this.nav(`/list/items/${list._id}`);
+          this.nav(`/app/items/${list._id}`);
         });
     },
   },

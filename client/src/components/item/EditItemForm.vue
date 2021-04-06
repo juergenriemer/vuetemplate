@@ -1,5 +1,5 @@
 <template>
-  <form class="ion-padding" @submit.prevent="submit">
+  <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
     <ion-toolbar>
       <ion-input
         placeholder="EDIT ITEM"

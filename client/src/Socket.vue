@@ -1,5 +1,5 @@
 <template>
-  <div>{{ status }}</div>
+  <div></div>
 </template>
 
 <script>
@@ -35,8 +35,6 @@ export default {
     },
   },
   created() {
-    return;
-    console.log(this.status);
     if (!this.isLocal) {
       this.waitFor().then(() => {
         //const socket = io("ws://192.168.1.27:3003");
@@ -49,7 +47,6 @@ export default {
         socket.on(csrf, (res) => {
           let { type, data } = res;
           data.socket = true;
-          console.log(type, data);
           if (this.allowedActions.includes(type))
             this.$store.dispatch(type, data);
         });
@@ -64,7 +61,6 @@ export default {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {
           if (sessionStorage.getItem("csrf")) return resolve();
-          console.log("...wait for csrf to arrive");
           setTimeout(waitForFoo, 30);
         })();
       });

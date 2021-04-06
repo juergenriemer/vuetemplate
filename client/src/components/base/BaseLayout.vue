@@ -1,5 +1,5 @@
 <template>
-  <page>
+  <ion-page>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -24,7 +24,7 @@
         <slot name="footer" />
       </IonToolbar>
     </IonFooter>
-  </page>
+  </ion-page>
 </template>
 
 <script>
@@ -46,6 +46,7 @@ const Page = window.isWeb ? WebPage : IonPage;
 export default {
   props: ["pageTitle", "link", "pageDefaultBackLink"],
   components: {
+    IonPage,
     Page,
     IonHeader,
     IonFooter,

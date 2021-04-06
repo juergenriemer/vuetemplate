@@ -1,5 +1,5 @@
 <template>
-  <form class="ion-padding" @submit.prevent="submit">
+  <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
     <ion-toolbar>
       <ion-input
         placeholder="NEW ITEM"
@@ -58,7 +58,11 @@ export default {
     },
   },
   mounted() {
-    this.setFocus();
+    if (self.isWeb) {
+      // we only want to have auto focus in web, in mobile it would
+      // load the keyboard everytime we enter a list
+      this.setFocus();
+    }
   },
   watch: {
     "$route.params.listId": function () {

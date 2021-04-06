@@ -11,7 +11,9 @@
         xsize="small"
       ></ion-icon>
     </IonAvatar>
-    <ion-label class="title"> {{ item.title }} </ion-label>
+    <ion-label @dblclick="updateItem(item)" class="title">
+      {{ item.title }}
+    </ion-label>
     <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
     <ion-buttons v-if="!reorderMode" slot="end">
       <ion-button @click="showMenu">

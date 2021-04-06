@@ -7,6 +7,10 @@
 
 <script lang="ts">
 // global functions
+//ionic build
+// to updateuse: npx cap copy
+// npx cap open android
+
 window.isWeb = false;
 
 /*
@@ -55,5 +59,19 @@ export default defineComponent({
 
 .title {
   padding-left: 10px;
+}
+
+#bottom-input {
+  background: #efefef;
+  border-top: 1px #c0c0c0 solid;
+  padding: 10px;
+}
+#bottom-input ion-toolbar {
+  --min-height: 30px;
+  --background: #efefef;
+}
+#bottom-input ion-toolbar input {
+  background: white;
+  border-radius: 5px;
 }
 </style>

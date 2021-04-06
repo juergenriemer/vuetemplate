@@ -114,7 +114,12 @@ export default {
           break;
         case "approve-invites":
           const listId = this.$route.params.id;
-          let link = `/app/approve-invites`;
+          var link = `/app/approve-invites`;
+          link += listId ? `/${listId}` : ``;
+          this.nav(link);
+          break;
+        case "reset-password":
+          var link = `/app/reset-password`;
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;

@@ -81,6 +81,7 @@ export default {
     };
   },
   computed: {
+    // REF: move to baselayout.. same in ResetPassword.vue
     link() {
       return self.isWeb ? "" : "/app/list";
     },

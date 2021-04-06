@@ -83,7 +83,11 @@ let http = app.listen(3003);
 const io = require("socket.io")(http, {
   allowEIO3: true,
   cors: {
-    origin: [process.env.CLIENT_HOST, "http://192.168.1.27:8100"],
+    origin: [
+      process.env.CLIENT_HOST,
+      process.env.CLIENT_HOST2,
+      process.env.CLIENT_HOST3,
+    ],
     credentials: true,
     methods: ["GET", "POST"],
   },
