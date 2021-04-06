@@ -113,7 +113,10 @@ export default {
             });
           break;
         case "approve-invites":
-          this.nav(`/user/approve-invites`);
+          const listId = this.$route.params.id;
+          let link = `/app/approve-invites`;
+          link += listId ? `/${listId}` : ``;
+          this.nav(link);
           break;
       }
     },

@@ -1,28 +1,26 @@
 <template>
   <div>
-    <div v-if="isWeb" id="wrapper">
-      <div id="backdrop"><div class="logo">LL</div></div>
-      <div id="app">
-        <div id="box" class="user" v-if="!app">
-          <div class="single column">
-            <component :is="page"></component>
-          </div>
-        </div>
-        <div id="box" class="app" v-if="app">
-          <div class="left column" v-if="app">
-            <lists-page></lists-page>
-          </div>
-          <div class="right column" v-if="app && page">
-            <component :is="page"></component>
-          </div>
-          <div class="middle column" v-if="app && listId">
-            <items-page></items-page>
-          </div>
-        </div>
-      </div>
-    </div>
     <div v-if="!isWeb">
       <component :is="page"></component>
+    </div>
+    <div v-if="isWeb" id="wrapper">
+      <div id="backdrop"><div class="logo">LL</div></div>
+      <div id="box" class="user" v-if="!app">
+        <div class="single column">
+          <component :is="page"></component>
+        </div>
+      </div>
+      <div id="box" class="app" v-if="app">
+        <div class="left column">
+          <lists-page></lists-page>
+        </div>
+        <div class="right column" v-if="page">
+          <component :is="page"></component>
+        </div>
+        <div class="middle column" v-if="listId">
+          <items-page></items-page>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -40,6 +38,8 @@ import RegisterVerify from "../pages/user/RegisterVerify.vue";
 import ResetPassword from "../pages/user/ResetPassword.vue";
 import ResetPasswordVerify from "../pages/user/ResetPasswordVerify.vue";
 import ApproveInvites from "../pages/user/ApproveInvites.vue";
+
+//() => import("@/pages/ListInfoPage.vue"),
 
 const pages = {
   list: ListsPage,
@@ -77,6 +77,13 @@ export default {
     };
   },
   created() {
+    // if we are in web we need to remove list
+    // and the items vue from pages because we
+    // always show those two panels in web mode
+    if (self.isWeb) {
+      delete pages.list;
+      delete pages.items;
+    }
     if (this.app) {
       this.$store.dispatch("info");
       this.$store.dispatch("fetchLists");

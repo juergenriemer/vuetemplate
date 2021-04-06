@@ -7,7 +7,7 @@
 
 <script lang="ts">
 // global functions
-window.isWeb = false;
+window.isWeb = true;
 
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
