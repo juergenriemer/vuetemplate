@@ -2,19 +2,55 @@ import { createRouter, createWebHistory } from "@ionic/vue-router";
 //import { RouteRecordRaw } from "vue-router";
 //import ListsPage from "../pages/ListsPage.vue";
 //import ItemsPage from "../pages/ItemsPage.vue";
+import store from "../store";
 import WebView from "../views/Web.vue";
 //import MobileView from "../views/Mobile.vue";
 const View = self.isWeb ? WebView : WebView;
+
+const ensureData = (to, next) => {
+  let noData = !(store && store.getters && store.getters.userId);
+  let app = /^\/app/.test(to.path);
+  if (noData && app) {
+    store
+      .dispatch("info")
+      .then(() => {
+        return store.dispatch("fetchLists");
+      })
+      .then((res) => {
+        next();
+      });
+  } else {
+    next();
+  }
+};
 const routes =
   1 == 1
     ? [
         {
-          path: "/:mode/:page",
+          path: "/",
+          redirect: "/app/list",
+        },
+        {
+          path: "/user/:page",
           component: View,
         },
         {
-          path: "/:mode/:page/:id",
+          path: "/user/:page/:id",
           component: View,
+        },
+        {
+          path: "/app/:page",
+          component: View,
+          beforeEnter: (to, from, next) => {
+            ensureData(to, next);
+          },
+        },
+        {
+          path: "/app/:page/:id",
+          component: View,
+          beforeEnter: (to, from, next) => {
+            ensureData(to, next);
+          },
         },
       ]
     : [];

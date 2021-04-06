@@ -76,7 +76,11 @@ export default {
       infoComponent: null,
     };
   },
+  updated() {
+    console.log("updated");
+  },
   created() {
+    console.log("created");
     // if we are in web we need to remove list
     // and the items vue from pages because we
     // always show those two panels in web mode
@@ -94,7 +98,7 @@ export default {
       return self.isWeb;
     },
     app() {
-      return this.$route.params.mode == "app";
+      return /^\/app/.test(this.$route.path);
     },
     page() {
       return pages[this.$route.params.page];

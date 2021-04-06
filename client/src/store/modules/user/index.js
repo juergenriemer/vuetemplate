@@ -9,7 +9,7 @@ const getters = {
   user: (state) => state.user,
   juserId: (state) => (state.user ? state.user._id : null),
   userId: (state) => {
-    return state.user._id;
+    return state.user && state.user._id ? state.user._id : null;
   },
   isLoggedIn: () => localStorage.getItem("token"),
   isLocal: () => localStorage.getItem("token") == "local",

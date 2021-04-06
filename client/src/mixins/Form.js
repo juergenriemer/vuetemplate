@@ -29,7 +29,6 @@ export default {
             .forEach((rule) => {
               if (!this.errors[field]) {
                 let result = this.validationRule(rule, val);
-                console.log(field, rule, result);
                 if (result !== true) {
                   this.errors[field] = result;
                   valid = false;

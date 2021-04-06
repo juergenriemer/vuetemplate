@@ -7,8 +7,19 @@
 
 <script lang="ts">
 // global functions
-window.isWeb = true;
+window.isWeb = false;
 
+/*
+window.onerror = (a, b, c) => {
+alert(a);
+};
+window.console.warn = (a) => {
+ alert(a);
+};
+window.console.log = (a) => {
+ alert(a);
+};
+*/
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";

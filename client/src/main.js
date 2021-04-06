@@ -49,6 +49,9 @@ app.mixin({
       return /^\/mob\//.test(router.currentRoute._value.path) ? "mob" : "web";
     },
   },
+  created() {
+    //this.ensureData();
+  },
   methods: {
     nav(path) {
       const x = `/${this.viewMode}${path}`;
@@ -56,6 +59,30 @@ app.mixin({
       router.push({ path: path });
       //window.emitter.emit("navigate", data);
     },
+    /*
+    ensureData() {
+      console.log(1, this.$store.getters.user.userId);
+      if (!this.$store.getters.user.userId) {
+        console.log("no userid");
+        let route = router.currentRoute._value;
+        if (route && route.params && route.params.mode == "app") {
+          console.log("next path is app");
+          store
+            .dispatch("info")
+            .then(() => {
+              return store.dispatch("fetchLists");
+            })
+            .then((res) => {
+              console.log("yay!");
+            });
+        } else {
+          console.log("next is login!");
+        }
+      } else {
+        console.log("all good!");
+      }
+    },
+    */
   },
 });
 router.isReady().then(() => {
