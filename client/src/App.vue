@@ -74,4 +74,20 @@ export default defineComponent({
   background: white;
   border-radius: 5px;
 }
+.textarea {
+  border-radius: 15px;
+  background: white;
+  max-height: 90px;
+  overflow: auto;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 8px;
+}
+.scroller::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+}
+.scroller::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
 </style>

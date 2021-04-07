@@ -16,6 +16,16 @@
     </ion-label>
     <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
     <ion-buttons v-if="!reorderMode" slot="end">
+      <ion-button
+        v-if="item.comments.length"
+        @click="showComment = !showComment"
+      >
+        <ion-icon
+          slot="icon-only"
+          :icon="chatboxEllipses"
+          size="small"
+        ></ion-icon>
+      </ion-button>
       <ion-button @click="showMenu">
         <ion-icon
           slot="icon-only"
@@ -24,6 +34,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
+  </ion-item>
+  <ion-item v-if="showComment">
+    <comments-list
+      @delete-item="deleteComment"
+      :items="item.comments"
+    ></comments-list>
   </ion-item>
 </template>
 
@@ -43,19 +59,23 @@ import {
   chevronForward,
   ellipsisVertical,
   settings,
+  chatboxEllipses,
   checkmark,
   trash,
   create,
 } from "ionicons/icons";
 import ItemMenu from "@/components/item/ItemMenu.vue";
+import CommentsList from "@/components/comment/CommentsList.vue";
 import { alertController, popoverController } from "@ionic/core";
 export default {
   props: ["item", "reorderMode"],
-  emits: ["delete-item", "update-item", "edit-item"],
+  emits: ["delete-item", "update-item", "edit-item", "comment-mode"],
   data() {
     return {
+      showComment: false,
       menu: null,
       ellipsisVertical,
+      chatboxEllipses,
       checkmark,
       chevronForward,
       trash,
@@ -63,9 +83,10 @@ export default {
     };
   },
   components: {
+    CommentsList,
+    ItemMenu,
     IonReorder,
     IonToolbar,
-    ItemMenu,
     IonAvatar,
     IonIcon,
     IonItem,
@@ -79,6 +100,9 @@ export default {
     updateItem() {
       this.item.done = !this.item.done;
       this.$emit("update-item", this.item);
+    },
+    deleteComment(item) {
+      this.$emit("delete-comment", item);
     },
     async showMenu(evt) {
       popoverController
@@ -106,6 +130,9 @@ export default {
           break;
         case "edit-item":
           this.$emit("edit-item", this.item);
+          break;
+        case "comment-mode":
+          this.$emit("comment-mode", this.item);
           break;
       }
     },

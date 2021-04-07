@@ -22,6 +22,7 @@
         @delete-item="deleteItem"
         @update-item="updateItem"
         @edit-item="editItem"
+        @comment-mode="commentMode"
       ></items-list>
       <div v-if="!list.items">loading</div>
     </template>
@@ -36,6 +37,11 @@
         v-if="mode == 'create'"
         @save-item="saveItem"
       ></create-item-form>
+      <create-comment-form
+        v-if="mode == 'comment'"
+        @create-item="saveComment"
+        @stop-commenting="mode = 'create'"
+      ></create-comment-form>
     </template>
   </base-layout>
 </template>
@@ -55,6 +61,7 @@ import { ellipsisVertical } from "ionicons/icons";
 import ItemsList from "@/components/item/ItemsList.vue";
 import CreateItemForm from "@/components/item/CreateItemForm.vue";
 import EditItemForm from "@/components/item/EditItemForm.vue";
+import CreateCommentForm from "@/components/comment/CreateCommentForm.vue";
 import Avatar from "@/components/base/Avatar.vue";
 import AllItemsMenu from "@/components/item/AllItemsMenu.vue";
 
@@ -64,6 +71,7 @@ export default {
     ItemsList,
     CreateItemForm,
     EditItemForm,
+    CreateCommentForm,
     IonContent,
     IonFooter,
     IonToolbar,
@@ -75,6 +83,7 @@ export default {
     return {
       mode: "create",
       edit: {},
+      actionItem: {},
       toggleMode: false,
       reorderMode: false,
       ellipsisVertical,
@@ -126,6 +135,10 @@ export default {
       this.mode = "edit";
       this.edit = item;
     },
+    commentMode(item) {
+      this.mode = "comment";
+      this.actionItem = item;
+    },
     async reorderList({ from, to }) {
       this.$store
         .dispatch("reorderList", { listId: this.list._id, from, to })
@@ -134,6 +147,16 @@ export default {
     async saveItem(item) {
       this.$store
         .dispatch("addItem", { listId: this.list._id, item })
+        .then((res) => {});
+    },
+    async saveComment(comment) {
+      console.log(123, comment);
+      this.$store
+        .dispatch("addComment", {
+          listId: this.list._id,
+          itemId: this.actionItem._id,
+          comment,
+        })
         .then((res) => {});
     },
     updateItem(item) {

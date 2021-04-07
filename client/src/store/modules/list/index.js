@@ -2,7 +2,7 @@ import router from "@/router";
 import list from "@/store/modules/list/list";
 import item from "@/store/modules/list/item";
 import share from "@/store/modules/list/share";
-//import comment from "@/store/modules/list/comment";
+import comment from "@/store/modules/list/comment";
 
 //var members = {};
 const state = {
@@ -47,14 +47,14 @@ const actions = {
   ...list.actions,
   ...item.actions,
   ...share.actions,
-  //  ...comment.actions,
+  ...comment.actions,
 };
 
 const mutations = {
   ...list.mutations,
   ...item.mutations,
   ...share.mutations,
-  //  ...comment.mutations
+  ...comment.mutations,
 };
 
 export default {

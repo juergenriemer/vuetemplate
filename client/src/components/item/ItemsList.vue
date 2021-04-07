@@ -8,6 +8,7 @@
         @edit-item="editItem"
         @delete-item="deleteItem"
         @update-item="updateItem"
+        @comment-mode="commentMode"
         v-for="item in items"
         :key="item._id"
         :item="item"
@@ -22,7 +23,13 @@ import { IonList, IonReorderGroup } from "@ionic/vue";
 import ItemsListItem from "./ItemsListItem.vue";
 
 export default {
-  emits: ["reorder-list", "delete-item", "update-item", "edit-item"],
+  emits: [
+    "reorder-list",
+    "delete-item",
+    "update-item",
+    "edit-item",
+    "comment-mode",
+  ],
   props: ["items", "reorderMode"],
   components: {
     IonList,
@@ -43,6 +50,9 @@ export default {
     },
     editItem(item) {
       this.$emit("edit-item", item);
+    },
+    commentMode(item) {
+      this.$emit("comment-mode", item);
     },
   },
 };
