@@ -5,13 +5,12 @@
       :disabled="!reorderMode"
     >
       <items-list-item
-        @edit-item="editItem"
-        @delete-item="deleteItem"
-        @update-item="updateItem"
-        @comment-mode="commentMode"
+        @change-mode="changeMode"
         v-for="item in items"
         :key="item._id"
         :item="item"
+        :itemInCommentMode="itemInCommentMode"
+        :itemInEditMode="itemInEditMode"
         :reorderMode="reorderMode"
       ></items-list-item>
     </ion-reorder-group>
@@ -23,36 +22,30 @@ import { IonList, IonReorderGroup } from "@ionic/vue";
 import ItemsListItem from "./ItemsListItem.vue";
 
 export default {
-  emits: [
-    "reorder-list",
-    "delete-item",
-    "update-item",
-    "edit-item",
-    "comment-mode",
-  ],
-  props: ["items", "reorderMode"],
+  emits: ["change-mode"],
+  props: ["items", "reorderMode", "itemInEditMode", "itemInCommentMode"],
   components: {
     IonList,
     IonReorderGroup,
     ItemsListItem,
   },
+  data() {
+    return {};
+  },
   methods: {
-    reorder(evt) {
+    async reorder(evt) {
       const { from, to } = evt.detail;
-      this.$emit("reorder-list", { from, to });
-      evt.detail.complete();
+      this.$store
+        .dispatch("reorderList", { listId: this.listId(), from, to })
+        .then((res) => {
+          evt.detail.complete();
+        })
+        .catch((err) => {
+          this.showError(err);
+        });
     },
-    deleteItem(itemId) {
-      this.$emit("delete-item", itemId);
-    },
-    updateItem(item) {
-      this.$emit("update-item", item);
-    },
-    editItem(item) {
-      this.$emit("edit-item", item);
-    },
-    commentMode(item) {
-      this.$emit("comment-mode", item);
+    changeMode(data) {
+      this.$emit("change-mode", data);
     },
   },
 };

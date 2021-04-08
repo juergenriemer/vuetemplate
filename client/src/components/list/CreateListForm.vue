@@ -29,6 +29,7 @@
 <script>
 import FormError from "@/components/base/FormError.vue";
 import Form from "@/mixins/Form";
+import Data from "@/mixins/Data";
 import {
   IonList,
   IonItem,
@@ -40,7 +41,7 @@ import {
 } from "@ionic/vue";
 
 export default {
-  mixins: [Form],
+  mixins: [Form, Data],
   emits: ["save-list"],
   components: {
     FormError,
@@ -69,9 +70,8 @@ export default {
         { role: "owner" },
         this.$store.getters.user
       );
-      // REF: extract to OjectID method
       let list = Object.assign(
-        { _id: Math.random(), users: [creator] },
+        { _id: this.objectId(), users: [creator] },
         this.form
       );
       this.$emit("save-list", list);

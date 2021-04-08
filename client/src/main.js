@@ -61,6 +61,14 @@ app.mixin({
       router.push(path);
       //window.emitter.emit("navigate", data);
     },
+    showError(err) {
+      console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
+      console.warn(err);
+      console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
+    },
+    listId() {
+      return this.$route.params.id;
+    },
     /*
     ensureData() {
       console.log(1, this.$store.getters.user.userId);

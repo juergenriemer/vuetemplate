@@ -1,14 +1,13 @@
 <template>
   <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
     <ion-toolbar>
-      <ion-input
-        placeholder="NEW ITEM"
-        v-model="form.title"
-        clear-input
-      ></ion-input>
+      <ion-input placeholder="NEW ITEM" v-model="form.title"></ion-input>
       <ion-buttons slot="end">
+        <ion-button @click="stopCreating">
+          <ion-icon :icon="close" size="medium"></ion-icon>
+        </ion-button>
         <ion-button :disabled="saveDisabled" @click="submit">
-          <ion-icon rules="required" :icon="send" size="medium"></ion-icon>
+          <ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -29,8 +28,10 @@ import {
 } from "@ionic/vue";
 
 import { camera, send, close } from "ionicons/icons";
+import Data from "@/mixins/Data";
 export default {
   emits: ["save-item"],
+  mixins: [Data],
   components: {
     IonList,
     IonItem,
@@ -44,6 +45,7 @@ export default {
   },
   data() {
     return {
+      input: null,
       camera,
       send,
       close,
@@ -57,32 +59,34 @@ export default {
       return !this.form.title;
     },
   },
-  mounted() {
-    if (self.isWeb) {
-      // we only want to have auto focus in web, in mobile it would
-      // load the keyboard everytime we enter a list
-      this.setFocus();
-    }
-  },
   watch: {
     "$route.params.listId": function () {
       this.setFocus();
     },
   },
   methods: {
-    setFocus() {
-      setTimeout(() => {
-        const input = this.$el.querySelector("input");
-        input.focus();
-      }, 500);
+    stopCreating() {
+      this.input.value = "";
+      this.input.blur();
     },
-    submit() {
-      // REF: create ObjectID method
-      let item = Object.assign({ _id: Math.random() }, this.form);
-      this.$emit("save-item", item);
-      setTimeout(() => {
-        this.form.title = "";
-      }, 0);
+    setFocus() {
+      let input = this.$el.querySelector("input");
+      input.value = "";
+      input.focus();
+    },
+    async submit() {
+      let item = Object.assign(
+        { _id: this.objectId(), comments: [] },
+        this.form
+      );
+      this.$store
+        .dispatch("addItem", { listId: this.listId(), item })
+        .then((res) => {
+          this.setFocus();
+        })
+        .catch((err) => {
+          this.showError(err);
+        });
     },
   },
 };

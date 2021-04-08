@@ -4,7 +4,11 @@
     .top
       .name(:style="{ color: userColor(item.creatorId) }")
         | {{ userName(item.creatorId) }}
-      ion-icon.menu(slot="icon-only", :icon="ellipsisVertical")
+      ion-icon.menu(
+        slot="icon-only",
+        :icon="ellipsisVertical",
+        @click="showMenu"
+      )
     .text {{ item.text }}
     .date {{ ago(item.updatedAt) }}
 </template>
@@ -37,8 +41,7 @@ import Dates from "@/mixins/Dates";
 import User from "@/mixins/User";
 
 export default {
-  props: ["item"],
-  emits: ["delete-item"],
+  props: ["item", "itemId"],
   mixins: [Dates, User],
   data() {
     return {
@@ -93,9 +96,6 @@ export default {
         case "delete-item":
           this.deleteItem();
           break;
-        case "edit-item":
-          this.$emit("edit-item", this.item);
-          break;
       }
     },
     async deleteItem() {
@@ -110,7 +110,16 @@ export default {
             },
             {
               text: "OK",
-              handler: () => this.$emit("delete-item", this.item._id),
+              handler: () => {
+                this.$store
+                  .dispatch("deleteComment", {
+                    listId: this.listId(),
+                    itemId: this.itemId,
+                    commentId: this.item._id,
+                  })
+                  .then((res) => res)
+                  .catch((err) => this.showError(err));
+              },
             },
           ],
         })

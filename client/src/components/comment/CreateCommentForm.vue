@@ -1,16 +1,27 @@
 <template>
-  <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
-    <ion-toolbar>
+  <form
+    style="background: goldenrod"
+    id="bottom-input"
+    class="ion-padding"
+    @submit.prevent="submit"
+  >
+    {{ form.text }}
+    <ion-toolbar style="--background: goldenrod">
       <bottom-input
         placeholder="NEW COMMENT"
         autofocus="true"
-        expandTo="180"
-        value="asdf qwer"
+        expandTo="80"
         @input="input"
       ></bottom-input>
       <ion-buttons slot="end">
+        <ion-button @click="stopCommenting">
+          <ion-icon :icon="close" size="medium"></ion-icon>
+        </ion-button>
+        <ion-button @click="takePicture">
+          <ion-icon :icon="camera" size="medium"></ion-icon>
+        </ion-button>
         <ion-button :disabled="saveDisabled" @click="submit">
-          <ion-icon rules="required" :icon="send" size="medium"></ion-icon>
+          <ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -30,10 +41,14 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import BottomInput from "@/components/base/Input.vue";
+import Data from "@/mixins/Data";
+import User from "@/mixins/User";
 
 import { camera, send, close } from "ionicons/icons";
 export default {
-  emits: ["create-item"],
+  emits: ["change-mode"],
+  mixins: [Data, User],
+  props: ["itemInCommentMode"],
   components: {
     BottomInput,
     IonList,
@@ -61,48 +76,29 @@ export default {
       return !this.form.text;
     },
   },
-  mounted() {
-    if (self.isWeb) {
-      // we only want to have auto focus in web, in mobile it would
-      // load the keyboard everytime we enter a list
-      this.setFocus();
-    }
-  },
-  watch: {
-    "$route.params.listId": function () {
-      //this.setFocus();
-    },
-  },
   methods: {
+    stopCommenting() {
+      this.$emit("change-mode", "create");
+    },
+    takePicture() {
+      alert("not implemented");
+    },
     input(data) {
       this.form.text = data;
     },
-    setFocus() {
-      setTimeout(() => {
-        const input = this.$el.querySelector("input");
-        input.focus();
-      }, 500);
-    },
     submit() {
-      console.log("doit");
-      this.$emit("create-item", this.form);
-      return;
-      if (!this.comment.text) return;
-      let comment = Object.assign(
-        { _id: this.objectId(), creatorId: this.myUserId },
-        this.comment
+      let item = Object.assign(
+        { _id: this.objectId(), creatorId: this.myId() },
+        this.form
       );
-
-      //let item = Object.assign({ _id: Math.random() }, this.form);
-
-      this.addComment({
-        listId: this.listId,
-        itemId: this.itemId,
-        comment: this.form,
-      })
+      this.$store
+        .dispatch("addComment", {
+          listId: this.listId(),
+          itemId: this.itemInCommentMode._id,
+          comment: item,
+        })
         .then(() => {
           this.form.text = "";
-          //this.$el.querySelector("input").focus();
         })
         .catch((err) => {
           this.showError(err);

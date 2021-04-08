@@ -17,30 +17,26 @@
         v-if="list"
         :items="list.items"
         :reorderMode="reorderMode"
-        @save-item="saveItem"
-        @reorder-list="reorderList"
-        @delete-item="deleteItem"
-        @update-item="updateItem"
-        @edit-item="editItem"
-        @comment-mode="commentMode"
+        :itemInCommentMode="itemInCommentMode"
+        :itemInEditMode="itemInEditMode"
+        @change-mode="changeMode"
       ></items-list>
       <div v-if="!list.items">loading</div>
     </template>
     <template v-slot:footer>
-      <edit-item-form
-        v-if="mode == 'edit'"
-        :form="edit"
-        @update-item="updateItem"
-        @stop-editing="mode = 'create'"
-      ></edit-item-form>
       <create-item-form
-        v-if="mode == 'create'"
-        @save-item="saveItem"
+        v-if="!itemInEditMode && !itemInCommentMode"
       ></create-item-form>
+      <edit-item-form
+        v-if="itemInEditMode"
+        :form="itemInEditMode"
+        :itemInEditMode="itemInEditMode"
+        @change-mode="changeMode"
+      ></edit-item-form>
       <create-comment-form
-        v-if="mode == 'comment'"
-        @create-item="saveComment"
-        @stop-commenting="mode = 'create'"
+        v-if="itemInCommentMode"
+        :itemInCommentMode="itemInCommentMode"
+        @change-mode="changeMode"
       ></create-comment-form>
     </template>
   </base-layout>
@@ -81,12 +77,13 @@ export default {
   },
   data() {
     return {
-      mode: "create",
       edit: {},
       actionItem: {},
       toggleMode: false,
       reorderMode: false,
       ellipsisVertical,
+      itemInEditMode: null,
+      itemInCommentMode: null,
     };
   },
   computed: {
@@ -126,60 +123,27 @@ export default {
           this.reorderMode = !this.reorderMode;
           break;
         case "toggleMode":
-          this.toggleMode = !this.toggleMode;
-          this.toggleList(this.toggleMode);
+          this.$store
+            .dispatch("toggleList", {
+              listId: this.listId(),
+              done: this.toggleMode,
+            })
+            .catch((err) => this.showError(err));
+
           break;
       }
     },
-    editItem(item) {
-      this.mode = "edit";
-      this.edit = item;
-    },
-    commentMode(item) {
-      this.mode = "comment";
-      this.actionItem = item;
-    },
-    async reorderList({ from, to }) {
-      this.$store
-        .dispatch("reorderList", { listId: this.list._id, from, to })
-        .then((res) => {});
-    },
-    async saveItem(item) {
-      this.$store
-        .dispatch("addItem", { listId: this.list._id, item })
-        .then((res) => {});
-    },
-    async saveComment(comment) {
-      console.log(123, comment);
-      this.$store
-        .dispatch("addComment", {
-          listId: this.list._id,
-          itemId: this.actionItem._id,
-          comment,
-        })
-        .then((res) => {});
-    },
-    updateItem(item) {
-      this.mode = "create";
-      this.edit = {};
-      this.$store
-        .dispatch("updateItem", {
-          listId: this.list._id,
-          itemId: item._id,
-          item,
-        })
-        .then((res) => {});
-    },
-    deleteItem(itemId) {
-      this.$store
-        .dispatch("deleteItem", { listId: this.list._id, itemId })
-        .then((res) => res)
-        .catch((err) => alert(err));
-    },
-    async toggleList(done) {
-      this.$store
-        .dispatch("toggleList", { listId: this.list._id, done })
-        .catch((err) => alert(err));
+    changeMode({ mode, item }) {
+      this.itemInEditMode = null;
+      this.itemInCommentMode = null;
+      switch (mode) {
+        case "edit":
+          this.itemInEditMode = item;
+          break;
+        case "comment":
+          this.itemInCommentMode = item;
+          break;
+      }
     },
   },
 };

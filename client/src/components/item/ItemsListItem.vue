@@ -1,46 +1,42 @@
 <template>
-  <ion-item button="true">
-    <IonAvatar
-      @click="updateItem(item)"
-      class="checkbox"
-      :class="item.done ? 'done' : ''"
-    >
-      <ion-icon
-        title="USE CHECKMARK-CIRCLE"
-        :icon="checkmark"
-        xsize="small"
-      ></ion-icon>
-    </IonAvatar>
-    <ion-label @dblclick="updateItem(item)" class="title">
-      {{ item.title }}
-    </ion-label>
-    <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
-    <ion-buttons v-if="!reorderMode" slot="end">
-      <ion-button
-        v-if="item.comments.length"
-        @click="showComment = !showComment"
+  <div>
+    <ion-item item-root button="true" :class="commenting ? 'comment-mode' : ''">
+      <IonAvatar
+        @click="checkItem(item)"
+        class="checkbox"
+        :class="item.done ? 'done' : ''"
       >
-        <ion-icon
-          slot="icon-only"
-          :icon="chatboxEllipses"
-          size="small"
-        ></ion-icon>
-      </ion-button>
-      <ion-button @click="showMenu">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="small"
-        ></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-item>
-  <ion-item v-if="showComment">
-    <comments-list
-      @delete-item="deleteComment"
-      :items="item.comments"
-    ></comments-list>
-  </ion-item>
+        <ion-icon title="USE CHECKMARK-CIRCLE" :icon="checkmark"></ion-icon>
+      </IonAvatar>
+      <ion-label @dblclick="checkItem(item)" class="title">
+        {{ item.title }}
+      </ion-label>
+      <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
+      <ion-buttons v-if="!reorderMode" slot="end">
+        <ion-button
+          v-if="item.comments.length"
+          @click="
+            $emit('change-mode', {
+              mode: 'comment',
+              item: commenting ? null : item,
+            })
+          "
+        >
+          <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
+        </ion-button>
+        <ion-button @click="showMenu">
+          <ion-icon slot="icon-only" :icon="ellipsisVertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+    <ion-item v-if="commenting">
+      <comments-list
+        @delete-item="deleteComment"
+        :items="item.comments"
+        :itemId="item._id"
+      ></comments-list>
+    </ion-item>
+  </div>
 </template>
 
 <script>
@@ -68,11 +64,11 @@ import ItemMenu from "@/components/item/ItemMenu.vue";
 import CommentsList from "@/components/comment/CommentsList.vue";
 import { alertController, popoverController } from "@ionic/core";
 export default {
-  props: ["item", "reorderMode"],
-  emits: ["delete-item", "update-item", "edit-item", "comment-mode"],
+  props: ["item", "reorderMode", "itemInCommentMode"],
+  emits: ["change-mode"],
   data() {
     return {
-      showComment: false,
+      commentMode: true,
       menu: null,
       ellipsisVertical,
       chatboxEllipses,
@@ -95,15 +91,14 @@ export default {
     IonButton,
     IonPopover,
   },
-  mounted() {},
+  computed: {
+    commenting() {
+      return (
+        this.itemInCommentMode && this.itemInCommentMode._id == this.item._id
+      );
+    },
+  },
   methods: {
-    updateItem() {
-      this.item.done = !this.item.done;
-      this.$emit("update-item", this.item);
-    },
-    deleteComment(item) {
-      this.$emit("delete-comment", item);
-    },
     async showMenu(evt) {
       popoverController
         .create({
@@ -124,17 +119,33 @@ export default {
     menuAction(evt) {
       this.menu.dismiss();
       const action = evt.target.getAttribute("data");
+      let data;
       switch (action) {
         case "delete-item":
           this.deleteItem();
           break;
-        case "edit-item":
-          this.$emit("edit-item", this.item);
+        case "edit-mode":
+          data = { mode: "edit", item: this.item };
+          this.$emit("change-mode", data);
           break;
         case "comment-mode":
-          this.$emit("comment-mode", this.item);
+          data = { mode: "comment", item: this.item };
+          this.$emit("change-mode", data);
           break;
       }
+    },
+    checkItem() {
+      this.item.done = !this.item.done;
+      this.$store
+        .dispatch("updateItem", {
+          listId: this.listId(),
+          itemId: this.item._id,
+          item: this.item,
+        })
+        .then((res) => {})
+        .catch((err) => {
+          this.showError(err);
+        });
     },
     async deleteItem() {
       alertController
@@ -148,7 +159,15 @@ export default {
             },
             {
               text: "OK",
-              handler: () => this.$emit("delete-item", this.item._id),
+              handler: () => {
+                this.$store
+                  .dispatch("deleteItem", {
+                    listId: this.listId(),
+                    itemId: this.item._id,
+                  })
+                  .then((res) => res)
+                  .catch((err) => this.showError(err));
+              },
             },
           ],
         })
@@ -158,6 +177,10 @@ export default {
 };
 </script>
 <style>
+.comment-mode {
+  --background: primary;
+  background: goldenrod;
+}
 .jdicon {
   padding: 4px;
 }

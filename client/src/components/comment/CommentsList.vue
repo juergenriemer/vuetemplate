@@ -4,7 +4,8 @@
     @delete-item="deleteItem",
     v-for="item in items",
     :key="item._id",
-    :item="item"
+    :item="item",
+    :itemId="itemId"
   )
 </template>
 
@@ -14,20 +15,10 @@ import CommentsListItem from "./CommentsListItem.vue";
 
 export default {
   emits: ["delete-item"],
-  props: ["items"],
-  data() {
-    return {
-      userId: 123,
-    };
-  },
+  props: ["items", "itemId"],
   components: {
     IonList,
     CommentsListItem,
-  },
-  methods: {
-    deleteItem(itemId) {
-      this.$emit("delete-comment", itemId);
-    },
   },
 };
 </script>

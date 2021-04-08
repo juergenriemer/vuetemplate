@@ -1,15 +1,13 @@
 <template>
   <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
     <ion-toolbar>
-      <ion-input
-        placeholder="EDIT ITEM"
-        v-model="form.title"
-        ref="inputField"
-        clear-input
-      ></ion-input>
+      <ion-input placeholder="EDIT ITEM" v-model="form.title"></ion-input>
       <ion-buttons slot="end">
+        <ion-button @click="stopEditing">
+          <ion-icon :icon="close" size="medium"></ion-icon>
+        </ion-button>
         <ion-button :disabled="saveDisabled" @click="submit">
-          <ion-icon rules="required" :icon="send" size="medium"></ion-icon>
+          <ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -29,10 +27,10 @@ import {
   IonIcon,
 } from "@ionic/vue";
 
-import { camera, send } from "ionicons/icons";
+import { send, close } from "ionicons/icons";
 export default {
   props: ["form"],
-  emits: ["update-item", "stop-editing"],
+  emits: ["update-item", "change-mode"],
   components: {
     IonList,
     IonItem,
@@ -46,8 +44,8 @@ export default {
   },
   data() {
     return {
-      camera,
       send,
+      close,
       origTitle: "",
     };
   },
@@ -57,12 +55,6 @@ export default {
     },
   },
   mounted() {
-    this.$el.addEventListener("click", (evt) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      let close = evt.target.querySelector("[aria-label='reset']");
-      if (close) this.stopEditing();
-    });
     this.$el.addEventListener("keyup", (evt) => {
       if (evt.key == "Escape") this.stopEditing();
     });
@@ -75,11 +67,23 @@ export default {
   methods: {
     stopEditing() {
       this.form.title = this.origTitle;
-      this.$emit("stop-editing");
+      this.$emit("change-mode", "create");
     },
     submit() {
       let item = Object.assign({}, this.form);
-      this.$emit("update-item", item);
+      this.$store
+        .dispatch("updateItem", {
+          listId: this.listId(),
+          itemId: item._id,
+          item,
+        })
+        .then((res) => {
+          this.origTitle = this.form.title;
+          this.stopEditing();
+        })
+        .catch((err) => {
+          this.showError(err);
+        });
     },
   },
 };

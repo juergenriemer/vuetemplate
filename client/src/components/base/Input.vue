@@ -16,7 +16,14 @@
 <script>
 export default {
   emits: ["input"],
-  props: ["expandTo", "placeholder", "value", "autofocus", "maxlength"],
+  props: [
+    "expandTo",
+    "placeholder",
+    "value",
+    "autofocus",
+    "maxlength",
+    "background",
+  ],
   mounted() {
     this.input = this.$el.querySelector(".content");
     this.init();
@@ -32,8 +39,20 @@ export default {
       if (this.expandTo) {
         this.input.style.maxHeight = `${this.expandTo}px`;
       }
+      if (this.background) {
+        this.$el.style.background = `${this.background}`;
+        this.input.style.background = `${this.background}`;
+      }
       this.checkPlaceholder();
-      if (this.autofocus) this.setCursor();
+      if (this.autofocus) {
+        // REF: 1. watch itemInEditmode to set focus when
+        // commenting on another item
+        // 2. avoid settimeout!!
+        setTimeout(() => {
+          this.setCursor();
+          console.log("??");
+        }, 1000);
+      }
     },
     expand(evt) {
       this.checkPlaceholder();
@@ -111,7 +130,7 @@ export default {
 #input {
   padding: 10px;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 #input div {
   background: #fff;
