@@ -1,7 +1,7 @@
 <template>
-  <base-layout :page-title="list.title" :link="link">
+  <base-layout :page-title="title" :link="link">
     <template v-slot:title>
-      <avatar size="large" :list-title="list.title"></avatar>
+      <avatar size="large" :list-title="title"></avatar>
     </template>
     <template v-slot:actions-end>
       <ion-button @click="showMenu">
@@ -13,28 +13,17 @@
       </ion-button>
     </template>
     <template v-slot:content>
-      <items-list
-        v-if="list"
-        :items="list.items"
-        :reorderMode="reorderMode"
-        :itemInCommentMode="itemInCommentMode"
+      <comments-list
+        v-if="item"
+        :items="item.comments"
+        :itemId="item._id"
         :itemInEditMode="itemInEditMode"
-        @change-mode="changeMode"
-      ></items-list>
+      ></comments-list>
       <div v-if="!list.items">loading</div>
     </template>
     <template v-slot:footer>
-      <create-item-form
-        v-if="!itemInEditMode && !itemInCommentMode"
-      ></create-item-form>
-      <edit-item-form
-        v-if="itemInEditMode"
-        :itemInEditMode="itemInEditMode"
-        @change-mode="changeMode"
-      ></edit-item-form>
       <create-comment-form
-        v-if="itemInCommentMode"
-        :itemInCommentMode="itemInCommentMode"
+        :item="item"
         @change-mode="changeMode"
       ></create-comment-form>
     </template>
@@ -53,19 +42,14 @@ import {
 import { popoverController } from "@ionic/core";
 import { ellipsisVertical } from "ionicons/icons";
 
-import ItemsList from "@/components/item/ItemsList.vue";
-import CreateItemForm from "@/components/item/CreateItemForm.vue";
-import EditItemForm from "@/components/item/EditItemForm.vue";
+import CommentsList from "@/components/comment/CommentsList.vue";
 import CreateCommentForm from "@/components/comment/CreateCommentForm.vue";
 import Avatar from "@/components/base/Avatar.vue";
-import AllItemsMenu from "@/components/item/AllItemsMenu.vue";
 
 export default {
   components: {
     Avatar,
-    ItemsList,
-    CreateItemForm,
-    EditItemForm,
+    CommentsList,
     CreateCommentForm,
     IonContent,
     IonFooter,
@@ -76,10 +60,6 @@ export default {
   },
   data() {
     return {
-      edit: {},
-      actionItem: {},
-      toggleMode: false,
-      reorderMode: false,
       ellipsisVertical,
       itemInEditMode: null,
       itemInCommentMode: null,
@@ -88,10 +68,24 @@ export default {
   computed: {
     // REF: move to baselayout.. same in ResetPassword.vue
     link() {
-      return self.isWeb ? "" : "/app/list";
+      const lnk = self.isWeb ? "" : `/app/items/${this.listId()}`;
+      return lnk;
     },
     list() {
-      return this.$store.getters.listById(this.$route.params.id);
+      return this.$route.params.id
+        ? this.$store.getters.listById(this.$route.params.id)
+        : null;
+    },
+    item() {
+      console.log(">>>>>>>>>>>>>>", this.$route.params);
+      const itemId = this.$route.params.itemId;
+      console.log(">>>>>>>>>>>>>>", itemId);
+      return itemId
+        ? this.list.items.find((itm) => itm._id == this.$route.params.itemId)
+        : null;
+    },
+    title() {
+      return this.item ? this.item.title : "";
     },
   },
   methods: {

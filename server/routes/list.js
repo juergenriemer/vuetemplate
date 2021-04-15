@@ -7,6 +7,7 @@ const validateIds = require("../middleware/validateIds.js");
 const role = require("../middleware/role.js");
 const utils = require("../lib/utils");
 const ApiError = require("../middleware/ApiError");
+const { deleteFolder } = require("../lib/files.js");
 
 // uncheck all items
 router.put(
@@ -127,19 +128,33 @@ router.delete(
   validateIds,
   role("owner"),
   (req, res, next) => {
-    utils.broadcast(req, req.list, {
-      type: "deleteList",
-      data: {
-        listId: req.list._id,
-      },
-    });
-    req.list
-      .remove()
+    const { listId } = req.params;
+    const listFolder = `./uploads/${listId}`;
+    let log = `LIST_DELETE(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        return deleteFolder(listFolder);
+      })
+      .then(() => {
+        // need to broadcast before list is gone, because
+        // we have user info there.. refactor this
+        log += " > broadcast";
+        utils.broadcast(req, req.list, {
+          type: "deleteList",
+          data: {
+            listId: req.list._id,
+          },
+        });
+      })
+      .then(() => {
+        log += " > delete_list";
+        return req.list.remove();
+      })
       .then(() => {
         res.status(200).json();
       })
       .catch((err) => {
-        next(err);
+        next(new ApiError(501, log, err));
       });
   }
 );

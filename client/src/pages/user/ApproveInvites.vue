@@ -2,8 +2,10 @@
 base-layout(page-title="Approve Invitations", link="/app/list")
   template(v-slot:title)
     avatar(size="large", list-title="Listle")
+    ion-avatar#xxx(size="large")
+      ion-icon(:icon="mail", size="small")
   template(v-slot:content)
-    ion-adding(v-if="invites && invites.length")
+    div(v-if="invites && invites.length")
       p
         | You have been invited to join lists.
       p
@@ -38,9 +40,11 @@ import {
   IonInput,
   IonButton,
   IonIcon,
+  IonAvatar,
 } from "@ionic/vue";
 import Avatar from "@/components/base/Avatar.vue";
 import Form from "@/mixins/Form";
+import { mail, key, logOut } from "ionicons/icons";
 
 export default {
   mixins: [Form],
@@ -53,10 +57,12 @@ export default {
     IonInput,
     IonButton,
     IonIcon,
+    IonAvatar,
   },
   data: () => ({
     approves: {},
     invites: [],
+    mail,
   }),
   created() {
     this.getListInvites();

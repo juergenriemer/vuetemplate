@@ -1,5 +1,5 @@
 <template lang="pug">
-.bubble(:class="pos(item)")
+.bubble(:id="item._id", :class="pos(item)")
   .bubble-content
     .top
       .name(:style="{ color: userColor(item.creatorId) }")
@@ -9,6 +9,7 @@
         :icon="ellipsisVertical",
         @click="showMenu"
       )
+    img.ion-hide.thumb(ref="thumb")
     .text {{ item.text }}
     .date {{ ago(item.updatedAt) }}
 </template>
@@ -66,7 +67,31 @@ export default {
     IonButton,
     IonPopover,
   },
-  mounted() {},
+  mounted() {
+    if (this.item.imageFile) {
+      var imageFile = this.item.imageFile;
+      var host = "http://10.0.0.136:3003";
+      var root = "file";
+      var listId = this.listId();
+      var itemId = this.itemId;
+      var url = `${host}/${root}/${listId}/${itemId}/thumb_${imageFile}`;
+      var opts = {
+        credentials: "include",
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "application/json",
+        },
+      };
+
+      fetch(url, opts)
+        .then((res) => res.blob())
+        .then((image) => {
+          var outside = URL.createObjectURL(image);
+          this.$refs.thumb.setAttribute("src", outside);
+          this.$refs.thumb.classList.remove("ion-hide");
+        });
+    }
+  },
   methods: {
     pos(item) {
       if (item.text == "test") return "left";
@@ -176,6 +201,11 @@ export default {
   flex-direction: column;
 }
 
+.bubble .image {
+  max-height: 600px;
+  border: 1px solid #444;
+}
+
 .bubble .bubble-content .top {
   justify-content: stretch !important;
   display: flex;
@@ -191,7 +221,9 @@ export default {
   overflow: hidden;
   flex: 10;
 }
-
+.bubble .text {
+  white-space: pre;
+}
 .bubble .bubble-content .top .menu {
   font-size: 14px;
   cursor: pointer;

@@ -1,12 +1,23 @@
 <template>
-  <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
+  <form
+    ref="form"
+    id="bottom-input"
+    class="ion-padding"
+    @submit.prevent="validate"
+  >
     <ion-toolbar>
-      <ion-input placeholder="NEW ITEM" v-model="form.title"></ion-input>
+      <ion-input
+        placeholder="NEW ITEM"
+        name="title"
+        v-model="title"
+        type="text"
+        rules="required"
+      ></ion-input>
       <ion-buttons slot="end">
         <ion-button @click="stopCreating">
           <ion-icon :icon="close" size="medium"></ion-icon>
         </ion-button>
-        <ion-button :disabled="saveDisabled" @click="submit">
+        <ion-button :disabled="sendDisabled" type="submit">
           <ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -28,10 +39,11 @@ import {
 } from "@ionic/vue";
 
 import { camera, send, close } from "ionicons/icons";
+import Form from "@/mixins/Form";
 import Data from "@/mixins/Data";
 export default {
   emits: ["save-item"],
-  mixins: [Data],
+  mixins: [Form, Data],
   components: {
     IonList,
     IonItem,
@@ -45,18 +57,24 @@ export default {
   },
   data() {
     return {
+      submitting: false,
       input: null,
       camera,
       send,
       close,
-      form: {
-        title: "",
-      },
+      title: "",
     };
   },
+  mounted() {
+    //setTimeout(() => {
+    const node = document.querySelector("#content-area");
+    node.scrollToBottom();
+    console.log(333, node);
+    //}, 1000);
+  },
   computed: {
-    saveDisabled() {
-      return !this.form.title;
+    sendDisabled() {
+      return this.disabled || !this.title;
     },
   },
   watch: {
@@ -79,13 +97,19 @@ export default {
         { _id: this.objectId(), comments: [] },
         this.form
       );
-      this.$store
+      return this.$store
         .dispatch("addItem", { listId: this.listId(), item })
         .then((res) => {
-          this.setFocus();
+          this.resetForm();
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 0);
         })
         .catch((err) => {
           this.showError(err);
+        })
+        .finally(() => {
+          this.setFocus();
         });
     },
   },

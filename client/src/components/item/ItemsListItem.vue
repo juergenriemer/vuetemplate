@@ -1,6 +1,11 @@
 <template>
   <div>
-    <ion-item item-root button="true" :class="commenting ? 'comment-mode' : ''">
+    <ion-item
+      lines="full"
+      detail="false"
+      button="true"
+      :class="commenting ? 'comment-mode' : ''"
+    >
       <IonAvatar
         @click="checkItem(item)"
         class="checkbox"
@@ -13,15 +18,7 @@
       </ion-label>
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
-        <ion-button
-          v-if="item.comments.length"
-          @click="
-            $emit('change-mode', {
-              mode: 'comment',
-              item: commenting ? null : item,
-            })
-          "
-        >
+        <ion-button @click="loadComments(item._id)" v-if="item.comments.length">
           <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
         </ion-button>
         <ion-button @click="showMenu">
@@ -30,11 +27,7 @@
       </ion-buttons>
     </ion-item>
     <ion-item v-if="commenting">
-      <comments-list
-        @delete-item="deleteComment"
-        :items="item.comments"
-        :itemId="item._id"
-      ></comments-list>
+      <comments-list :items="item.comments" :itemId="item._id"></comments-list>
     </ion-item>
   </div>
 </template>
@@ -134,6 +127,16 @@ export default {
           break;
       }
     },
+    loadComments(itemId) {
+      const route = `/app/comments/${this.listId()}/${itemId}`;
+      this.nav(route);
+    },
+    xxxxxxxxxxxxxxxxxxtoggleComment() {
+      this.$emit("change-mode", {
+        mode: "comment",
+        item: this.commenting ? null : this.item,
+      });
+    },
     checkItem() {
       this.item.done = !this.item.done;
       this.$store
@@ -142,7 +145,6 @@ export default {
           itemId: this.item._id,
           item: this.item,
         })
-        .then((res) => {})
         .catch((err) => {
           this.showError(err);
         });
@@ -165,7 +167,6 @@ export default {
                     listId: this.listId(),
                     itemId: this.item._id,
                   })
-                  .then((res) => res)
                   .catch((err) => this.showError(err));
               },
             },
@@ -179,7 +180,7 @@ export default {
 <style>
 .comment-mode {
   --background: primary;
-  background: goldenrod;
+  background: #c0c0c0;
 }
 .jdicon {
   padding: 4px;

@@ -5,5 +5,6 @@ router.use("/share", require("./share"));
 router.use("/comment", require("./comment"));
 router.use("/item", require("./item"));
 router.use("/list", require("./list"));
+router.use("/file", require("./file"));
 
 module.exports = router;

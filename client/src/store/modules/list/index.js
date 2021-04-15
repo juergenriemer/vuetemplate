@@ -3,6 +3,7 @@ import list from "@/store/modules/list/list";
 import item from "@/store/modules/list/item";
 import share from "@/store/modules/list/share";
 import comment from "@/store/modules/list/comment";
+import file from "@/store/modules/list/file";
 
 //var members = {};
 const state = {
@@ -48,6 +49,7 @@ const actions = {
   ...item.actions,
   ...share.actions,
   ...comment.actions,
+  ...file.actions,
 };
 
 const mutations = {

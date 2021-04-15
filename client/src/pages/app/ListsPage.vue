@@ -99,8 +99,12 @@ export default {
         });
     },
     menuAction(evt) {
+      console.log(evt.target);
       this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
+      const node = evt.target.hasAttribute("data")
+        ? node
+        : evt.target.closest("[data]");
+      const action = node.getAttribute("data");
       switch (action) {
         case "logout":
           this.$store

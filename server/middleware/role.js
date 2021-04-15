@@ -4,7 +4,7 @@ const ApiError = require("../middleware/ApiError");
 
 module.exports = (role) => {
   return (req, res, next) => {
-    const listId = req.params && req.params.listId;
+    const listId = req.params ? req.params.listId : null;
     const userId = req.userId;
     let roles = ["owner"];
     if (role == "admin") roles.push(...["admin"]);

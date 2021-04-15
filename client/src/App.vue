@@ -61,16 +61,23 @@ export default defineComponent({
   padding-left: 10px;
 }
 
-#bottom-input {
+form#bottom-input,
+form#bottom-input ion-toolbar {
   background: #efefef;
-  border-top: 1px #c0c0c0 solid;
-  padding: 10px;
-}
-#bottom-input ion-toolbar {
-  --min-height: 30px;
+  display: flex;
+  --min-height: 30px !important;
   --background: #efefef;
 }
-#bottom-input ion-toolbar input {
+form#bottom-input ion-buttons {
+  margin-bottom: 3px;
+  align-self: flex-end;
+}
+form#bottom-input ion-fab {
+  align-self: flex-end;
+  margin-bottom: -8px;
+}
+
+form#bottom-input input {
   background: white;
   border-radius: 5px;
 }
@@ -80,14 +87,16 @@ export default defineComponent({
   max-height: 90px;
   overflow: auto;
 }
-
-.scroller::-webkit-scrollbar {
+::-webkit-scrollbar {
+  background-color: #696969;
   width: 8px;
+  height: 8px;
 }
-.scroller::-webkit-scrollbar-thumb {
+/* https://npm.io/package/ion-custom-scrollbar */
+::-webkit-scrollbar-thumb {
   background: #c0c0c0;
 }
-.scroller::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: #e0e0e0;
 }
 </style>

@@ -2,45 +2,72 @@ export default {
   data: () => ({
     errors: {},
     status: "idle",
+    sending: false,
+    nodes: null,
+    fields: null,
   }),
   computed: {
     disabled() {
-      return this.status == "submitting";
-    },
-    submitting() {
-      return this.status == "submitting";
-    },
-    active() {
-      return this.status == "sending" || this.status == "idle";
+      return this.sending == true;
     },
   },
   methods: {
+    getFields() {
+      if (this.fields) return this.fields;
+      this.fields = {};
+      this.$refs.form.querySelectorAll(`[name]`).forEach((node) => {
+        let rules = node.closest("[rules]")
+          ? node
+              .closest("[rules]")
+              .getAttribute("rules")
+              .split(",")
+          : null;
+        this.fields[node.name] = {
+          node,
+          rules,
+        };
+      });
+      return this.fields;
+    },
     isValid() {
       let valid = true;
-      for (let field in this.form) {
-        const val = this.form[field];
-        let node = this.$el.querySelector(`[name='${field}']`);
-        let rules = node ? node.closest("[rules]") : null;
-        if (node && rules) {
-          this.errors[field] = "";
-          rules
-            .getAttribute("rules")
-            .split(",")
-            .forEach((rule) => {
-              if (!this.errors[field]) {
-                let result = this.validationRule(rule, val);
-                if (result !== true) {
-                  this.errors[field] = result;
-                  valid = false;
-                }
+      this.errors = [];
+      let fields = this.getFields();
+      for (let name in fields) {
+        let field = fields[name];
+        if (field.rules) {
+          field.rules.forEach((rule) => {
+            if (!this.errors[name]) {
+              let val = field.node.value;
+              let result = this.validationRule(rule, val);
+              if (result !== true) {
+                this.errors[name] = result;
+                valid = false;
               }
-            });
+            } else valid = false;
+          });
         }
       }
       return valid;
     },
+    getFormData() {
+      let data = {};
+      let fields = this.getFields();
+      for (let name in fields) {
+        data[name] = fields[name].node.value;
+      }
+      return data;
+    },
     validate() {
-      if (this.isValid()) this.submit();
+      if (this.isValid() && !this.sending) {
+        this.sending = true;
+        setTimeout(() => {
+          this.form = this.getFormData();
+          this.submit().finally(() => {
+            this.sending = false;
+          });
+        }, 0);
+      }
     },
     validationRule(rule, val, add) {
       if (/^equal:/.test(rule)) {
@@ -69,6 +96,9 @@ export default {
           );
           break;
       }
+    },
+    resetForm() {
+      this.$refs.form.reset();
     },
   },
   /*

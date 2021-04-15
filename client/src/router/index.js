@@ -86,6 +86,10 @@ const routes = self.isWeb
         component: () => import("@/pages/app/EditListPage.vue"),
       },
       {
+        path: "/app/comments/:id/:itemId",
+        component: () => import("@/pages/app/CommentsPage.vue"),
+      },
+      {
         path: "/user/login",
         component: Login,
       },
@@ -99,6 +103,7 @@ const routes = self.isWeb
       },
       {
         path: "/user/reset-password",
+        alias: "/app/reset-password",
         component: () => import("@/pages/user/ResetPassword.vue"),
       },
       {
@@ -107,6 +112,7 @@ const routes = self.isWeb
       },
       {
         path: "/user/approve-invites",
+        alias: "/app/approve-invites",
         component: () => import("@/pages/user/ApproveInvites.vue"),
       },
     ];

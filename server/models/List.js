@@ -4,7 +4,16 @@ const CommentSchema = new mongoose.Schema(
   {
     text: {
       type: "String",
-      required: true,
+      required: function () {
+        return !this.imageFile;
+      },
+      xminlength: function () {
+        return this.imageFile ? 0 : 1;
+      },
+      maxlength: 1000,
+    },
+    imageFile: {
+      type: "String",
       minlength: 1,
       maxlength: 1000,
     },

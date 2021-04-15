@@ -4,14 +4,18 @@ base-layout(page-title="Login")
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
     .ion-padding
-      form(v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
+      form(
+        ref="form",
+        v-if="!showInfoSheet",
+        @submit.prevent="validate",
+        novalidate
+      )
         ion-list
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
               name="email",
               type="email",
-              v-model="form.email",
               rules="required,email",
               :disabled="disabled"
             )
@@ -21,7 +25,6 @@ base-layout(page-title="Login")
             ion-input(
               name="password",
               type="text",
-              v-model="form.password",
               rules="password",
               :disabled="disabled"
             )
@@ -102,17 +105,14 @@ export default {
   data: () => ({
     showInfoSheet: false,
     showIntro: true,
-    form: {
-      email: "juergen.riemer@gmail.com",
-      password: "Test!234",
-    },
   }),
-  computed: {
-    sending() {
-      return this.status == "sending";
-    },
-  },
+  computed: {},
   mounted() {
+    setTimeout(() => {
+      this.$refs.form.querySelector("[name='email']").value =
+        "juergen.riemer@gmail.com";
+      this.$refs.form.querySelector("[name='password']").value = "Test!234";
+    }, 1000);
     //  this.showIntro = this.firstTimer;
   },
   methods: {
@@ -131,7 +131,6 @@ export default {
       }, 1500);
     },
     async submit() {
-      this.status = "submitting";
       this.$store
         .dispatch("login", this.form)
         .then(() => {
@@ -141,6 +140,8 @@ export default {
             this.$root.$router.push({
               path: `/app/list`,
             });
+            this.status = "idle";
+            this.showInfoSheet = false;
           }, 500);
         })
         .catch((err) => {

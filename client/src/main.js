@@ -56,10 +56,14 @@ app.mixin({
     nav(path) {
       const x = `/${this.viewMode}${path}`;
       //router.push({ path: x });
-      console.log(this.navCtrl);
       console.log("path", path);
       router.push(path);
       //window.emitter.emit("navigate", data);
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        document.querySelector("#content-area").scrollToBottom();
+      });
     },
     showError(err) {
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");

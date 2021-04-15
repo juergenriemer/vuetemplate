@@ -20,5 +20,10 @@ export default {
     IonList,
     CommentsListItem,
   },
+  mounted() {},
+  updated() {},
+  methods: {
+    deleteItem() {},
+  },
 };
 </script>

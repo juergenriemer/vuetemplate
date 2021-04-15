@@ -31,7 +31,7 @@ const actions = {
 
   async deleteItem({ commit }, { listId, itemId }) {
     commit("deleteItem", { listId, itemId });
-    if (wire(arguments)) http().delete(`${root}/${listId}/${itemId}`);
+    if (wire(arguments)) return http().delete(`${root}/${listId}/${itemId}`);
   },
 };
 

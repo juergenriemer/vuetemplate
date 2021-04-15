@@ -16,13 +16,15 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-      <slot name="content" />
+    <ion-content
+      id="content-area"
+      class="scroller"
+      style="--offset-bottom: 58px"
+    >
+      <slot class="scroller" name="content" />
     </ion-content>
     <IonFooter v-if="$slots.footer">
-      <IonToolbar>
-        <slot name="footer" />
-      </IonToolbar>
+      <slot name="footer" />
     </IonFooter>
   </ion-page>
 </template>
@@ -67,7 +69,7 @@ export default {
   },
   methods: {
     back(path) {
-      let link = `/app/list`;
+      let link = path || `/app/list`;
       if (self.isWeb) {
         const listId = this.$route.params.id;
         if (listId) link = `/app/items/${listId}`;
