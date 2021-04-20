@@ -94,6 +94,7 @@ const mutations = {
   logout: (state) => {
     localStorage.removeItem("token");
     sessionStorage.removeItem("csrf");
+    window.initialDataLoad = false;
     var mydate = new Date();
     mydate.setTime(mydate.getTime() - 1);
     document.cookie = "_csrf=; expires=" + mydate.toGMTString();

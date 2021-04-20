@@ -7,7 +7,74 @@ const root = "/list";
 const getters = {};
 
 const actions = {
+  async synchronize({ commit, rootState }, { localLists }) {
+    return http()
+      .get(`${root}`)
+      .then((res) => {
+        let actions = [];
+        const offlineSince = localStorage.getItem("offline-since");
+        const server = [...res.data.lists];
+        let local = [...rootState.list.lists];
+        //local.forEach((lst) => console.log(lst.title, lst._id));
+        //server.forEach((lst) => console.log(lst.title, lst._id));
+        const lstNew = local.filter((lst) => /^id/.test(lst._id));
+        local = local.filter((lst) => !/^id/.test(lst._id));
+        lstNew.forEach((list) =>
+          actions.push({
+            type: "add-list",
+            list,
+          })
+        );
+        local.forEach((lst) => {
+          let itmNew = lst.items.filter((itm) => /^id/.test(itm._id));
+          if (itmNew.length) {
+            lst.items = lst.items.filter((itm) => !/^id/.test(itm._id));
+            itmNew.forEach((item) =>
+              // check if list still exists on server
+              // report.push( list no longer exists )
+              actions.push({ type: "add-item", listId: lst._id, item })
+            );
+          }
+          lst.items.forEach((itm) => {
+            let cmtNew = itm.comments.filter((cmt) => /^id/.test(cmt._id));
+            if (cmtNew.length) {
+              cmtNew.forEach((comment) => {
+                // check if list and/or item still exists on server
+                actions.push({
+                  type: "add-comment",
+                  listId: lst._id,
+                  itemId: itm._id,
+                  comment,
+                });
+              });
+            }
+          });
+        });
+        const localIds = local.map((lst) => lst._id);
+        console.log(offlineSince);
+        const lstDel = server.filter(
+          (lst) =>
+            new Date(lst.updatedAt) < new Date(offlineSince) &&
+            !localIds.includes(lst._id)
+        );
+        console.log("del", lstDel);
+        console.log("actions", actions);
+        return res;
+      });
+  },
+
   async addList({ commit, rootState }, { list }) {
+    if (wire(arguments))
+      return http()
+        .post(`${root}`, list)
+        .then((res) => {
+          commit("addList", { list: res.data.list });
+          return res;
+        });
+    else commit("addList", { list });
+  },
+
+  async xxxxxxxxxxxxxxxaddList({ commit, rootState }, { list }) {
     commit("addList", { list });
     if (wire(arguments))
       return http()
@@ -23,13 +90,25 @@ const actions = {
   },
 
   async updateList({ commit }, { listId, list }) {
-    commit("updateList", { listId, list });
-    if (wire(arguments)) return http().put(`/list/${listId}`, list);
+    if (wire(arguments))
+      return http()
+        .put(`/list/${listId}`, list)
+        .then((res) => {
+          commit("updateList", { listId, list });
+          return res;
+        });
+    else commit("updateList", { listId, list });
   },
 
   async deleteList({ commit }, { listId }) {
-    commit("deleteList", { listId });
-    if (wire(arguments)) return http().delete(`${root}/${listId}`);
+    if (wire(arguments))
+      return http()
+        .delete(`${root}/${listId}`)
+        .then((res) => {
+          commit("deleteList", { listId });
+          return res;
+        });
+    else commit("deleteList", { listId });
   },
 
   async fetchLists({ commit }) {
@@ -67,6 +146,10 @@ const actions = {
 
 const mutations = {
   clearLists: (state) => (state.lists = []),
+  synchronize: (state, { lists }) => {
+    //console.log("server", lists);
+    //console.log("local", state.lists);
+  },
   fetchLists: (state, { lists }) => (state.lists = lists),
   addList: (state, { list }) => {
     state.lists.unshift(list);

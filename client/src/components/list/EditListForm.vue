@@ -62,7 +62,8 @@ export default {
         .dispatch("updateList", { listId: list._id, list })
         .then(() => {
           this.nav(`/app/items/${this.list._id}`);
-        });
+        })
+        .catch((err) => this.showError(err));
     },
   },
 };

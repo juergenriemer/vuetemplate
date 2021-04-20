@@ -26,10 +26,6 @@ import "@ionic/vue/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-import mitt from "mitt";
-window.emitter = mitt();
-window.emitter.on("navigate", (data) => {});
-
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
@@ -70,7 +66,7 @@ app.mixin({
       const x = `/${this.viewMode}${path}`;
       //router.push({ path: x });
       router.push(path);
-      //window.emitter.emit("navigate", data);
+      //window.bus.emit("navigate", data);
     },
     scrollToBottom() {
       this.$nextTick(() => {

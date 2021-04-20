@@ -63,14 +63,15 @@ export default {
         this.$store.getters.user
       );
       let list = Object.assign(
-        { _id: this.objectId(), users: [creator] },
+        { _id: this.objectId(), createdAt: new Date(), users: [creator] },
         this.form
       );
       this.$store
         .dispatch("addList", { list })
-        .then(() => {
+        .then((res) => {
+          const listId = res ? res.data.list._id : list._id;
           this.resetForm();
-          this.nav(`/app/items/${list._id}`);
+          this.nav(`/app/items/${listId}`);
         })
         .catch((err) => {
           this.showError(err);

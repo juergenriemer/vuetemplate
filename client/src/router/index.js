@@ -10,14 +10,23 @@ import WebView from "../views/Web.vue";
 const View = self.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
-  let noData = !(store && store.getters && store.getters.userId);
-  if (noData) {
+  const loadInitialData =
+    window.appConnectionMode == "online" && window.initialDataLoad == false;
+  next();
+  return;
+  if (loadInitialData) {
     store
       .dispatch("info")
       .then(() => {
+        console.warn("!!!!!!!!!!!!!!!!!!!!!LOOOOOOOADED");
         return store.dispatch("fetchLists");
       })
       .then((res) => {
+        window.initialDataLoad = true;
+        next();
+      })
+      .catch((err) => {
+        console.warn(err);
         next();
       });
   } else {
@@ -41,16 +50,10 @@ const routes = self.isWeb
       {
         path: "/app/:page",
         component: View,
-        beforeEnter: (to, from, next) => {
-          ensureData(to, next);
-        },
       },
       {
         path: "/app/:page/:id",
         component: View,
-        beforeEnter: (to, from, next) => {
-          ensureData(to, next);
-        },
       },
     ]
   : [
@@ -61,9 +64,6 @@ const routes = self.isWeb
       {
         path: "/app/list",
         component: ListsPage,
-        beforeEnter: (to, from, next) => {
-          ensureData(to, next);
-        },
       },
       {
         path: "/app/items/:id",
@@ -133,5 +133,8 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
+router.beforeEach((to, from, next) => {
+  if (to.path.substring(1, 4) == "app") ensureData(to, next);
+  else next();
+});
 export default router;

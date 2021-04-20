@@ -1,6 +1,9 @@
 import axios from "axios";
 import appConfig from "../config.js";
-import { bus } from "@/main";
+//import { bus } from "@/main";
+import mitt from "mitt";
+window.bus = mitt();
+
 window.csrf = null;
 
 const http = axios.create({
@@ -48,12 +51,24 @@ http.interceptors.request.use(
   }
 );
 
+const setNetworkStatus = (status) => {
+  if (window.networkStatus !== status) {
+    window.networkStatus = status;
+    window.bus.emit("network-status", status);
+  }
+};
+
 http.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    setNetworkStatus("online");
+    return res;
+  },
   (err) => {
     if (/Network Error/.test(err)) {
-      bus.$emit("showOffline", true);
+      setNetworkStatus("offline");
       return Promise.reject({ status: 0, message: "network-error" });
+    } else {
+      setNetworkStatus("online");
     }
     const status = err && err.response && err.response.status;
     if (status == 401) {

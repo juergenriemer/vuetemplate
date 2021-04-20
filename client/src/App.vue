@@ -12,6 +12,9 @@
 // npx cap open android
 
 window.isWeb = false;
+window.networkStatus = "unknown";
+window.initialDataLoad = false;
+window.appConnectionMode = "online";
 
 window.onerror = (a, b, c) => {
   alert(a);
