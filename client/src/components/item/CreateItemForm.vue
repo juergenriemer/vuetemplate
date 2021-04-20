@@ -42,6 +42,7 @@ import { camera, send, close } from "ionicons/icons";
 import Form from "@/mixins/Form";
 import Data from "@/mixins/Data";
 export default {
+  props: ["listId"],
   emits: ["save-item"],
   mixins: [Form, Data],
   components: {
@@ -64,13 +65,6 @@ export default {
       close,
       title: "",
     };
-  },
-  mounted() {
-    //setTimeout(() => {
-    const node = document.querySelector("#content-area");
-    node.scrollToBottom();
-    console.log(333, node);
-    //}, 1000);
   },
   computed: {
     sendDisabled() {
@@ -98,7 +92,7 @@ export default {
         this.form
       );
       return this.$store
-        .dispatch("addItem", { listId: this.listId(), item })
+        .dispatch("addItem", { listId: this.listId, item })
         .then((res) => {
           this.resetForm();
           setTimeout(() => {

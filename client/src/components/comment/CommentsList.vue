@@ -1,11 +1,12 @@
 <template lang="pug">
-.comments(v-if="items.length")
+.comments(v-if="comments")
   comments-list-item(
     @delete-item="deleteItem",
-    v-for="item in items",
-    :key="item._id",
+    v-for="comment in comments",
+    :key="comment._id",
+    :listId="listId",
     :item="item",
-    :itemId="itemId"
+    :comment="comment"
   )
 </template>
 
@@ -15,7 +16,7 @@ import CommentsListItem from "./CommentsListItem.vue";
 
 export default {
   emits: ["delete-item"],
-  props: ["items", "itemId"],
+  props: ["listId", "item", "comments"],
   components: {
     IonList,
     CommentsListItem,

@@ -1,12 +1,14 @@
 <template>
   <ion-list-header>Invite a friend</ion-list-header>
-  <form class="ion-padding" @submit.prevent="validate" novalidate>
+  <form ref="form" class="ion-padding" @submit.prevent="validate" novalidate>
     <ion-item>
       <ion-label position="floating">Email of friend</ion-label>
-      <ion-input type="text" required v-model="invitation.email" />
+      <ion-input type="text" :disabled="disabled" rules="email" name="email" />
     </ion-item>
-    <form-error :error="error"></form-error>
-    <ion-button type="validate" expand="block">INVITE</ion-button>
+    <form-error :error="errors.email"></form-error>
+    <ion-button type="submit" :disabled="disabled" expand="block"
+      >INVITE</ion-button
+    >
   </form>
 </template>
 
@@ -26,8 +28,8 @@ import Form from "@/mixins/Form";
 
 export default {
   emits: ["invite"],
+  props: ["listId", "error"],
   mixins: [Form],
-  props: ["error"],
   components: {
     FormError,
     IonListHeader,
@@ -39,16 +41,31 @@ export default {
     IonButton,
   },
   data() {
-    return {
-      invitation: {
-        email: "mordret@sms.at",
-      },
-    };
+    return {};
+  },
+  mounted() {
+    setTimeout(() => {
+      this.$refs.form.querySelector("[name='email']").value = "mordret@sms.at";
+    }, 1000);
+    //  this.showIntro = this.firstTimer;
   },
   methods: {
     submit() {
-      console.log("ooo");
-      this.$emit("invite", this.invitation.email);
+      const serverErrors = {
+        "user-already-member": "This user is already a member.",
+        "user-already-invited": "This user is already invited.",
+      };
+      return this.$store
+        .dispatch("invite", {
+          listId: this.listId,
+          email: this.form.email,
+          role: "user",
+        })
+        .catch((err) => {
+          if (err.message && serverErrors[err.message]) {
+            this.errors.email = serverErrors[err.message];
+          } else this.showError(err);
+        });
     },
   },
 };

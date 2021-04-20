@@ -1,10 +1,10 @@
 <template>
-  <base-layout :page-title="list.title" :link="link">
+  <base-layout :page-title="currentList.title" :link="link">
     <template v-slot:title>
-      <avatar size="large" :list-title="list.title"></avatar>
+      <avatar size="large" :list-title="currentList.title"></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="showMenu">
+      <ion-button @click="showMenu($event, menuData)">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
@@ -14,29 +14,26 @@
     </template>
     <template v-slot:content>
       <items-list
-        v-if="list"
-        :items="list.items"
+        v-if="currentList"
+        :listId="currentList._id"
+        :items="currentList.items"
         :reorderMode="reorderMode"
-        :itemInCommentMode="itemInCommentMode"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></items-list>
-      <div v-if="!list.items">loading</div>
+      <div v-if="!currentList">loading</div>
     </template>
     <template v-slot:footer>
       <create-item-form
-        v-if="!itemInEditMode && !itemInCommentMode"
+        :listId="currentList._id"
+        v-if="!itemInEditMode"
       ></create-item-form>
       <edit-item-form
         v-if="itemInEditMode"
+        :listId="currentList._id"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></edit-item-form>
-      <create-comment-form
-        v-if="itemInCommentMode"
-        :itemInCommentMode="itemInCommentMode"
-        @change-mode="changeMode"
-      ></create-comment-form>
     </template>
   </base-layout>
 </template>
@@ -50,23 +47,23 @@ import {
   IonButton,
   IonIcon,
 } from "@ionic/vue";
-import { popoverController } from "@ionic/core";
 import { ellipsisVertical } from "ionicons/icons";
 
 import ItemsList from "@/components/item/ItemsList.vue";
 import CreateItemForm from "@/components/item/CreateItemForm.vue";
 import EditItemForm from "@/components/item/EditItemForm.vue";
-import CreateCommentForm from "@/components/comment/CreateCommentForm.vue";
 import Avatar from "@/components/base/Avatar.vue";
-import AllItemsMenu from "@/components/item/AllItemsMenu.vue";
+import MenuComponent from "@/components/item/AllItemsMenu.vue";
 
+import Menu from "@/mixins/Menu";
 export default {
+  mixins: [Menu],
   components: {
     Avatar,
     ItemsList,
     CreateItemForm,
     EditItemForm,
-    CreateCommentForm,
+    MenuComponent,
     IonContent,
     IonFooter,
     IonToolbar,
@@ -90,41 +87,21 @@ export default {
     link() {
       return self.isWeb ? "" : "/app/list";
     },
-    list() {
-      return this.$store.getters.listById(this.$route.params.id);
+    menuData() {
+      return { reorderMode: this.reorderMode, toggleMode: this.toggleMode };
     },
   },
   methods: {
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: AllItemsMenu,
-          componentProps: {
-            list: this.list,
-            reorderMode: this.reorderMode,
-            toggleMode: this.toggleMode,
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
+    menuAction(action) {
       switch (action) {
         case "reorderMode":
           this.reorderMode = !this.reorderMode;
           break;
         case "toggleMode":
+          this.toggleMode = !this.toggleMode;
           this.$store
             .dispatch("toggleList", {
-              listId: this.listId(),
+              listId: this.currentList._id,
               done: this.toggleMode,
             })
             .catch((err) => this.showError(err));

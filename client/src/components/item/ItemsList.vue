@@ -8,8 +8,8 @@
         @change-mode="changeMode"
         v-for="item in items"
         :key="item._id"
+        :listId="listId"
         :item="item"
-        :itemInCommentMode="itemInCommentMode"
         :itemInEditMode="itemInEditMode"
         :reorderMode="reorderMode"
       ></items-list-item>
@@ -23,7 +23,7 @@ import ItemsListItem from "./ItemsListItem.vue";
 
 export default {
   emits: ["change-mode"],
-  props: ["items", "reorderMode", "itemInEditMode", "itemInCommentMode"],
+  props: ["listId", "items", "reorderMode", "itemInEditMode"],
   components: {
     IonList,
     IonReorderGroup,
@@ -36,7 +36,7 @@ export default {
     async reorder(evt) {
       const { from, to } = evt.detail;
       this.$store
-        .dispatch("reorderList", { listId: this.listId(), from, to })
+        .dispatch("reorderList", { listId: this.listId, from, to })
         .then((res) => {
           evt.detail.complete();
         })

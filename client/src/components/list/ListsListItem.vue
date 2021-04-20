@@ -5,7 +5,7 @@
       {{ list.title }}
     </ion-label>
     <ion-buttons slot="end">
-      <ion-button @click="showMenu($event)">
+      <ion-button @click="showMenu($event, { list })">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
@@ -19,12 +19,14 @@
 <script>
 import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
 import { ellipsisVertical } from "ionicons/icons";
-import { popoverController, alertController } from "@ionic/core";
+import { alertController } from "@ionic/core";
 import Avatar from "@/components/base/Avatar.vue";
-import ListMenu from "@/components/list/ListMenu.vue";
+import MenuComponent from "@/components/list/ListMenu.vue";
+import Menu from "@/mixins/Menu";
 
 export default {
   props: ["list"],
+  mixins: [Menu],
   data() {
     return {
       ellipsisVertical,
@@ -32,6 +34,7 @@ export default {
   },
   components: {
     Avatar,
+    MenuComponent,
     IonButton,
     IonButtons,
     IonIcon,
@@ -39,46 +42,47 @@ export default {
     IonLabel,
   },
   methods: {
-    async showMenu(evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-      popoverController
-        .create({
-          component: ListMenu,
-          componentProps: {
-            list: this.list,
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
-      const listId = this.list._id;
+    menuAction(action) {
       switch (action) {
         case "delete":
           this.deleteList();
           break;
+        case "leave":
+          this.leaveList();
+          break;
         case "info":
-          this.nav(`/app/info/${listId}`);
+          this.nav(`/app/info/${this.list._id}`);
           break;
         case "members":
-          this.nav(`/app/members/${listId}`);
+          this.nav(`/app/members/${this.list._id}`);
           break;
         case "edit":
-          this.nav(`/app/edit/${listId}`);
+          this.nav(`/app/edit/${this.list._id}`);
           break;
       }
     },
-    listSettings(listId) {
-      alert("settings for " + listId);
+    async leaveList() {
+      alertController
+        .create({
+          header: "Leave list?",
+          message: "Are you sure you want to leave this list?",
+          buttons: [
+            {
+              text: "Cancel",
+              role: "cancel",
+            },
+            {
+              text: "OK",
+              handler: () => {
+                this.$store
+                  .dispatch("leaveList", { listId: this.list._id })
+                  .then((res) => res)
+                  .catch((err) => this.showError(err));
+              },
+            },
+          ],
+        })
+        .then((res) => res.present());
     },
     async deleteList() {
       alertController

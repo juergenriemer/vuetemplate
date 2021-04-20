@@ -39,11 +39,20 @@ app.component("base-layout", BaseLayout);
 
 app.mixin({
   computed: {
-    xxxlistId() {
-      let route = router.currentRoute._value;
-      return route && route.params && route.params.listId
-        ? route.params.listId
-        : null;
+    currentList() {
+      const listId = this.$route.params.id;
+      if (listId) {
+        return this.$store.getters.list(listId);
+      }
+      return {};
+    },
+    currentItem() {
+      const listId = this.$route.params.id;
+      const itemId = this.$route.params.itemId;
+      if (listId && itemId) {
+        return this.$store.getters.item(listId, itemId);
+      }
+      return {};
     },
     viewMode() {
       return /^\/mob\//.test(router.currentRoute._value.path) ? "mob" : "web";
@@ -53,10 +62,13 @@ app.mixin({
     //this.ensureData();
   },
   methods: {
+    test2() {
+      const list = this.$store.getters.list(this.$route.params.id);
+      return list.title;
+    },
     nav(path) {
       const x = `/${this.viewMode}${path}`;
       //router.push({ path: x });
-      console.log("path", path);
       router.push(path);
       //window.emitter.emit("navigate", data);
     },
@@ -69,9 +81,6 @@ app.mixin({
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
       console.warn(err);
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
-    },
-    listId() {
-      return this.$route.params.id;
     },
     /*
     ensureData() {

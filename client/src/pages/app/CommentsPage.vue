@@ -1,29 +1,26 @@
 <template>
-  <base-layout :page-title="title" :link="link">
+  <base-layout :page-title="currentItem.title" :link="link">
     <template v-slot:title>
-      <avatar size="large" :list-title="title"></avatar>
+      <avatar size="large" :list-title="currentList.title" />
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="showMenu">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="medium"
-        ></ion-icon>
-      </ion-button>
+      <div class="header-icon">
+        <ion-icon :icon="chatboxEllipses" size="large"></ion-icon>
+      </div>
     </template>
     <template v-slot:content>
       <comments-list
-        v-if="item"
-        :items="item.comments"
-        :itemId="item._id"
+        v-if="currentItem"
+        :listId="currentList._id"
+        :item="currentItem"
+        :comments="currentItem.comments"
         :itemInEditMode="itemInEditMode"
       ></comments-list>
-      <div v-if="!list.items">loading</div>
     </template>
     <template v-slot:footer>
       <create-comment-form
-        :item="item"
+        :listId="currentList._id"
+        :item="currentItem"
         @change-mode="changeMode"
       ></create-comment-form>
     </template>
@@ -40,8 +37,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { popoverController } from "@ionic/core";
-import { ellipsisVertical } from "ionicons/icons";
-
+import { ellipsisVertical, chatboxEllipses } from "ionicons/icons";
 import CommentsList from "@/components/comment/CommentsList.vue";
 import CreateCommentForm from "@/components/comment/CreateCommentForm.vue";
 import Avatar from "@/components/base/Avatar.vue";
@@ -61,6 +57,7 @@ export default {
   data() {
     return {
       ellipsisVertical,
+      chatboxEllipses,
       itemInEditMode: null,
       itemInCommentMode: null,
     };
@@ -68,64 +65,11 @@ export default {
   computed: {
     // REF: move to baselayout.. same in ResetPassword.vue
     link() {
-      const lnk = self.isWeb ? "" : `/app/items/${this.listId()}`;
+      const lnk = self.isWeb ? "" : `/app/items/${this.currentList._id}`;
       return lnk;
-    },
-    list() {
-      return this.$route.params.id
-        ? this.$store.getters.listById(this.$route.params.id)
-        : null;
-    },
-    item() {
-      console.log(">>>>>>>>>>>>>>", this.$route.params);
-      const itemId = this.$route.params.itemId;
-      console.log(">>>>>>>>>>>>>>", itemId);
-      return itemId
-        ? this.list.items.find((itm) => itm._id == this.$route.params.itemId)
-        : null;
-    },
-    title() {
-      return this.item ? this.item.title : "";
     },
   },
   methods: {
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: AllItemsMenu,
-          componentProps: {
-            list: this.list,
-            reorderMode: this.reorderMode,
-            toggleMode: this.toggleMode,
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
-      switch (action) {
-        case "reorderMode":
-          this.reorderMode = !this.reorderMode;
-          break;
-        case "toggleMode":
-          this.$store
-            .dispatch("toggleList", {
-              listId: this.listId(),
-              done: this.toggleMode,
-            })
-            .catch((err) => this.showError(err));
-
-          break;
-      }
-    },
     changeMode({ mode, item }) {
       this.itemInEditMode = null;
       this.itemInCommentMode = null;

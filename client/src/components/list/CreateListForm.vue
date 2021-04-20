@@ -66,8 +66,6 @@ export default {
         { _id: this.objectId(), users: [creator] },
         this.form
       );
-      console.log(this.form);
-      return;
       this.$store
         .dispatch("addList", { list })
         .then(() => {

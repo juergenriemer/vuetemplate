@@ -35,6 +35,11 @@ const actions = {
       return http().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
   },
 
+  async leaveList({ commit }, { listId }) {
+    commit("leaveList", { listId });
+    if (wire(arguments)) return http().put(`${root}/leaveList/${listId}`);
+  },
+
   async uninvite({ commit }, { listId, email }) {
     if (!wire(arguments)) commit("uninvite", { listId, email });
     else
@@ -74,6 +79,9 @@ const mutations = {
   },
   approveInvites: (state, { lists }) => {
     state.lists = state.lists.concat(lists);
+  },
+  leaveList: (state, { listId }) => {
+    state.lists = state.lists.filter((lst) => lst._id != listId);
   },
   invite: (state, { listId, invitee }) => {
     const list = state.lists.find((list) => list._id == listId);

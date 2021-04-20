@@ -1,12 +1,12 @@
 <template>
-  <form class="ion-padding" @submit.prevent="validate">
+  <form ref="form" class="ion-padding" @submit.prevent="validate">
     <ion-list>
       <ion-item>
         <ion-label position="floating">Title</ion-label>
         <ion-input
           name="title"
           type="text"
-          v-model="form.title"
+          v-model="list.title"
           rules="required"
         />
       </ion-item>
@@ -16,11 +16,11 @@
         <ion-textarea
           name="description"
           rows="5"
-          v-model="form.description"
+          v-model="list.description"
         ></ion-textarea>
       </ion-item>
     </ion-list>
-    <ion-button :disabled="submitting" type="submit" expand="block"
+    <ion-button :disabled="disabled" type="submit" expand="block"
       >Save</ion-button
     >
   </form>
@@ -40,9 +40,8 @@ import {
 } from "@ionic/vue";
 
 export default {
-  props: ["form"],
+  props: ["list"],
   mixins: [Form],
-  emits: ["update-list"],
   components: {
     FormError,
     IonList,
@@ -58,7 +57,12 @@ export default {
   },
   methods: {
     submit() {
-      this.$emit("update-list", this.form);
+      const list = Object.assign(this.list, this.form);
+      return this.$store
+        .dispatch("updateList", { listId: list._id, list })
+        .then(() => {
+          this.nav(`/app/items/${this.list._id}`);
+        });
     },
   },
 };

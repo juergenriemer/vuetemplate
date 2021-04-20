@@ -1,33 +1,33 @@
 <template>
   <div>
+    <hr />
     <ion-item
+      style="--padding-bottom: 6px; --padding-top: 6px"
       lines="full"
       detail="false"
       button="true"
-      :class="commenting ? 'comment-mode' : ''"
     >
-      <IonAvatar
-        @click="checkItem(item)"
-        class="checkbox"
-        :class="item.done ? 'done' : ''"
-      >
-        <ion-icon title="USE CHECKMARK-CIRCLE" :icon="checkmark"></ion-icon>
-      </IonAvatar>
       <ion-label @dblclick="checkItem(item)" class="title">
         {{ item.title }}
       </ion-label>
+      <ion-buttons slot="start">
+        <ion-button
+          :class="item.done ? 'done2' : 'undone2'"
+          @click="checkItem(item._id)"
+        >
+          <ion-icon slot="icon-only" :icon="checkmark"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
         <ion-button @click="loadComments(item._id)" v-if="item.comments.length">
           <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
         </ion-button>
-        <ion-button @click="showMenu">
+        <ion-button @click="showMenu($event)">
           <ion-icon slot="icon-only" :icon="ellipsisVertical"></ion-icon>
         </ion-button>
       </ion-buttons>
-    </ion-item>
-    <ion-item v-if="commenting">
-      <comments-list :items="item.comments" :itemId="item._id"></comments-list>
     </ion-item>
   </div>
 </template>
@@ -48,32 +48,35 @@ import {
   chevronForward,
   ellipsisVertical,
   settings,
+  heart,
   chatboxEllipses,
   checkmark,
+  thumbsUp,
   trash,
   create,
 } from "ionicons/icons";
-import ItemMenu from "@/components/item/ItemMenu.vue";
-import CommentsList from "@/components/comment/CommentsList.vue";
+import MenuComponent from "@/components/item/ItemMenu.vue";
 import { alertController, popoverController } from "@ionic/core";
+import Menu from "@/mixins/Menu";
 export default {
-  props: ["item", "reorderMode", "itemInCommentMode"],
+  props: ["listId", "item", "reorderMode", "itemInCommentMode"],
   emits: ["change-mode"],
+  mixins: [Menu],
   data() {
     return {
-      commentMode: true,
-      menu: null,
       ellipsisVertical,
       chatboxEllipses,
       checkmark,
       chevronForward,
+      thumbsUp,
+      heart,
       trash,
       settings,
     };
   },
   components: {
-    CommentsList,
-    ItemMenu,
+    //   CommentsList,
+    MenuComponent,
     IonReorder,
     IonToolbar,
     IonAvatar,
@@ -84,64 +87,30 @@ export default {
     IonButton,
     IonPopover,
   },
-  computed: {
-    commenting() {
-      return (
-        this.itemInCommentMode && this.itemInCommentMode._id == this.item._id
-      );
-    },
-  },
   methods: {
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: ItemMenu,
-          componentProps: {
-            item: this.item,
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
-      let data;
+    menuAction(action) {
       switch (action) {
         case "delete-item":
           this.deleteItem();
           break;
         case "edit-mode":
-          data = { mode: "edit", item: this.item };
+          let data = { mode: "edit", item: this.item };
           this.$emit("change-mode", data);
           break;
-        case "comment-mode":
-          data = { mode: "comment", item: this.item };
-          this.$emit("change-mode", data);
+        case "comments":
+          this.loadComments(this.item._id);
           break;
       }
     },
     loadComments(itemId) {
-      const route = `/app/comments/${this.listId()}/${itemId}`;
+      const route = `/app/comments/${this.listId}/${itemId}`;
       this.nav(route);
-    },
-    xxxxxxxxxxxxxxxxxxtoggleComment() {
-      this.$emit("change-mode", {
-        mode: "comment",
-        item: this.commenting ? null : this.item,
-      });
     },
     checkItem() {
       this.item.done = !this.item.done;
       this.$store
         .dispatch("updateItem", {
-          listId: this.listId(),
+          listId: this.listId,
           itemId: this.item._id,
           item: this.item,
         })
@@ -164,7 +133,7 @@ export default {
               handler: () => {
                 this.$store
                   .dispatch("deleteItem", {
-                    listId: this.listId(),
+                    listId: this.listId,
                     itemId: this.item._id,
                   })
                   .catch((err) => this.showError(err));
@@ -186,6 +155,18 @@ export default {
   padding: 4px;
 }
 .title {
-  font-size: 1.3em;
+  margin-left: 0px;
+  padding: 0px;
+  font-size: 1.4em !important;
+}
+.undone2 {
+  color: #444;
+  --background: whitesmoke !important;
+  --ionicon-stroke-width: 90px;
+}
+.done2 {
+  color: #fff;
+  --background: green !important;
+  --ionicon-stroke-width: 90px;
 }
 </style>

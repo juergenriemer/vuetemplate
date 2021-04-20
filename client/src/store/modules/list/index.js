@@ -17,6 +17,15 @@ const getters = {
   listById: (state) => (listId) => {
     return state.lists.find((list) => list._id == listId) || [];
   },
+  /* replace above */
+  list: (state) => (listId) => {
+    return state.lists.find((list) => list._id == listId) || [];
+  },
+  item: (state) => (listId, itemId) => {
+    const list = state.lists.find((list) => list._id == listId);
+    const item = list.items.find((itm) => itm._id == itemId);
+    return item;
+  },
   userById: (state, getters) => (listId, userId) => {
     return getters.listById(listId).users.find((usr) => usr.userId == userId);
   },

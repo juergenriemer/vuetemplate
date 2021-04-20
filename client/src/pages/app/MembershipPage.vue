@@ -1,36 +1,35 @@
 <template lang="pug">
-base-layout(page-title="My Invitations", link="/app/list")
+base-layout(page-title="My Memberships", link="/app/list")
   template(v-slot:title)
     avatar(size="large", logo="Listle")
   template(v-slot:actions-end)
     .header-icon
-      ion-icon(:icon="mail", size="large")
+      ion-icon(:icon="people", size="large")
   template(v-slot:content)
-    .ion-padding(v-if="invites && invites.length")
+    .ion-padding(v-if="lists && lists.length")
       p
-        | You have been invited to join lists.
+        | You are member of below lists.
       p
-        | Select the ones you want and join.
+        | Select the ones you want to leave.
       form(@submit.prevent="submit", novalidate)
-        .ion-list
+        ion-list
           ion-item(
-            v-for="invite in invites",
-            :key="invite._id",
-            @click="approves[invite._id] = !approves[invite._id]",
+            v-for="list in lists",
+            :key="list._id",
+            @click="approves[list._id] = !approves[list._id]",
             button="true"
           )
-            avatar(size="medium", :list-title="invite.title")
-            ion-label.title {{ invite.title }}
+            avatar(size="medium", :list-title="list.title")
+            ion-label.title {{ list.title }}
             ion-checkbox(
               slot="end",
-              v-model="approves[invite._id]",
-              @click="approves[invite._id] = !approves[invite._id]"
+              v-model="approves[list._id]",
+              @click="approves[list._id] = !approves[list._id]"
             )
-          ion-button(type="submit", expand="block", :disabled="disabled") JOIN
-          button.hide(type="submit", :disabled="disabled")
+          ion-button(type="submit", expand="block", :disabled="disabled") LEAVE button.hide(type="submit", :disabled="disabled")
     .ion-padding(v-else)
       p
-        | There are no invitations at the moment.
+        | You have no memberships at the moment.
 </template>
 <script>
 import {
@@ -45,10 +44,11 @@ import {
 } from "@ionic/vue";
 import Avatar from "@/components/base/Avatar.vue";
 import Form from "@/mixins/Form";
-import { mail } from "ionicons/icons";
+import User from "@/mixins/User";
+import { people } from "ionicons/icons";
 
 export default {
-  mixins: [Form],
+  mixins: [Form, User],
   components: {
     Avatar,
     IonCheckbox,
@@ -60,10 +60,16 @@ export default {
     IonIcon,
     IonAvatar,
   },
+  computed: {
+    lists() {
+      return this.$store.getters.lists.filter(
+        (lst) => lst.users[0].userId != this.myId()
+      );
+    },
+  },
   data: () => ({
     approves: {},
-    invites: [],
-    mail,
+    people,
   }),
   created() {
     this.getListInvites();
@@ -75,8 +81,8 @@ export default {
         .then((res) => {
           this.status = "OK";
           if (res.data && res.data.lists) {
-            this.invites = res.data.lists;
-            this.approves = this.invites.reduce((map, list) => {
+            this.lists = res.data.lists;
+            this.approves = this.lists.reduce((map, list) => {
               map[list._id] = true;
               return map;
             }, {});
@@ -100,10 +106,10 @@ export default {
       this.$store
         .dispatch("approveInvites", {
           approves: this.approves,
-          lists: this.invites.filter((inv) => this.approves[inv._id]),
+          lists: this.lists.filter((inv) => this.approves[inv._id]),
         })
         .then((res) => {
-          this.nav(`/app/items${pathAdd}`);
+          this.nav(`/app/list${pathAdd}`);
         })
         .catch((err) => {
           alert(err);

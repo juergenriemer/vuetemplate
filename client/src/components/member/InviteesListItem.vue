@@ -5,7 +5,7 @@
       {{ item.name }}
     </ion-label>
     <ion-buttons slot="end">
-      <ion-button @click="showMenu">
+      <ion-button @click="showMenu($event)">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
@@ -18,14 +18,16 @@
 
 <script>
 import Avatar from "@/components/base/Avatar.vue";
-import InviteesMenu from "@/components/member/InviteesMenu.vue";
+import MenuComponent from "@/components/member/InviteesMenu.vue";
 import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
 import { ellipsisVertical } from "ionicons/icons";
-import { popoverController, alertController } from "@ionic/core";
+import { alertController } from "@ionic/core";
+import Menu from "@/mixins/Menu";
 
 export default {
   emits: ["uninvite"],
   props: ["item"],
+  mixins: [Menu],
   data() {
     return {
       ellipsisVertical,
@@ -33,6 +35,7 @@ export default {
   },
   components: {
     Avatar,
+    MenuComponent,
     IonButton,
     IonButtons,
     IonIcon,
@@ -40,23 +43,7 @@ export default {
     IonLabel,
   },
   methods: {
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: InviteesMenu,
-          componentProps: {
-            action: (evt) => this.menuAction(evt),
-          },
-          event: evt,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
+    menuAction(action) {
       switch (action) {
         case "uninvite":
           this.deleteList();

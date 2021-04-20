@@ -1,10 +1,15 @@
 <template>
-  <base-layout :page-title="list.title" link="/app/list">
+  <base-layout :page-title="currentList.title" link="/app/list">
     <template v-slot:title>
-      <avatar size="large" :list-title="list.title"></avatar>
+      <avatar size="large" :list-title="currentList.title" />
+    </template>
+    <template v-slot:actions-end>
+      <div class="header-icon">
+        <ion-icon :icon="shareSocial" size="large"></ion-icon>
+      </div>
     </template>
     <template v-slot:content>
-      <invitation-form :error="error" @invite="invite"></invitation-form>
+      <invitation-form :listId="currentList._id"></invitation-form>
       <invitees-list
         v-if="invitees && invitees.length"
         @uninvite="uninvite"
@@ -13,7 +18,7 @@
       <members-list
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
-        :items="list.users"
+        :items="currentList.users"
         admin="true"
       ></members-list>
     </template>
@@ -23,34 +28,35 @@
 <script>
 import Avatar from "@/components/base/Avatar.vue";
 import InvitationForm from "@/components/member/CreateInvitationForm.vue";
+import { IonIcon } from "@ionic/vue";
 import MembersList from "@/components/member/MembersList.vue";
 import InviteesList from "@/components/member/InviteesList.vue";
+import { shareSocial } from "ionicons/icons";
 
 export default {
   components: {
     InvitationForm,
     MembersList,
     InviteesList,
+    IonIcon,
     Avatar,
   },
   data() {
     return {
+      shareSocial,
       error: "",
     };
   },
   computed: {
-    list() {
-      return this.$store.getters.listById(this.$route.params.id) || [];
-    },
     invitees() {
-      return this.list ? this.list.invitees : null;
+      return this.currentList ? this.currentList.invitees : null;
     },
   },
   methods: {
     unshare(userId) {
       this.$store
         .dispatch("unshare", {
-          listId: this.list._id,
+          listId: this.currentList._id,
           userId,
         })
         .catch((err) => alert(err));
@@ -58,7 +64,7 @@ export default {
     toggleAdmin(userId, isAdmin) {
       this.$store
         .dispatch("toggleAdmin", {
-          listId: this.list._id,
+          listId: this.currentList._id,
           userId,
           isAdmin,
         })
@@ -67,28 +73,10 @@ export default {
     uninvite(email) {
       this.$store
         .dispatch("uninvite", {
-          listId: this.list._id,
+          listId: this.currentList._id,
           email,
         })
         .catch((err) => alert(err));
-    },
-    invite(email) {
-      console.log(email);
-      this.error = "";
-      const errors = {
-        "user-already-member": "This user is already a member.",
-        "user-already-invited": "This user is already invited.",
-      };
-      this.$store
-        .dispatch("invite", {
-          listId: this.list._id,
-          email,
-          role: "user",
-        })
-        .catch((err) => {
-          if (err.status && err.status == 422) this.error = errors[err.message];
-          else alert(err);
-        });
     },
   },
 };

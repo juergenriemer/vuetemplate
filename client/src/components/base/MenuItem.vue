@@ -1,22 +1,27 @@
 <template>
-  <ion-item button="true" :data="token">
+  <ion-item button="true" :data="data">
     <ion-label class="title">{{ label }}</ion-label>
-    <ion-icon :icon="icon" size="small"></ion-icon>
+    <ion-icon slot="end" class="menu-icon" :icon="icon" size="small"></ion-icon>
   </ion-item>
 </template>
 <script>
-import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
+import { IonIcon, IonItem, IonLabel } from "@ionic/vue";
 export default {
-  props: ["token", "label", "icon"],
+  props: ["data", "label", "icon"],
   components: {
-    IonButton,
-    IonButtons,
     IonIcon,
     IonItem,
     IonLabel,
   },
 };
 </script>
-<style>
+<style scoped>
+.title {
+  font-size: 1.2em !important;
+}
+.menu-icon {
+  color: #444;
+  zoom: 1.1;
+}
 </style>
 

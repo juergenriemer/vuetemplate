@@ -5,7 +5,7 @@
         style="cursor: pointer"
         size="large"
         :user-id="userId"
-        @click="showMenu"
+        @click="showMenu($event)"
       ></avatar>
     </template>
     <template v-slot:actions-end>
@@ -29,14 +29,15 @@ import { IonButtons, IonButton, IonIcon } from "@ionic/vue";
 import { add } from "ionicons/icons";
 import Avatar from "@/components/base/Avatar.vue";
 import ListsList from "@/components/list/ListsList.vue";
-import UserMenu from "@/components/user/UserMenu.vue";
-import { popoverController } from "@ionic/core";
+import MenuComponent from "@/components/user/UserMenu.vue";
+import Menu from "@/mixins/Menu";
 
 export default {
+  mixins: [Menu],
   components: {
     Avatar,
     ListsList,
-    UserMenu,
+    MenuComponent,
     IonButtons,
     IonButton,
     IonIcon,
@@ -55,7 +56,7 @@ export default {
     addLink() {
       const listId = this.$route.params.id;
       let link = `/app/add`;
-      link += listId ? `/${listId}` : ``;
+      link += this.currentList._id ? `/${this.currentList._id}` : ``;
       return link;
     },
   },
@@ -65,7 +66,7 @@ export default {
       this.$store
         .dispatch("deleteList", { listId })
         .then((res) => res)
-        .catch((err) => alert(err));
+        .catch((err) => this.showError(err));
     },
     async fetch() {
       // no longer needed if we call on app.js level!!!!!
@@ -74,37 +75,18 @@ export default {
         this.$store
           .dispatch("fetchLists")
           .then(() => {
-            if (this.listId) {
-              return this.sawList({ listId: this.listId, userId: this.userId });
+            if (this.currentList._id) {
+              return this.sawList({
+                listId: this.currentList._id,
+                userId: this.userId,
+              });
             }
           })
           .catch((err) => {
             this.showError(err);
           });
     },
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: UserMenu,
-          componentProps: {
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
-    },
-    menuAction(evt) {
-      console.log(evt.target);
-      this.menu.dismiss();
-      const node = evt.target.hasAttribute("data")
-        ? node
-        : evt.target.closest("[data]");
-      const action = node.getAttribute("data");
+    menuAction(action) {
       switch (action) {
         case "logout":
           this.$store
@@ -117,13 +99,18 @@ export default {
             });
           break;
         case "approve-invites":
-          const listId = this.$route.params.id;
+          const listId = this.currentList._id;
           var link = `/app/approve-invites`;
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;
         case "reset-password":
           var link = `/app/reset-password`;
+          link += listId ? `/${listId}` : ``;
+          this.nav(link);
+          break;
+        case "memberships":
+          var link = `/app/memberships`;
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;

@@ -40,7 +40,7 @@ import Form from "@/mixins/Form";
 import { send, close } from "ionicons/icons";
 export default {
   mixins: [Form],
-  props: ["itemInEditMode"],
+  props: ["listId", "itemInEditMode"],
   emits: ["update-item", "change-mode"],
   components: {
     IonList,
@@ -88,7 +88,7 @@ export default {
       let item = Object.assign(this.itemInEditMode, this.form);
       return this.$store
         .dispatch("updateItem", {
-          listId: this.listId(),
+          listId: this.listId,
           itemId: item._id,
           item,
         })

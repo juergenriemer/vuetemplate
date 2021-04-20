@@ -3,6 +3,7 @@ const List = mongoose.model("List");
 const ApiError = require("../middleware/ApiError");
 
 module.exports = (role) => {
+  // REF: add logging similar to the routes one
   return (req, res, next) => {
     const listId = req.params ? req.params.listId : null;
     const userId = req.userId;
@@ -32,7 +33,7 @@ module.exports = (role) => {
           next();
         }
         // Q have only one 401 error message?h
-        else throw new ApiError(401, "wrong-role");
+        else throw new ApiError(403, "wrong-role");
       })
       .catch((error) => {
         next(error);

@@ -173,6 +173,42 @@ router.post(
       .catch((error) => res.status(500).json(error));
   }
 );
+//
+// leave list as member
+router.put(
+  "/leaveList/:listId",
+  passport.authenticate("jwt", { session: false }),
+  validateIds,
+  userInfo,
+  role("user"),
+  (req, res, next) => {
+    const { listId } = req.params;
+    let log = `LEAVE_LIST(${JSON.stringify(req.params)})::`;
+    const listUser = req.list.users.find((usr) => usr.userId == req.userId);
+    console.log(listUser);
+    if (listUser.role == "owner") throw new ApiError(500, "owner-cannot-leave");
+    Promise.resolve()
+      .then(() => {
+        log += " > delete_user";
+        req.list.users = req.list.users.find((itm) => itm.userId != req.userId);
+        return req.list.save();
+      })
+      .then((list) => {
+        log += " > broadcast";
+        utils.broadcast(req, list, {
+          type: "leaveList",
+          data: {
+            listId,
+            userId: req.userId,
+          },
+        });
+        res.status(200).json();
+      })
+      .catch((err) => {
+        next(new ApiError(501, log, err));
+      });
+  }
+);
 
 // toggle admin
 router.put(

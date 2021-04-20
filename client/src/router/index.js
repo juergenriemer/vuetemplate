@@ -90,6 +90,18 @@ const routes = self.isWeb
         component: () => import("@/pages/app/CommentsPage.vue"),
       },
       {
+        path: "/app/memberships/:id",
+        component: () => import("@/pages/app/MembershipPage.vue"),
+      },
+      {
+        path: "/app/memberships",
+        component: () => import("@/pages/app/MembershipPage.vue"),
+      },
+      {
+        path: "/app/picture/:id/:itemId/:imageFile",
+        component: () => import("@/pages/app/Picture.vue"),
+      },
+      {
         path: "/user/login",
         component: Login,
       },

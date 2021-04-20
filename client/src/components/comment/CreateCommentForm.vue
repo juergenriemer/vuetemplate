@@ -75,9 +75,9 @@ import { Plugins, CameraResultType, CameraSource } from "@capacitor/core";
 const { Camera } = Plugins;
 import { attach, image, camera, send, close } from "ionicons/icons";
 export default {
+  props: ["listId", "item"],
   emits: ["change-mode"],
   mixins: [Data, User],
-  props: ["item"],
   components: {
     BottomInput,
     IonFab,
@@ -146,7 +146,7 @@ export default {
             let formData = new FormData();
             formData.append("file", this.imageFile);
             return this.$store.dispatch("upload", {
-              listId: this.listId(),
+              listId: this.listId,
               itemId: this.item._id,
               formData,
             });
@@ -157,7 +157,7 @@ export default {
             item.imageFile = res.data.imageFile;
           }
           return this.$store.dispatch("addComment", {
-            listId: this.listId(),
+            listId: this.listId,
             itemId: this.item._id,
             comment: item,
           });

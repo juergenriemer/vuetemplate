@@ -1,16 +1,28 @@
 <template>
-  <ion-list lines="none" @click="action($event)">
-    <ion-item button="true" data="uninvite">Withdraw Invitation</ion-item>
+  <ion-list lines="none" @click="action">
+    <menu-item
+      label="Withdraw Invitation"
+      :icon="informationCircle"
+      data="uninvite"
+    />
   </ion-list>
 </template>
+
 <script>
-import { IonList, IonItem } from "@ionic/vue";
+import { IonList } from "@ionic/vue";
+import { trash } from "ionicons/icons";
+import MenuItem from "@/components/base/MenuItem.vue";
 
 export default {
   props: ["action"],
   components: {
+    MenuItem,
     IonList,
-    IonItem,
+  },
+  data() {
+    return {
+      trash,
+    };
   },
 };
 </script>

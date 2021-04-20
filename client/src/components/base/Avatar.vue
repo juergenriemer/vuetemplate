@@ -1,6 +1,6 @@
 <template>
   <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
-    <div v-if="listTitle" v-html="jdIcon"></div>
+    <div v-if="listTitle" class="avatar-jd" v-html="jdIcon"></div>
     <div v-else v-html="initials"></div>
     <ion-icon
       v-if="role == 'owner' || role == 'admin'"
@@ -15,7 +15,7 @@ import { toSvg } from "jdenticon";
 import { star, build } from "ionicons/icons";
 
 export default {
-  props: ["size", "role", "short", "userId", "listTitle"],
+  props: ["size", "role", "short", "userId", "listTitle", "logo"],
   components: {
     IonAvatar,
     IonIcon,
@@ -25,6 +25,7 @@ export default {
   },
   computed: {
     initials() {
+      if (this.logo) return "LL";
       if (this.short) return this.short;
       let user = this.$store.getters.getMember(this.userId);
       return user && user.short ? user.short : "";
@@ -35,7 +36,8 @@ export default {
   },
   methods: {
     color() {
-      if (this.initials) return this.avatarColor(this.initials);
+      if (this.logo) return "crimson";
+      else if (this.initials) return this.avatarColor(this.initials);
       return "whitesmoke";
     },
     avatarColor(str) {
@@ -57,6 +59,8 @@ export default {
 <style>
 #avatar {
   position: relative;
+  display: flex;
+  box-shadow: 6px 6px 10px #666 inset;
 }
 #avatar div {
   color: #444;
@@ -66,6 +70,11 @@ export default {
   justify-content: center;
   width: 100%;
   height: 100%;
+}
+
+#avatar .avatar-jd {
+  position: absolute;
+  z-index: 1;
 }
 
 #avatar.large {

@@ -13,17 +13,15 @@
 
 window.isWeb = false;
 
-/*
 window.onerror = (a, b, c) => {
-alert(a);
+  alert(a);
 };
-window.console.warn = (a) => {
- alert(a);
-};
-window.console.log = (a) => {
- alert(a);
-};
-*/
+//window.console.warn = (a) => {
+// alert(a);
+//};
+//window.console.log = (a) => {
+// alert(a);
+//};
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
@@ -38,6 +36,13 @@ export default defineComponent({
 });
 </script>
 <style>
+/* BaseLayout.vue */
+ion-header .header-icon {
+  padding-right: 8px;
+}
+ion-header ion-title {
+  padding-right: 0px;
+}
 /* item checkboxes */
 .checkbox {
   background: #c0c0c0;

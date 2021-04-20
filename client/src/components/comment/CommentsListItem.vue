@@ -1,17 +1,17 @@
 <template lang="pug">
-.bubble(:id="item._id", :class="pos(item)")
+.bubble(:id="comment._id", :class="pos(comment)")
   .bubble-content
     .top
-      .name(:style="{ color: userColor(item.creatorId) }")
-        | {{ userName(item.creatorId) }}
+      .name(:style="{ color: userColor(comment.creatorId) }")
+        | {{ userName(comment.creatorId) }}
       ion-icon.menu(
         slot="icon-only",
         :icon="ellipsisVertical",
         @click="showMenu"
       )
-    img.ion-hide.thumb(ref="thumb")
-    .text {{ item.text }}
-    .date {{ ago(item.updatedAt) }}
+    img.ion-hide.thumb(ref="thumb", @click="openPicture(comment.imageFile)")
+    .text {{ comment.text }}
+    .date {{ ago(comment.updatedAt) }}
 </template>
 
 
@@ -19,6 +19,7 @@
 import {
   IonAvatar,
   IonReorder,
+  IonImg,
   IonIcon,
   IonItem,
   IonLabel,
@@ -36,17 +37,17 @@ import {
   trash,
   create,
 } from "ionicons/icons";
-import ItemMenu from "@/components/comment/CommentMenu.vue";
-import { alertController, popoverController } from "@ionic/core";
+import MenuComponent from "@/components/comment/CommentMenu.vue";
+import { alertController } from "@ionic/core";
 import Dates from "@/mixins/Dates";
 import User from "@/mixins/User";
+import Menu from "@/mixins/Menu";
 
 export default {
-  props: ["item", "itemId"],
-  mixins: [Dates, User],
+  props: ["listId", "item", "comment"],
+  mixins: [Dates, User, Menu],
   data() {
     return {
-      menu: null,
       close,
       ellipsisVertical,
       checkmark,
@@ -58,8 +59,9 @@ export default {
   components: {
     IonReorder,
     IonToolbar,
-    ItemMenu,
+    MenuComponent,
     IonAvatar,
+    IonImg,
     IonIcon,
     IonItem,
     IonLabel,
@@ -68,12 +70,12 @@ export default {
     IonPopover,
   },
   mounted() {
-    if (this.item.imageFile) {
-      var imageFile = this.item.imageFile;
+    if (this.comment.imageFile) {
+      var imageFile = this.comment.imageFile;
       var host = "http://10.0.0.136:3003";
       var root = "file";
-      var listId = this.listId();
-      var itemId = this.itemId;
+      var listId = this.listId;
+      var itemId = this.item._id;
       var url = `${host}/${root}/${listId}/${itemId}/thumb_${imageFile}`;
       var opts = {
         credentials: "include",
@@ -82,41 +84,29 @@ export default {
           "Content-Type": "application/json",
         },
       };
-
       fetch(url, opts)
         .then((res) => res.blob())
         .then((image) => {
           var outside = URL.createObjectURL(image);
           this.$refs.thumb.setAttribute("src", outside);
           this.$refs.thumb.classList.remove("ion-hide");
+        })
+        .catch((err) => {
+          this.showError(err);
         });
     }
   },
   methods: {
-    pos(item) {
-      if (item.text == "test") return "left";
-      return this.myId !== item.creatorId ? "right" : "left";
+    pos(comment) {
+      return this.myId !== comment.creatorId ? "right" : "left";
     },
-    async showMenu(evt) {
-      popoverController
-        .create({
-          component: ItemMenu,
-          componentProps: {
-            item: this.item,
-            action: (evt) => this.menuAction(evt),
-          },
-          cssClass: "my-custom-class",
-          event: evt,
-          translucent: true,
-        })
-        .then((res) => {
-          this.menu = res;
-          this.menu.present();
-        });
+    openPicture(imageFile) {
+      var listId = this.listId;
+      var itemId = this.item._id;
+      var path = `/app/picture/${listId}/${itemId}/${imageFile}`;
+      this.nav(path);
     },
-    menuAction(evt) {
-      this.menu.dismiss();
-      const action = evt.target.getAttribute("data");
+    menuAction(action) {
       switch (action) {
         case "delete-item":
           this.deleteItem();
@@ -138,9 +128,9 @@ export default {
               handler: () => {
                 this.$store
                   .dispatch("deleteComment", {
-                    listId: this.listId(),
-                    itemId: this.itemId,
-                    commentId: this.item._id,
+                    listId: this.listId,
+                    itemId: this.item._id,
+                    commentId: this.comment._id,
                   })
                   .then((res) => res)
                   .catch((err) => this.showError(err));
@@ -201,9 +191,10 @@ export default {
   flex-direction: column;
 }
 
-.bubble .image {
-  max-height: 600px;
-  border: 1px solid #444;
+.bubble .thumb {
+  max-height: 300px;
+  max-width: 300px;
+  cursor: pointer;
 }
 
 .bubble .bubble-content .top {

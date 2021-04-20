@@ -1,7 +1,10 @@
 <template lang="pug">
 base-layout(page-title="Reset Password", :link="link")
   template(v-slot:title)
-    avatar(size="large", list-title="Listle")
+    avatar(size="large", logo="Listle")
+  template(v-slot:actions-end)
+    .header-icon
+      ion-icon(:icon="key", size="large")
   template(v-slot:content)
     .ion-padding
       form(v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
@@ -75,6 +78,7 @@ import Avatar from "@/components/base/Avatar.vue";
 import FormError from "@/components/base/FormError.vue";
 import InfoSheet from "@/components/base/InfoSheet.vue";
 import Form from "@/mixins/Form";
+import { key } from "ionicons/icons";
 
 export default {
   mixins: [Form],
@@ -90,6 +94,7 @@ export default {
     IonIcon,
   },
   data: () => ({
+    key,
     showInfoSheet: false,
     form: {
       email: "juergen.riemer@gmail.com",
