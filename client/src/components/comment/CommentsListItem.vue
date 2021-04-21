@@ -37,6 +37,7 @@ import {
   trash,
   create,
 } from "ionicons/icons";
+import appConfig from "@/config.js";
 import MenuComponent from "@/components/comment/CommentMenu.vue";
 import { alertController } from "@ionic/core";
 import Dates from "@/mixins/Dates";
@@ -72,7 +73,7 @@ export default {
   mounted() {
     if (this.comment.imageFile) {
       var imageFile = this.comment.imageFile;
-      var host = "http://10.0.0.136:3003";
+      var host = appConfig.backend;
       var root = "file";
       var listId = this.listId;
       var itemId = this.item._id;

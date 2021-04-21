@@ -33,8 +33,12 @@ base-layout(page-title="Login")
             )
           form-error(:error="errors.password")
         ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
-        button.hide(type="submit", :disabled="disabled")
-
+        button.ion-hide(type="submit", :disabled="disabled")
+        ul
+          li
+            a(href="/user/register") Register with Listle
+          li
+            a(href="/user/reset-password") Reset my Password
       info-sheet(type="error", v-if="status == 'wrong-creds'")
         template(v-slot:content)
           p
@@ -157,7 +161,7 @@ export default {
               break;
             default:
               this.status = "idle";
-              this.showInfoSheet(err);
+              this.showError(err);
               break;
           }
         });
@@ -165,8 +169,16 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 #first-time li {
   font-size: 0.8em;
+}
+ul {
+  text-align:center;
+  padding:0;
+}
+li {
+  list-style-type : none;
+  padding-bottom:10px;
 }
 </style>

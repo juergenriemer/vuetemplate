@@ -78,30 +78,6 @@ app.mixin({
       console.warn(err);
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
     },
-    /*
-    ensureData() {
-      console.log(1, this.$store.getters.user.userId);
-      if (!this.$store.getters.user.userId) {
-        console.log("no userid");
-        let route = router.currentRoute._value;
-        if (route && route.params && route.params.mode == "app") {
-          console.log("next path is app");
-          store
-            .dispatch("info")
-            .then(() => {
-              return store.dispatch("fetchLists");
-            })
-            .then((res) => {
-              console.log("yay!");
-            });
-        } else {
-          console.log("next is login!");
-        }
-      } else {
-        console.log("all good!");
-      }
-    },
-    */
   },
 });
 router.isReady().then(() => {

@@ -4,14 +4,13 @@ base-layout(page-title="Register")
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
     .ion-padding
-      form(v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
+      form(ref="form", v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
         ion-list
           ion-item
             ion-label(position="floating") First Name
             ion-input(
               name="firstName",
               type="text",
-              v-model="form.firstName",
               rules="required",
               :disabled="disabled"
             )
@@ -21,7 +20,6 @@ base-layout(page-title="Register")
             ion-input(
               name="lastName",
               type="text",
-              v-model="form.lastName",
               rules="required",
               :disabled="disabled"
             )
@@ -31,7 +29,6 @@ base-layout(page-title="Register")
             ion-input(
               name="email",
               type="email",
-              v-model="form.email",
               rules="required,email",
               :disabled="disabled"
             )
@@ -41,7 +38,6 @@ base-layout(page-title="Register")
             ion-input(
               name="password",
               type="text",
-              v-model="form.password",
               rules="password",
               :disabled="disabled"
             )
@@ -51,7 +47,6 @@ base-layout(page-title="Register")
             ion-input(
               name="retypedPassword",
               type="text",
-              v-model="form.retypedPassword",
               rules="equal:password",
               :disabled="disabled"
             )
@@ -111,18 +106,26 @@ export default {
   },
   data: () => ({
     showInfoSheet: false,
-    form: {
+  }),
+  mounted() {
+    const form = {
       firstName: "Juergen",
       lastName: "Riemer",
       email: "juergen.riemer@gmail.com",
       password: "Test!234",
       retypedPassword: "Test!234",
-    },
-  }),
+    }
+    setTimeout( ()=>{
+    for( var field in form ){
+      document.querySelector( "[name='"+ field +"']").value = form[field]
+    }
+
+    }, 500)
+  }
+  ,
   methods: {
     async submit() {
-      this.status = "submitting";
-      this.$store
+      return this.$store
         .dispatch("registerUser", this.form)
         .then(() => {
           this.showInfoSheet = true;

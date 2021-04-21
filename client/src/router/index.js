@@ -12,8 +12,6 @@ const View = self.isWeb ? WebView : WebView;
 const ensureData = (to, next) => {
   const loadInitialData =
     window.appConnectionMode == "online" && window.initialDataLoad == false;
-  next();
-  return;
   if (loadInitialData) {
     store
       .dispatch("info")
@@ -110,7 +108,7 @@ const routes = self.isWeb
         component: () => import("@/pages/user/Register.vue"),
       },
       {
-        path: "/user/register-verify",
+        path: "/user/register-verify/:id",
         component: () => import("@/pages/user/RegisterVerify.vue"),
       },
       {

@@ -12,6 +12,7 @@
 <script>
 //import { bus } from "@/main";
 
+import appConfig from "@/config.js";
 import { IonButton, IonIcon } from "@ionic/vue";
 import { cloudOffline } from "ionicons/icons";
 import { alertController } from "@ionic/core";
@@ -112,7 +113,6 @@ export default {
             this.$store
               .dispatch("synchronize", { localLists })
               .then(() => {
-                console.warn("yeayyyy");
               })
               .catch((err) => {
                 console.warn(err);
@@ -140,10 +140,8 @@ export default {
         this.$store
           .dispatch("synchronize")
           .then(() => {
-            console.warn("yeayyyy");
           })
           .catch((err) => {
-            console.warn(err);
             next();
           });
       }
@@ -152,7 +150,8 @@ export default {
       if (!this.isLocal) {
         this.waitFor().then(() => {
           //const socket = io("ws://192.168.1.27:3003");
-          const socket = io("ws://10.0.0.136:3003");
+          //const socket = io("ws://10.0.0.136:3003");
+          const socket = io(appConfig.socket);
           const csrf = sessionStorage.getItem("csrf");
           socket.on("connect", () => {
             window.bus.emit("network-status", "online");

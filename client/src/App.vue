@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <socket />
+    <socket v-if="app"/>
     <ion-router-outlet />
   </ion-app>
 </template>
@@ -28,6 +28,7 @@ window.onerror = (a, b, c) => {
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
+import router from "./router";
 
 export default defineComponent({
   name: "App",
@@ -36,6 +37,12 @@ export default defineComponent({
     IonRouterOutlet,
     Socket,
   },
+  computed: {
+    app() {
+      const path = router.currentRoute._value.path;
+      return (path && path.substring(1, 4) == "app");
+    }
+  }
 });
 </script>
 <style>

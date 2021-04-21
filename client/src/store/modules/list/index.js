@@ -30,16 +30,21 @@ const getters = {
     return getters.listById(listId).users.find((usr) => usr.userId == userId);
   },
   // create new store!!!
-  members: (state) => {
+  members: (state, getters, rootState) => {
     let members = {};
+    const owner = rootState.user.user;
+    members[owner.userId] = owner;
     if (state.lists)
       state.lists.forEach((lst) => {
         lst.users.forEach((usr) => (members[usr.userId] = usr));
       });
+    else members[memberId] = state.user;
     return members;
   },
-  getMember: (state) => (memberId) => {
+  getMember: (state, getters, rootState) => (memberId) => {
     let members = {};
+    const owner = rootState.user.user;
+    members[owner.userId] = owner;
     if (state.lists)
       state.lists.forEach((lst) => {
         return lst.users.forEach((usr) => (members[usr.userId] = usr));

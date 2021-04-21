@@ -4,7 +4,7 @@
       <avatar
         style="cursor: pointer"
         size="large"
-        :user-id="userId"
+        :userId="userId"
         @click="showMenu($event)"
       ></avatar>
     </template>
