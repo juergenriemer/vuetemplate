@@ -12,7 +12,6 @@
 <script>
 //import { bus } from "@/main";
 
-import appConfig from "@/config.js";
 import { IonButton, IonIcon } from "@ionic/vue";
 import { cloudOffline } from "ionicons/icons";
 import { alertController } from "@ionic/core";
@@ -149,9 +148,7 @@ export default {
     connectToSocket() {
       if (!this.isLocal) {
         this.waitFor().then(() => {
-          //const socket = io("ws://192.168.1.27:3003");
-          //const socket = io("ws://10.0.0.136:3003");
-          const socket = io(appConfig.socket);
+          const socket = io(process.env.VUE_APP_SOCKET);
           const csrf = sessionStorage.getItem("csrf");
           socket.on("connect", () => {
             window.bus.emit("network-status", "online");

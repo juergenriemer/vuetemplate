@@ -1,13 +1,10 @@
 import axios from "axios";
-import appConfig from "../config.js";
-//import { bus } from "@/main";
 import mitt from "mitt";
 window.bus = mitt();
-
 window.csrf = null;
 
 const http = axios.create({
-  baseURL: appConfig.backend,
+  baseURL: process.env.VUE_APP_BACKEND,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -22,7 +19,7 @@ const getCsrfToken = async () => {
   if (csrf) {
     return csrf;
   } else {
-    const res = await fetch(`${appConfig.backend}/csrf`, {
+    const res = await fetch(`${process.env.VUE_APP_BACKEND}/csrf`, {
       method: "GET",
       headers: {
         Accept: "application/json",

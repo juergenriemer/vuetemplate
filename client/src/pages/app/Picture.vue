@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import appConfig from "@/config.js";
 import { IonIcon } from "@ionic/vue";
 import Avatar from "@/components/base/Avatar.vue";
 import { image } from "ionicons/icons";
@@ -41,7 +40,7 @@ export default {
       return `/app/comments/${this.currentList._id}/${this.currentItem._id}`;
     },
     loadImage() {
-      var host = appConfig.backend;
+      var host = process.env.VUE_APP_BACKEND;
       var root = "file";
       var imageFile = this.$route.params.imageFile;
       if (!imageFile) return;
