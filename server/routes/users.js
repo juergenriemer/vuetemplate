@@ -68,7 +68,7 @@ router.post("/register", (req, res, next) => {
     .then((token) => {
       const text = `
         To finish your registration click here:
-        ${baseUrl}#/register-verify/${token}
+        ${baseUrl}/user/register-verify/${token}
       `;
       var opts = {
         to: email,
@@ -113,7 +113,7 @@ router.post("/registerVerifyResend", (req, res, next) => {
     .then((token) => {
       const text = `
         To finish your registration click here:
-        ${baseUrl}#/register-verify/${token}
+        ${baseUrl}/user/register-verify/${token}
       `;
       var opts = {
         to: email,

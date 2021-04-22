@@ -80,7 +80,7 @@ ${invitingUser} has invited you to collaborate on this listle list "${listTitle}
           mail.text += `
 Please visit 
 
-  ${baseUrl}#/approve-invites 
+  ${baseUrl}/user/approve-invites 
 
 to approve.`;
         } else if (user && !user.is_verified) {
@@ -89,7 +89,7 @@ It seems you already tried to register with listle.
 
 In case you did not receive the confirmation e-mail please visit 
 
-  ${baseUrl}#/resend-verification
+  ${baseUrl}/user/resend-verification
 
 to request another e-mail.
             `;
@@ -99,7 +99,7 @@ It seems you did not yet register with listle.
 
 Please visit 
 
-  ${baseUrl}#/register
+  ${baseUrl}/user/register
 
 to create an account, the lists will be shared with you automatically.
             `;
