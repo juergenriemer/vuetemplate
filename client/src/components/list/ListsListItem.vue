@@ -19,14 +19,14 @@
 <script>
 import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
 import { ellipsisVertical } from "ionicons/icons";
-import { alertController } from "@ionic/core";
 import Avatar from "@/components/base/Avatar.vue";
 import MenuComponent from "@/components/list/ListMenu.vue";
 import Menu from "@/mixins/Menu";
+import Alert from "@/mixins/Alert";
 
 export default {
   props: ["list"],
-  mixins: [Menu],
+  mixins: [Menu, Alert],
   data() {
     return {
       ellipsisVertical,
@@ -45,10 +45,22 @@ export default {
     menuAction(action) {
       switch (action) {
         case "delete":
-          this.deleteList();
+          this.confirm("to delete this list", () => {
+            this.$store
+              .dispatch("deleteList", {
+                listId: this.list._id,
+              })
+              .catch((err) => this.showError(err));
+          });
           break;
         case "leave":
-          this.leaveList();
+          this.confirm("to leave this list", () => {
+            this.$store
+              .dispatch("leaveList", {
+                listId: this.list._id,
+              })
+              .catch((err) => this.showError(err));
+          });
           break;
         case "info":
           this.nav(`/app/info/${this.list._id}`);
@@ -60,47 +72,6 @@ export default {
           this.nav(`/app/edit/${this.list._id}`);
           break;
       }
-    },
-    async leaveList() {
-      alertController
-        .create({
-          header: "Leave list?",
-          message: "Are you sure you want to leave this list?",
-          buttons: [
-            {
-              text: "Cancel",
-              role: "cancel",
-            },
-            {
-              text: "OK",
-              handler: () => {
-                this.$store
-                  .dispatch("leaveList", { listId: this.list._id })
-                  .then((res) => res)
-                  .catch((err) => this.showError(err));
-              },
-            },
-          ],
-        })
-        .then((res) => res.present());
-    },
-    async deleteList() {
-      alertController
-        .create({
-          header: "Delete list?",
-          message: "Are you sure you want to delete this list?",
-          buttons: [
-            {
-              text: "Cancel",
-              role: "cancel",
-            },
-            {
-              text: "OK",
-              handler: () => this.$emit("delete-list", this.list._id),
-            },
-          ],
-        })
-        .then((res) => res.present());
     },
   },
 };

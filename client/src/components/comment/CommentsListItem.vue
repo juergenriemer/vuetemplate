@@ -38,14 +38,14 @@ import {
   create,
 } from "ionicons/icons";
 import MenuComponent from "@/components/comment/CommentMenu.vue";
-import { alertController } from "@ionic/core";
 import Dates from "@/mixins/Dates";
 import User from "@/mixins/User";
 import Menu from "@/mixins/Menu";
+import Alert from "@/mixins/Alert";
 
 export default {
   props: ["listId", "item", "comment"],
-  mixins: [Dates, User, Menu],
+  mixins: [Dates, User, Menu, Alert],
   data() {
     return {
       close,
@@ -109,36 +109,17 @@ export default {
     menuAction(action) {
       switch (action) {
         case "delete-item":
-          this.deleteItem();
+          this.confirm("to delete this comment", () => {
+            this.$store
+              .dispatch("deleteComment", {
+                listId: this.listId,
+                itemId: this.item._id,
+                commentId: this.comment._id,
+              })
+              .catch((err) => this.showError(err));
+          });
           break;
       }
-    },
-    async deleteItem() {
-      alertController
-        .create({
-          header: "Delete item?",
-          message: "Are you sure you want to delete this item?",
-          buttons: [
-            {
-              text: "Cancel",
-              role: "cancel",
-            },
-            {
-              text: "OK",
-              handler: () => {
-                this.$store
-                  .dispatch("deleteComment", {
-                    listId: this.listId,
-                    itemId: this.item._id,
-                    commentId: this.comment._id,
-                  })
-                  .then((res) => res)
-                  .catch((err) => this.showError(err));
-              },
-            },
-          ],
-        })
-        .then((res) => res.present());
     },
   },
 };

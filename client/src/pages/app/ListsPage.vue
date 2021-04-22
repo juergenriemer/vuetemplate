@@ -14,11 +14,7 @@
       </ion-button>
     </template>
     <template v-slot:content>
-      <lists-list
-        v-if="lists"
-        :lists="lists"
-        @delete-list="deleteList"
-      ></lists-list>
+      <lists-list v-if="lists" :lists="lists"></lists-list>
       <div v-if="!lists">loading</div>
     </template>
   </base-layout>
@@ -61,31 +57,6 @@ export default {
     },
   },
   methods: {
-    updateList(listId) {},
-    deleteList(listId) {
-      this.$store
-        .dispatch("deleteList", { listId })
-        .then((res) => res)
-        .catch((err) => this.showError(err));
-    },
-    async fetch() {
-      // no longer needed if we call on app.js level!!!!!
-      // saw list should be triggerd in ItemsPage
-      if (!self.isLocal)
-        this.$store
-          .dispatch("fetchLists")
-          .then(() => {
-            if (this.currentList._id) {
-              return this.sawList({
-                listId: this.currentList._id,
-                userId: this.userId,
-              });
-            }
-          })
-          .catch((err) => {
-            this.showError(err);
-          });
-    },
     menuAction(action) {
       switch (action) {
         case "logout":

@@ -56,12 +56,12 @@ import {
   create,
 } from "ionicons/icons";
 import MenuComponent from "@/components/item/ItemMenu.vue";
-import { alertController, popoverController } from "@ionic/core";
 import Menu from "@/mixins/Menu";
+import Alert from "@/mixins/Alert";
 export default {
   props: ["listId", "item", "reorderMode", "itemInCommentMode"],
   emits: ["change-mode"],
-  mixins: [Menu],
+  mixins: [Menu, Alert],
   data() {
     return {
       ellipsisVertical,
@@ -91,7 +91,14 @@ export default {
     menuAction(action) {
       switch (action) {
         case "delete-item":
-          this.deleteItem();
+          this.confirm("to delete this item", () => {
+            this.$store
+              .dispatch("deleteItem", {
+                listId: this.listId,
+                itemId: this.item._id,
+              })
+              .catch((err) => this.showError(err));
+          });
           break;
         case "edit-mode":
           let data = { mode: "edit", item: this.item };
@@ -117,31 +124,6 @@ export default {
         .catch((err) => {
           this.showError(err);
         });
-    },
-    async deleteItem() {
-      alertController
-        .create({
-          header: "Delete item?",
-          message: "Are you sure you want to delete this item?",
-          buttons: [
-            {
-              text: "Cancel",
-              role: "cancel",
-            },
-            {
-              text: "OK",
-              handler: () => {
-                this.$store
-                  .dispatch("deleteItem", {
-                    listId: this.listId,
-                    itemId: this.item._id,
-                  })
-                  .catch((err) => this.showError(err));
-              },
-            },
-          ],
-        })
-        .then((res) => res.present());
     },
   },
 };
