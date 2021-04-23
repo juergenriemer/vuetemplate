@@ -175,9 +175,10 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    console.log(">>>>>>>>>>", req.userId);
-    User.findOne({ _id: req.userId })
-      .exec()
+    Promise.resolve()
+      .then(() => {
+        return User.findOne({ _id: req.userId }).exec();
+      })
       .then((user) => {
         if (!user) {
           throw new ApiError(400, "user-not-found");
@@ -193,8 +194,10 @@ router.get(
 );
 
 router.post("/login", function (req, res, next) {
-  User.findOne({ email: req.body.email })
-    .exec()
+  Promise.resolve()
+    .then(() => {
+      return User.findOne({ email: req.body.email }).exec();
+    })
     .then((user) => {
       if (!user) throw new ApiError(422, "wrong-creds"); // user-not-found
       if (!user.is_verified) throw new ApiError(422, "in-registration");

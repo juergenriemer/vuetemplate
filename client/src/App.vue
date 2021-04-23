@@ -11,6 +11,7 @@
 // to updateuse: npx cap copy
 // npx cap open android
 
+window.isLocal = true;
 window.isWeb = false;
 window.networkStatus = "unknown";
 window.initialDataLoad = false;

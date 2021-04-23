@@ -7,11 +7,20 @@ const root = "/list";
 const getters = {};
 
 const actions = {
+  async rawLists({ commit }) {
+    return http()
+      .get(`${root}`)
+      .then((res) => {
+        return res;
+        //const server = [...res.data.lists];
+      });
+  },
   async synchronize({ commit, rootState }, { localLists }) {
     return http()
       .get(`${root}`)
       .then((res) => {
         let actions = [];
+        //window.tzo
         const offlineSince = localStorage.getItem("offline-since");
         const server = [...res.data.lists];
         let local = [...rootState.list.lists];
@@ -71,22 +80,8 @@ const actions = {
           commit("addList", { list: res.data.list });
           return res;
         });
-    else commit("addList", { list });
-  },
-
-  async xxxxxxxxxxxxxxxaddList({ commit, rootState }, { list }) {
+    list.offline = true;
     commit("addList", { list });
-    if (wire(arguments))
-      return http()
-        .post(`${root}`, list)
-        .then((res) => {
-          // second update for the ID of the item
-          commit("updateList", {
-            listId: list._id,
-            list: res.data.list,
-          });
-          return res;
-        });
   },
 
   async updateList({ commit }, { listId, list }) {
@@ -97,7 +92,8 @@ const actions = {
           commit("updateList", { listId, list });
           return res;
         });
-    else commit("updateList", { listId, list });
+    list.offline = true;
+    commit("updateList", { listId, list });
   },
 
   async deleteList({ commit }, { listId }) {

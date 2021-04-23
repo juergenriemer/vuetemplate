@@ -9,5 +9,10 @@ export default {
       date = date ? new Date(date) : new Date();
       return formatDistance(date, new Date());
     },
+    now() {
+      const now = new Date();
+      now.setMinutes(myDate.getHours() + window.tzo);
+      return now;
+    },
   },
 };

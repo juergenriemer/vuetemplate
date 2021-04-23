@@ -8,21 +8,17 @@ const getters = {};
 
 const actions = {
   async addComment({ commit }, { listId, itemId, comment }) {
-    commit("addComment", { listId, itemId, comment });
     if (wire(arguments))
       return http()
         .post(`${root}/${listId}/${itemId}`, comment)
         .then((res) => {
-          // second update for the ID of the item
-          commit("updateComment", {
-            listId,
-            itemId: itemId,
-            commentId: comment._id,
-            comment: res.data.comment,
-          });
+          commit("addComment", { listId, itemId, comment });
           return res;
         });
+    comment.offline = true;
+    commit("addComment", { listId, itemId, comment });
   },
+
   async deleteComment({ commit }, { listId, itemId, commentId }) {
     commit("deleteComment", { listId, itemId, commentId });
     if (wire(arguments))

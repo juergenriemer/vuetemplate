@@ -12,7 +12,8 @@ const View = self.isWeb ? WebView : WebView;
 const ensureData = (to, next) => {
   const loadInitialData =
     window.appConnectionMode == "online" && window.initialDataLoad == false;
-  if (loadInitialData) {
+  //if (loadInitialData) {
+  if (1 == 4) {
     store
       .dispatch("info")
       .then(() => {

@@ -1,5 +1,10 @@
 import User from "@/services/UserService";
 import Api from "@/services/Api";
+const wire = Api.wire;
+const http = Api.http;
+
+// REF: change to user
+const root = "/users";
 
 const state = {
   user: [],
@@ -58,14 +63,17 @@ const actions = {
   },
 
   async info({ commit, getters }) {
-    return User.info(getters.userId).then((res) => {
-      if (res && res.data) {
-        // need to set userId to use this object like any other member
-        res.data.user.userId = res.data.user._id;
-        commit("fetchUser", res.data.user);
-      }
-      return res;
-    });
+    if (wire(arguments)) {
+      return http()
+        .get(`${root}/info`)
+        .then((res) => {
+          const user = res.data.user;
+          const tzo = res.data.tzo + new Date().getTimezoneOffset();
+          window.tzo = tzo;
+          commit("fetchUser", { user });
+          return res;
+        });
+    }
   },
 
   async logout({ commit }) {
@@ -83,7 +91,7 @@ const actions = {
 };
 
 const mutations = {
-  fetchUser: (state, user) => (state.user = user),
+  fetchUser: (state, { user }) => (state.user = user),
   removeUser: (state) => (state.user = null),
   setToken: (state, token) => {
     self.isLocal = false;

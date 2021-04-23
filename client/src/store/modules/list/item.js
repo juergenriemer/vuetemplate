@@ -8,25 +8,27 @@ const getters = {};
 
 const actions = {
   async addItem({ commit }, { listId, item }) {
-    commit("addItem", { listId, item });
-    if (wire(arguments)) {
+    if (wire(arguments))
       return http()
         .post(`${root}/${listId}`, item)
         .then((res) => {
-          // second update for the ID of the item
-          commit("updateItem", {
-            listId,
-            itemId: item._id,
-            item: res.data.item,
-          });
+          commit("addItem", { listId, item });
           return res;
         });
-    }
+    item.offline = true;
+    commit("addItem", { listId, item });
   },
 
   async updateItem({ commit }, { listId, itemId, item }) {
+    if (wire(arguments))
+      return http()
+        .put(`${root}/${listId}/${itemId}`, item)
+        .then((res) => {
+          commit("updateItem", { listId, itemId, item });
+          return res;
+        });
+    item.offline = true;
     commit("updateItem", { listId, itemId, item });
-    if (wire(arguments)) return http().put(`${root}/${listId}/${itemId}`, item);
   },
 
   async deleteItem({ commit }, { listId, itemId }) {
@@ -37,6 +39,7 @@ const actions = {
 
 const mutations = {
   addItem: (state, { listId, item }) => {
+    console.log(item);
     const list = state.lists.find((lst) => lst._id == listId);
     list.items.push(item);
     /* update list lastSeen!!!  with item updatedAt? */

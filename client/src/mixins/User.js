@@ -12,8 +12,12 @@ export default {
       return user ? user.name : "";
     },
     userColor(userId) {
+      return "#555";
       const user = this.userById(userId);
       const str = user ? user.name : "Listle";
+      if (!str || !str.length) {
+        str = "gescheissen";
+      }
       const s = 30;
       const l = 80;
       var hash = 0;
