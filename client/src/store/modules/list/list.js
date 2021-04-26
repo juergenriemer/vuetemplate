@@ -50,24 +50,8 @@ const actions = {
           commit("deleteList", { listId });
           return res;
         });
-    if (
-      window.networkStatus == "offline" &&
-      window.appConnectionMode == "online"
-    ) {
-      let sOD = localStorage.getItem("sOD", store);
-      let store =
-        JSON.stringify({
-          order: 0,
-          method: "deleteList",
-          params: { listId },
-        }) +
-        "," +
-        sOD
-          ? sOD
-          : "";
-      localStorage.setItem("sOD", store);
-    }
     commit("deleteList", { listId });
+    window.storeDeletion("deleteList", { listId });
   },
 
   async fetchLists({ commit }) {

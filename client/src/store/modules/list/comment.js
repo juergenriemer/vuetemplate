@@ -21,9 +21,14 @@ const actions = {
   },
 
   async deleteComment({ commit }, { listId, itemId, commentId }) {
-    commit("deleteComment", { listId, itemId, commentId });
     if (wire(arguments))
-      return http().delete(`${root}/${listId}/${itemId}/${commentId}`);
+      return http()
+        .delete(`${root}/${listId}/${itemId}/${commentId}`)
+        .then(() => {
+          commit("deleteComment", { listId, itemId, commentId });
+        });
+    commit("deleteComment", { listId, itemId, commentId });
+    window.storeDeletion("deleteComment", { listId, itemId, commentId });
   },
 };
 

@@ -16,7 +16,6 @@ const actions = {
           commit("addItem", { listId, item });
           return res;
         });
-
     item.offline = true;
     commit("addItem", { listId, item });
   },
@@ -42,24 +41,7 @@ const actions = {
           commit("deleteItem", { listId, itemId });
         });
     commit("deleteItem", { listId, itemId });
-    console.log(window.networkStatus);
-    console.log(window.appConnectionMode);
-    if (
-      window.networkStatus != "online" && // == ?? "offline"
-      window.appConnectionMode == "online"
-    ) {
-      console.log("xxxxxxxxxxxxx");
-      let sOD = localStorage.getItem("sOD");
-      let store = sOD ? JSON.parse(sOD) : [];
-      store.push(
-        JSON.stringify({
-          order: 0,
-          method: "deleteItem",
-          params: { listId, itemId },
-        })
-      );
-      localStorage.setItem("sOD", JSON.stringify(store));
-    }
+    window.storeDeletion("deleteItem", { listId, itemId });
   },
 };
 

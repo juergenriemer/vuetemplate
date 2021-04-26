@@ -5,6 +5,23 @@ import share from "@/store/modules/list/share";
 import comment from "@/store/modules/list/comment";
 import file from "@/store/modules/list/file";
 
+window.storeDeletion = (method, params) => {
+  if (
+    window.networkStatus != "online" && // == ?? "offline"
+    window.appConnectionMode == "online"
+  ) {
+    let sOD = localStorage.getItem("sOD");
+    let store = sOD ? JSON.parse(sOD) : [];
+    store.push(
+      JSON.stringify({
+        order: 0,
+        method,
+        params,
+      })
+    );
+    localStorage.setItem("sOD", JSON.stringify(store));
+  }
+};
 //var members = {};
 const state = {
   lists: [],
