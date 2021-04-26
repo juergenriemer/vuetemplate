@@ -1,7 +1,7 @@
 <template>
-  <base-layout :page-title="currentList.title" :link="link">
+  <base-layout :page-title="list2.title" :link="link">
     <template v-slot:title>
-      <avatar size="large" :list-title="currentList.title"></avatar>
+      <avatar size="large" :list-title="list2.title"></avatar>
     </template>
     <template v-slot:actions-end>
       <ion-button @click="showMenu($event, menuData)">
@@ -14,23 +14,23 @@
     </template>
     <template v-slot:content>
       <items-list
-        v-if="currentList"
-        :listId="currentList._id"
-        :items="currentList.items"
+        v-if="list2"
+        :listId="list2._id"
+        :items="list2.items"
         :reorderMode="reorderMode"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></items-list>
-      <div v-if="!currentList">loading</div>
+      <div v-if="!list2">loading</div>
     </template>
     <template v-slot:footer>
       <create-item-form
-        :listId="currentList._id"
+        :listId="list2._id"
         v-if="!itemInEditMode"
       ></create-item-form>
       <edit-item-form
         v-if="itemInEditMode"
-        :listId="currentList._id"
+        :listId="list2._id"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></edit-item-form>
@@ -87,6 +87,22 @@ export default {
     link() {
       return self.isWeb ? "" : "/app/list";
     },
+    list2() {
+      const listId = this.$route.params.id;
+      if (listId) {
+        return this.$store.getters.list(listId);
+      }
+      return {};
+    },
+    currentItem() {
+      const listId = this.$route.params.id;
+      const itemId = this.$route.params.itemId;
+      if (listId && itemId) {
+        console.log(this.$store.getters.item(listId, itemId));
+        return this.$store.getters.item(listId, itemId);
+      }
+      return {};
+    },
     menuData() {
       return { reorderMode: this.reorderMode, toggleMode: this.toggleMode };
     },
@@ -101,7 +117,7 @@ export default {
           this.toggleMode = !this.toggleMode;
           this.$store
             .dispatch("toggleList", {
-              listId: this.currentList._id,
+              listId: this.list2._id,
               done: this.toggleMode,
             })
             .catch((err) => this.showError(err));

@@ -46,6 +46,7 @@ app.mixin({
       const listId = this.$route.params.id;
       const itemId = this.$route.params.itemId;
       if (listId && itemId) {
+        console.log(this.$store.getters.item(listId, itemId));
         return this.$store.getters.item(listId, itemId);
       }
       return {};

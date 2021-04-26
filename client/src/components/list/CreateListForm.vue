@@ -63,7 +63,7 @@ export default {
         this.$store.getters.user
       );
       let list = Object.assign(
-        { _id: this.objectId(), createdAt: new Date(), users: [creator] },
+        { _id: this.objectId(), createdAt: new Date(), users: [creator], items : [] },
         this.form
       );
       this.$store

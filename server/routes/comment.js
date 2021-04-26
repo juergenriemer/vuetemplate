@@ -21,13 +21,20 @@ router.post(
     const comment = (({ text, imageFile }) => ({ text, imageFile }))(req.body);
     comment._id = new mongoose.mongo.ObjectId();
     comment.creatorId = req.userId;
-    let item = req.list.items.find((itm) => itm._id == itemId);
-    item.comments.push(comment);
-    req.list
-      .save()
+    let log = `COMMENT_CREATE(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > prepare data";
+        let item = req.list.items.find((itm) => itm._id == itemId);
+        item.comments.push(comment);
+      })
+      .then(() => {
+        log += " > save";
+        return req.list.save();
+      })
       .then((list) => {
-        res.status(200).json({ comment });
-        utils.broadcast(req, list, {
+        log += " > broadcast";
+        return utils.broadcast(req, list, {
           type: "addComment",
           data: {
             listId,
@@ -36,8 +43,14 @@ router.post(
           },
         });
       })
-      .catch((error) => {
-        next(error);
+      .then(() => {
+        res.status(200).json({ comment });
+      })
+      .catch((err) => {
+        next(new ApiError(501, log, err));
+      })
+      .finally(() => {
+        console.log("SUCCESS: " + log);
       });
   }
 );

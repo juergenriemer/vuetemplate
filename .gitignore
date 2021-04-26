@@ -1,6 +1,8 @@
 *.swp
 node_modules
 uploads
+client/ios
+client/android
 build
 npm-debug.log
 .env

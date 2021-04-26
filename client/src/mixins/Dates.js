@@ -11,7 +11,7 @@ export default {
     },
     now() {
       const now = new Date();
-      now.setMinutes(myDate.getHours() + window.tzo);
+      now.setMinutes(now.getHours() + window.tzo);
       return now;
     },
   },

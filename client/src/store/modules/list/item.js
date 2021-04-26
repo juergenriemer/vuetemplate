@@ -12,9 +12,11 @@ const actions = {
       return http()
         .post(`${root}/${listId}`, item)
         .then((res) => {
+          const item = res.data.item;
           commit("addItem", { listId, item });
           return res;
         });
+
     item.offline = true;
     commit("addItem", { listId, item });
   },
@@ -24,6 +26,7 @@ const actions = {
       return http()
         .put(`${root}/${listId}/${itemId}`, item)
         .then((res) => {
+          const item = res.data.item;
           commit("updateItem", { listId, itemId, item });
           return res;
         });
@@ -39,7 +42,6 @@ const actions = {
 
 const mutations = {
   addItem: (state, { listId, item }) => {
-    console.log(item);
     const list = state.lists.find((lst) => lst._id == listId);
     list.items.push(item);
     /* update list lastSeen!!!  with item updatedAt? */

@@ -12,6 +12,7 @@ const actions = {
       return http()
         .post(`${root}/${listId}/${itemId}`, comment)
         .then((res) => {
+          const comment = res.data.comment;
           commit("addComment", { listId, itemId, comment });
           return res;
         });

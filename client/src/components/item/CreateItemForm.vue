@@ -87,8 +87,10 @@ export default {
       input.focus();
     },
     async submit() {
+
+      const creatorId = this.$store.getters.user.userId;
       let item = Object.assign(
-        { _id: this.objectId(), comments: [] },
+        { _id: this.objectId(), createdAt: new Date(), creatorId, comments: [] },
         this.form
       );
       return this.$store

@@ -24,8 +24,6 @@ const actions = {
         const offlineSince = localStorage.getItem("offline-since");
         const server = [...res.data.lists];
         let local = [...rootState.list.lists];
-        //local.forEach((lst) => console.log(lst.title, lst._id));
-        //server.forEach((lst) => console.log(lst.title, lst._id));
         const lstNew = local.filter((lst) => /^id/.test(lst._id));
         local = local.filter((lst) => !/^id/.test(lst._id));
         lstNew.forEach((list) =>
@@ -60,14 +58,11 @@ const actions = {
           });
         });
         const localIds = local.map((lst) => lst._id);
-        console.log(offlineSince);
         const lstDel = server.filter(
           (lst) =>
             new Date(lst.updatedAt) < new Date(offlineSince) &&
             !localIds.includes(lst._id)
         );
-        console.log("del", lstDel);
-        console.log("actions", actions);
         return res;
       });
   },
@@ -77,7 +72,8 @@ const actions = {
       return http()
         .post(`${root}`, list)
         .then((res) => {
-          commit("addList", { list: res.data.list });
+          const list = res.data.list;
+          commit("addList", { list });
           return res;
         });
     list.offline = true;
@@ -89,6 +85,7 @@ const actions = {
       return http()
         .put(`/list/${listId}`, list)
         .then((res) => {
+          const list = res.data.list;
           commit("updateList", { listId, list });
           return res;
         });
@@ -142,10 +139,7 @@ const actions = {
 
 const mutations = {
   clearLists: (state) => (state.lists = []),
-  synchronize: (state, { lists }) => {
-    //console.log("server", lists);
-    //console.log("local", state.lists);
-  },
+  synchronize: (state, { lists }) => {},
   fetchLists: (state, { lists }) => (state.lists = lists),
   addList: (state, { list }) => {
     state.lists.unshift(list);
