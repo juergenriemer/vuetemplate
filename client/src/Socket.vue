@@ -12,60 +12,6 @@
 <script>
 //import { bus } from "@/main";
 
-var result = [];
-
-window.res = function () {
-  var s = function (item) {
-    Object.keys(item).forEach((key) => {
-      if (key !== "parent" && typeof item[key] === "object") {
-        s(item[key]);
-      }
-      if (item.offline === true && !result[item._id]) {
-        let type;
-        let title = item.title ? item.title : item.text;
-        if (item.parent && item.parent.parent && item.parent.parent._id) {
-          let parent = item.parent.parent;
-          if (parent.parent.parent) {
-            type = "comment";
-            title +=
-              " (" +
-              item.parent.parent.title +
-              " - " +
-              item.parent.parent.parent.parent.title +
-              ")";
-          } else {
-            type = "item";
-          }
-          //console.log("parent: " + item.parent.parent.title);
-        } else {
-          type = "list";
-        }
-        type += /^id/.test(item._id) ? "-add" : "-update";
-        console.log(type + " >> " + title);
-        result[item._id] = { item };
-      }
-    });
-  };
-  var parenter = {
-    set: function (target, prop, value) {
-      if (typeof value === "object") {
-        var p = new Proxy({ parent: target }, parenter);
-        for (var key in value) {
-          p[key] = value[key];
-        }
-        return (target[prop] = p);
-      } else {
-        target[prop] = value;
-        return true;
-      }
-    },
-  };
-  var root = new Proxy({}, parenter);
-  //self.dmiep = { a: { b: 1, offline: true } };
-  Object.assign(root, self.dmiep);
-  s(root);
-  console.log(result);
-};
 import { IonButton, IonIcon } from "@ionic/vue";
 import { cloudOffline } from "ionicons/icons";
 import { alertController } from "@ionic/core";
@@ -195,97 +141,22 @@ export default {
     },
     // REF: DONST SEND invitees in list object to users only to owner
     synchronize() {
-      let local = [...this.$store.getters.lists];
-      window.dmiep = local;
-      window.res();
+      const lists = [...this.$store.getters.lists];
+      const offlineChanges = this.getOfflineChanges(lists);
+      console.log(offlineChanges);
+      let sOD = localStorage.getItem("sOD");
+      const offlineDeletions = sOD ? JSON.parse(sOD) : [];
+      const actions = [...offlineChanges, ...offlineDeletions];
+      console.log(actions);
+      return;
+      /*
       this.$store
         .dispatch("rawLists")
         .then((res) => {
-          let local = [...this.$store.getters.lists];
-          console.log("local", local);
-          window.dmiep = local;
-          let server = res.data.lists;
-          console.log("server", server);
-          let actions = [];
-          // check for lists
-          local
-            .filter((lst) => lst.offline)
-            .forEach((list) => {
-              const listId = list._id;
-              if (/^id/.test(listId)) {
-                actions.push({
-                  type: "list-add",
-                  data: { list },
-                });
-                // and remove from further checks
-                local = local.filter((lst) => lst._id != listId);
-              } else
-                actions.push({
-                  type: "list-update",
-                  data: {
-                    listId: listId,
-                    list: {
-                      title: list.title,
-                      description: list.description,
-                    },
-                  },
-                });
-            });
-          local.forEach((lst) => {
-            // check for items
-            const listId = lst._id;
-            lst.items
-              .filter((itm) => itm.offline)
-              .forEach((itm) => {
-                const itemId = itm._id;
-                if (/^id/.test(itemId)) {
-                  actions.push({
-                    type: "item-add",
-                    data: { listId, item: itm },
-                  });
-                  // and remove from further checks
-                  lst.items = lst.items.filter((itm) => itm._id != itemId);
-                } else
-                  actions.push({
-                    type: "item-update",
-                    data: {
-                      listId,
-                      itemId,
-                      item: {
-                        title: itm.title,
-                        done: itm.done,
-                      },
-                    },
-                  });
-              });
-          });
-          local.forEach((lst) => {});
-          console.log(".......result......");
-          console.log("local", local);
-          console.log("actions", actions);
-          actions.forEach((act) => {
-            //let title = act.data.title ? act.data.title : act.data.item.title;
-            let title;
-            if (act.data.list) title = act.data.list.title;
-            if (act.data.item) title = act.data.item.title;
-            console.log(act.type + " > " + title);
-          });
-        })
         .catch((err) => {
           console.warn(err);
         });
-
-      return;
-      localStorage.removeItem("offline-since");
-      var x = confirm("do it?");
-      if (x) {
-        this.$store
-          .dispatch("synchronize")
-          .then(() => {})
-          .catch((err) => {
-            next();
-          });
-      }
+          */
     },
     connectToSocket() {
       if (!this.isLocal) {
@@ -316,6 +187,77 @@ export default {
           setTimeout(waitForFoo, 30);
         })();
       });
+    },
+    getOfflineChanges(lists) {
+      let result = [];
+      let Processed = new Map();
+      const inspect = function (item) {
+        Object.keys(item).forEach((key) => {
+          if (key !== "parent" && typeof item[key] === "object") {
+            inspect(item[key]);
+          }
+          if (item.offline === true && !Processed[item._id]) {
+            let type, order;
+            let params = {};
+            let action = /^id/.test(item._id) ? "add" : "update";
+            let p = item.parent.parent;
+            if (!p) {
+              // list
+              type = "list";
+              order = 1;
+              params[type] = (({ title, description }) => ({
+                title,
+                description,
+              }))(item);
+            } else {
+              let parentId = p._id;
+              p = p.parent.parent;
+              if (!p) {
+                type = "item";
+                order = 2;
+                params[type] = (({ title, done }) => ({ title, done }))(item);
+                params.listId = parentId;
+              } else {
+                type = "comment";
+                order = 3;
+                params[type] = (({ text, imageFile }) => ({
+                  text,
+                  imageFile,
+                }))(item);
+                params.listId = p._id;
+                params.itemId = parentId;
+              }
+            }
+            if (action == "update") params[`${type}Id`] = item._id;
+            const method =
+              action + type.charAt(0).toUpperCase() + type.slice(1);
+            Processed[item._id] = true;
+            result.push({
+              order,
+              method,
+              params,
+            });
+          }
+        });
+      };
+      var addParent = {
+        set: function (target, prop, value) {
+          if (typeof value === "object") {
+            var p = new Proxy({ parent: target }, addParent);
+            for (var key in value) {
+              p[key] = value[key];
+            }
+            return (target[prop] = p);
+          } else {
+            target[prop] = value;
+            return true;
+          }
+        },
+      };
+      let data = new Proxy({}, addParent);
+      Object.assign(data, lists);
+      inspect(data);
+      return result;
     },
   },
 };

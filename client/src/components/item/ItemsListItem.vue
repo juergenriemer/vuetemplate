@@ -8,7 +8,7 @@
       button="true"
     >
       <ion-label @dblclick="checkItem(item)" class="title">
-        {{ item.title }} {{item._id}}
+        {{ item.title }}
       </ion-label>
       <ion-buttons slot="start">
         <ion-button

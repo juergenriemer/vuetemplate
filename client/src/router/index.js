@@ -10,9 +10,6 @@ import WebView from "../views/Web.vue";
 const View = self.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
-  console.log(window.appConnectionMode);
-  console.log(window.initialDataLoad);
-  console.log(window.isLocal);
   const loadInitialData =
     window.appConnectionMode == "online" &&
     window.initialDataLoad == false &&

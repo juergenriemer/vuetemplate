@@ -15,57 +15,6 @@ const actions = {
         //const server = [...res.data.lists];
       });
   },
-  async synchronize({ commit, rootState }, { localLists }) {
-    return http()
-      .get(`${root}`)
-      .then((res) => {
-        let actions = [];
-        //window.tzo
-        const offlineSince = localStorage.getItem("offline-since");
-        const server = [...res.data.lists];
-        let local = [...rootState.list.lists];
-        const lstNew = local.filter((lst) => /^id/.test(lst._id));
-        local = local.filter((lst) => !/^id/.test(lst._id));
-        lstNew.forEach((list) =>
-          actions.push({
-            type: "add-list",
-            list,
-          })
-        );
-        local.forEach((lst) => {
-          let itmNew = lst.items.filter((itm) => /^id/.test(itm._id));
-          if (itmNew.length) {
-            lst.items = lst.items.filter((itm) => !/^id/.test(itm._id));
-            itmNew.forEach((item) =>
-              // check if list still exists on server
-              // report.push( list no longer exists )
-              actions.push({ type: "add-item", listId: lst._id, item })
-            );
-          }
-          lst.items.forEach((itm) => {
-            let cmtNew = itm.comments.filter((cmt) => /^id/.test(cmt._id));
-            if (cmtNew.length) {
-              cmtNew.forEach((comment) => {
-                // check if list and/or item still exists on server
-                actions.push({
-                  type: "add-comment",
-                  listId: lst._id,
-                  itemId: itm._id,
-                  comment,
-                });
-              });
-            }
-          });
-        });
-        const localIds = local.map((lst) => lst._id);
-        const lstDel = server.filter(
-          (lst) =>
-            new Date(lst.updatedAt) < new Date(offlineSince) &&
-            !localIds.includes(lst._id)
-        );
-        return res;
-      });
-  },
 
   async addList({ commit, rootState }, { list }) {
     if (wire(arguments))
@@ -101,7 +50,24 @@ const actions = {
           commit("deleteList", { listId });
           return res;
         });
-    else commit("deleteList", { listId });
+    if (
+      window.networkStatus == "offline" &&
+      window.appConnectionMode == "online"
+    ) {
+      let sOD = localStorage.getItem("sOD", store);
+      let store =
+        JSON.stringify({
+          order: 0,
+          method: "deleteList",
+          params: { listId },
+        }) +
+        "," +
+        sOD
+          ? sOD
+          : "";
+      localStorage.setItem("sOD", store);
+    }
+    commit("deleteList", { listId });
   },
 
   async fetchLists({ commit }) {

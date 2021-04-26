@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <socket v-if="app"/>
+    <socket v-if="app" />
     <ion-router-outlet />
   </ion-app>
 </template>
@@ -11,7 +11,7 @@
 // to updateuse: npx cap copy
 // npx cap open android
 
-window.isLocal = false;
+window.isLocal = true;
 window.isWeb = false;
 window.networkStatus = "unknown";
 window.initialDataLoad = false;
@@ -41,9 +41,9 @@ export default defineComponent({
   computed: {
     app() {
       const path = router.currentRoute._value.path;
-      return (path && path.substring(1, 4) == "app");
-    }
-  }
+      return path && path.substring(1, 4) == "app";
+    },
+  },
 });
 </script>
 <style>
