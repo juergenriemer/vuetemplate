@@ -40,8 +40,12 @@ const actions = {
         .then((res) => {
           commit("deleteItem", { listId, itemId });
         });
+    window.storeAction(
+      "deleteItem",
+      { listId, itemId },
+      "delete item " + itemId
+    );
     commit("deleteItem", { listId, itemId });
-    window.storeDeletion("deleteItem", { listId, itemId });
   },
 };
 

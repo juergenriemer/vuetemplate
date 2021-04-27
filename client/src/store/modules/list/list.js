@@ -51,9 +51,8 @@ const actions = {
           return res;
         });
     commit("deleteList", { listId });
-    window.storeDeletion("deleteList", { listId });
+    window.storeAction("deleteList", { listId }, "delete list " + listId);
   },
-
   async fetchLists({ commit }) {
     if (wire(arguments))
       return http()
@@ -70,8 +69,18 @@ const actions = {
   },
 
   async toggleList({ commit }, { listId, done }) {
+    if (wire(arguments))
+      return http()
+        .put(`${root}/toggle/${listId}/${done}`)
+        .then((_) => {
+          commit("toggleList", { listId, done });
+        });
+    window.storeAction(
+      "toggleList",
+      { listId, done },
+      "toggle all items in " + listId
+    );
     commit("toggleList", { listId, done });
-    if (wire(arguments)) return http().put(`${root}/toggle/${listId}/${done}`);
   },
 
   async toggleAdmin({ commit }, { listId, userId, isAdmin }) {
@@ -81,9 +90,18 @@ const actions = {
   },
 
   async reorderList({ commit }, { listId, from, to }) {
-    commit("reorderList", { listId, from, to });
     if (wire(arguments))
-      return http().put(`${root}/reorder/${listId}/${from}/${to}`);
+      return http()
+        .put(`${root}/reorder/${listId}/${from}/${to}`)
+        .then((_) => {
+          commit("reorderList", { listId, from, to });
+        });
+    window.storeAction(
+      "reorderList",
+      { listId, from, to },
+      "reorder list " + listId
+    );
+    commit("reorderList", { listId, from, to });
   },
 };
 

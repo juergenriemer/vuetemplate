@@ -27,8 +27,12 @@ const actions = {
         .then(() => {
           commit("deleteComment", { listId, itemId, commentId });
         });
+    window.storeAction(
+      "deleteComment",
+      { listId, itemId, commentId },
+      "delete comment " + commentId
+    );
     commit("deleteComment", { listId, itemId, commentId });
-    window.storeDeletion("deleteComment", { listId, itemId, commentId });
   },
 };
 

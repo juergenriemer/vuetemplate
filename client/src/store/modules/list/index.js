@@ -5,22 +5,24 @@ import share from "@/store/modules/list/share";
 import comment from "@/store/modules/list/comment";
 import file from "@/store/modules/list/file";
 
-window.storeDeletion = (method, params) => {
-  if (
-    window.networkStatus != "online" && // == ?? "offline"
-    window.appConnectionMode == "online"
-  ) {
-    let sOD = localStorage.getItem("sOD");
-    let store = sOD ? JSON.parse(sOD) : [];
-    store.push(
-      JSON.stringify({
-        order: 0,
-        method,
-        params,
-      })
-    );
-    localStorage.setItem("sOD", JSON.stringify(store));
+window.storeAction = (method, params, title) => {
+  if (window.networkStatus == "online") return;
+  if (window.appConnectionMode == "offline") return;
+  if (/^delete/.test(method)) {
+    for (var id in params) {
+      if (/^id/.test(params[id])) return;
+    }
   }
+  console.log("STOOOORE ACTIN");
+  let sOD = localStorage.getItem("sOD");
+  let store = sOD ? JSON.parse(sOD) : [];
+  store.push({
+    order: 8,
+    title,
+    method,
+    params,
+  });
+  localStorage.setItem("sOD", JSON.stringify(store));
 };
 //var members = {};
 const state = {

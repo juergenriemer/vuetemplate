@@ -25,9 +25,6 @@ export default {
   components: {
     IonIcon,
   },
-  mounted() {
-    this.synchronize();
-  },
   data() {
     return {
       infoWindow: null,
@@ -73,7 +70,7 @@ export default {
           <p>However, you can continue to work, all lists will 
         get synchronized as soon as a connection can be re-established.
          </p>
-         <button @click="synchronize()">sync</button>
+          <p>All functions related to sharing lists will be deactivated until back online.</p>
          <p><a href="#">Learn more about synchronizing</a></p>
           `,
           buttons: [
@@ -93,13 +90,27 @@ export default {
       alertController
         .create({
           header: "Synchronize with the server",
-          message: `<p>Do you want to synchronize changes?</p>
+          message: `<p>Do you want to synchronize changes NOW?</p>
+						<p>You can synchronize LATER using the personal menu, or you 
+							DISCARD all changes and load data from the server </p>
           `,
           buttons: [
             {
-              text: "OK",
+              text: "Discard",
               handler: () => {
-                this.synchronize();
+                localStorage.removeItem("sOD");
+                localStorage.removeItem("offline-since");
+                self.location.reload();
+              },
+            },
+            {
+              text: "LATER",
+              handler: () => {},
+            },
+            {
+              text: "NOW",
+              handler: () => {
+                this.nav("/user/synchronize");
               },
             },
           ],
@@ -112,24 +123,18 @@ export default {
     },
     listenOnNetworkStatus() {
       window.bus.on("network-status", (status) => {
+        console.log(status);
         switch (status) {
           case "online":
-            return;
-            const localLists = this.$store.getters.lists;
-            this.$store
-              .dispatch("synchronize", { localLists })
-              .then(() => {})
-              .catch((err) => {
-                console.warn(err);
-                next();
-              });
+            console.log("online");
             if (this.infoWindow) this.infoWindow.dismiss();
             this.offline = false;
             window.networkStatus = "online";
             const offlineSince = localStorage.getItem("offline-since");
-            if (offlineSince) this.synchronize();
+            if (offlineSince) this.confirmSynchronization();
             break;
           case "offline":
+            console.log("offline");
             // REF: wait 10 secs before doing
             localStorage.setItem("offline-since", this.now());
             if (!this.offline) this.showOfflineInfo();
@@ -140,24 +145,6 @@ export default {
       });
     },
     // REF: DONST SEND invitees in list object to users only to owner
-    synchronize() {
-      const lists = [...this.$store.getters.lists];
-      const offlineChanges = this.getOfflineChanges(lists);
-      console.log(offlineChanges);
-      let sOD = localStorage.getItem("sOD");
-      const offlineDeletions = sOD ? JSON.parse(sOD) : [];
-      const actions = [...offlineChanges, ...offlineDeletions];
-      console.log(actions);
-      return;
-      /*
-      this.$store
-        .dispatch("rawLists")
-        .then((res) => {
-        .catch((err) => {
-          console.warn(err);
-        });
-          */
-    },
     connectToSocket() {
       if (!this.isLocal) {
         this.waitFor().then(() => {
@@ -187,77 +174,6 @@ export default {
           setTimeout(waitForFoo, 30);
         })();
       });
-    },
-    getOfflineChanges(lists) {
-      let result = [];
-      let Processed = new Map();
-      const inspect = function (item) {
-        Object.keys(item).forEach((key) => {
-          if (key !== "parent" && typeof item[key] === "object") {
-            inspect(item[key]);
-          }
-          if (item.offline === true && !Processed[item._id]) {
-            let type, order;
-            let params = {};
-            let action = /^id/.test(item._id) ? "add" : "update";
-            let p = item.parent.parent;
-            if (!p) {
-              // list
-              type = "list";
-              order = 1;
-              params[type] = (({ title, description }) => ({
-                title,
-                description,
-              }))(item);
-            } else {
-              let parentId = p._id;
-              p = p.parent.parent;
-              if (!p) {
-                type = "item";
-                order = 2;
-                params[type] = (({ title, done }) => ({ title, done }))(item);
-                params.listId = parentId;
-              } else {
-                type = "comment";
-                order = 3;
-                params[type] = (({ text, imageFile }) => ({
-                  text,
-                  imageFile,
-                }))(item);
-                params.listId = p._id;
-                params.itemId = parentId;
-              }
-            }
-            if (action == "update") params[`${type}Id`] = item._id;
-            const method =
-              action + type.charAt(0).toUpperCase() + type.slice(1);
-            Processed[item._id] = true;
-            result.push({
-              order,
-              method,
-              params,
-            });
-          }
-        });
-      };
-      var addParent = {
-        set: function (target, prop, value) {
-          if (typeof value === "object") {
-            var p = new Proxy({ parent: target }, addParent);
-            for (var key in value) {
-              p[key] = value[key];
-            }
-            return (target[prop] = p);
-          } else {
-            target[prop] = value;
-            return true;
-          }
-        },
-      };
-      let data = new Proxy({}, addParent);
-      Object.assign(data, lists);
-      inspect(data);
-      return result;
     },
   },
 };

@@ -10,10 +10,18 @@ import WebView from "../views/Web.vue";
 const View = self.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
+  const wasOffline = localStorage.getItem("offline-since");
+  console.log(wasOffline);
   const loadInitialData =
+    !wasOffline &&
     window.appConnectionMode == "online" &&
     window.initialDataLoad == false &&
     window.isLocal == false;
+  if (loadInitialData) {
+    //console.log("would load now");
+    //    next();
+  }
+  // return;
   if (loadInitialData) {
     store
       .dispatch("info")
@@ -100,6 +108,10 @@ const routes = self.isWeb
       {
         path: "/app/picture/:id/:itemId/:imageFile",
         component: () => import("@/pages/app/Picture.vue"),
+      },
+      {
+        path: "/user/synchronize", // move to /user
+        component: () => import("@/pages/app/Synchronize.vue"),
       },
       {
         path: "/user/login",

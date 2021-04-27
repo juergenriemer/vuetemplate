@@ -55,7 +55,8 @@ const actions = {
   async login({ commit }, data) {
     return User.login(data).then((res) => {
       if (res && res.data) {
-        commit("fetchUser", res.data.userdata);
+        console.log(res.data);
+        commit("fetchUser", res.data.user);
         commit("setToken", res.data.token);
       }
       return res;
@@ -91,7 +92,10 @@ const actions = {
 };
 
 const mutations = {
-  fetchUser: (state, { user }) => (state.user = user),
+  fetchUser: (state, { user }) => {
+    console.log(state);
+    state.user = user;
+  },
   removeUser: (state) => (state.user = null),
   setToken: (state, token) => {
     self.isLocal = false;
