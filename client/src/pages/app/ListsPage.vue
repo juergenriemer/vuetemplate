@@ -80,6 +80,10 @@ export default {
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;
+        case "delete-account":
+          var link = `/user/delete`;
+          this.nav(link);
+          break;
         case "memberships":
           var link = `/app/memberships`;
           link += listId ? `/${listId}` : ``;

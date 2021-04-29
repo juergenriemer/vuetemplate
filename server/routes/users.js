@@ -315,4 +315,130 @@ router.get("/resetPasswordVerify/:token", (req, res, next) => {
     });
 });
 
+router.post(
+  "/delete",
+  passport.authenticate("jwt", { session: false }),
+  userInfo,
+  (req, res, next) => {
+    const { email, password } = req.body;
+    let log = `DELETE_USER(${JSON.stringify(req.body)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > find user";
+        return User.findOne({ email }).exec();
+      })
+      .then((user) => {
+        log += " > check creds";
+        if (!user || !utils.validPassword(password, user.hash, user.salt)) {
+          throw new ApiError(422, "wrong-creds");
+        }
+        const info = { userId: req.userId };
+        return utils.createToken(info, 1);
+      })
+      .then((token) => {
+        log += " > send email";
+        const text = `
+        To delete your account click here:
+        ${baseUrl}/user/delete-verify/${token}
+      `;
+        var opts = {
+          to: email,
+          subject: "Deletion at L",
+          text,
+        };
+        return mail.send(opts);
+      })
+      .then(() => {
+        res.status(200).json();
+      })
+      .catch((err) => {
+        next(err);
+      })
+      .finally((_) => console.log(log));
+  }
+);
+
+router.get("/deleteVerify/:token", (req, res, next) => {
+  let log = `DELETE_VERIFY_USER(${JSON.stringify(req.params)})::`;
+  const List = mongoose.model("List");
+  const { deleteFolder } = require("../lib/files.js");
+  const data = utils.validateToken(req.params.token);
+  const deleteId = data.userId;
+  if (!data) next(new ApiError(422, "token-invalid"));
+  if (new Date(data.expiry) < new Date())
+    next(new ApiError(422, "token-expired"));
+  let ownerLists = [];
+  Promise.resolve()
+    .then(() => {
+      log += " > find user";
+      return User.findOne({ _id: deleteId }).exec();
+    })
+    .then((user) => {
+      if (!user) {
+        throw new ApiError(422, "user-not-found");
+      } else {
+        log += " > delete user";
+        return user.remove();
+      }
+      return true;
+    })
+    .then(() => {
+      log += " > set user 'deleted' role in all lists";
+      return List.updateMany(
+        { "users.userId": deleteId },
+        {
+          $set: { "users.$.role": "deleted" },
+        },
+        { multi: true, upsert: true }
+      );
+    })
+    .then(() => {
+      log += " > load all lists";
+      return List.find({ "users.userId": deleteId }).select(
+        "users _id creatorId"
+      );
+    })
+    .then((lists) => {
+      log += " > analyze data";
+      let notify = new Map();
+      lists.forEach((lst) => {
+        if (lst.creatorId == deleteId) ownerLists.push(lst._id);
+        lst.users.forEach((usr) => {
+          if (!usr.userId == deleteId) notify[usr.userId] = 1;
+        });
+      });
+      log += " > notify all users";
+      const data = {
+        type: "deleteUser",
+        data: {
+          userId: deleteId,
+        },
+      };
+      for (let userId in notify) {
+        utils.users[user.userId].forEach((usr) => {
+          io.emit(usr, data);
+        });
+      }
+    })
+    .then(() => {
+      log += " > delete all user's own lists";
+      return List.remove({ creatorId: deletedId });
+    })
+    .then(() => {
+      log += " > delete all lists's upload folders";
+      ownerLists.forEach((listId) => {
+        const listFolder = `./uploads/${listId}`;
+        log += " > delete " + listId;
+        return deleteFolder(listFolder);
+      });
+    })
+    .then(() => {
+      res.status(200).json();
+    })
+    .catch((err) => {
+      next(err);
+    })
+    .finally((_) => console.log(log));
+});
+
 module.exports = router;

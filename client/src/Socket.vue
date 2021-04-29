@@ -123,7 +123,6 @@ export default {
     },
     listenOnNetworkStatus() {
       window.bus.on("network-status", (status) => {
-        console.log(status);
         switch (status) {
           case "online":
             console.log("online");
@@ -156,8 +155,8 @@ export default {
           });
           socket.on(csrf, (res) => {
             let { type, data } = res;
+            console.log( "socket", type, data)
             data.socket = true;
-            return;
             if (this.allowedActions.includes(type))
               this.$store.dispatch(type, data);
           });

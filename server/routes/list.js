@@ -90,9 +90,11 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
+    console.log("username: " + req.name);
     const data = (({ title }) => ({ title }))(req.body);
     let list = new List(data);
     list._id = new mongoose.mongo.ObjectId();
+    list.creatorId = req.userId;
     list.users = [
       {
         userId: req.userId,

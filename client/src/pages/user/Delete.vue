@@ -1,29 +1,12 @@
 <template lang="pug">
-base-layout(page-title="Register")
+base-layout(page-title="Delete Account")
   template(v-slot:title)
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
     .ion-padding
+      p Note that if you delete your account all your lists will get deleted. They can not be recovered at a later stage.
       form(ref="form", v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
         ion-list
-          ion-item
-            ion-label(position="floating") First Name
-            ion-input(
-              name="firstName",
-              type="text",
-              rules="required",
-              :disabled="disabled"
-            )
-          form-error(:error="errors.firstName",for="firstName")
-          ion-item
-            ion-label(position="floating") Last Name
-            ion-input(
-              name="lastName",
-              type="text",
-              rules="required",
-              :disabled="disabled"
-            )
-          form-error(:error="errors.lastName",for="lastName")
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
@@ -42,38 +25,25 @@ base-layout(page-title="Register")
               :disabled="disabled"
             )
           form-error(for="password", :error="errors.password")
-          ion-item
-            ion-label(position="floating") Retype Password
-            ion-input(
-              name="retypedPassword",
-              type="text",
-              rules="required,equal:password",
-              :disabled="disabled"
-            )
-          form-error(:error="errors.retypedPassword",for="retypedPassword")
         ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
         button.hide(type="submit", :disabled="disabled")
 
-      info-sheet(type="error", v-if="status == 'is-registered'")
+
+      info-sheet(type="error", v-if="status == 'wrong-creds'")
         template(v-slot:content)
           p
-            | The account exists already.
+            | Wrong e-mail or password.
           p
-            | If you are having troubles logging please try to reset your password.
-          a(href="/user/reset-password")
-            | Reset your password
-      info-sheet(type="error", v-if="status == 'in-registration'")
-        template(v-slot:content)
+            | Please try again or if you are having troubles logging consider to reset your password.
+          p 
+            a(href="/user/delete", @click="status = 'idle'") Try again
           p
-            | The account exists already but was not yet verified.
-          p
-            | In case you did not receive an e-mail we can send it again.
-          a(href="/user/resend-verification")
-            | Resend registration verification
+            a(href="/user/reset-password") Reset your password
+
       info-sheet(type="success", v-if="status == 'OK'")
         template(v-slot:content)
           p
-            | Your registration was successful.
+            | Your deletion request was successful.
           p
             | Please check your mailbox for a verification e-mail.
 </template>
@@ -127,7 +97,7 @@ export default {
   methods: {
     async submit() {
       return this.$store
-        .dispatch("registerUser", this.form)
+        .dispatch("deleteUser", this.form)
         .then(() => {
           this.showInfoSheet = true;
           this.status = "OK";
@@ -135,8 +105,8 @@ export default {
         .catch((err) => {
           switch (err.status) {
             case 422:
+              console.log( err.message )
               this.showInfoSheet = true;
-              console.log(err.message);
               this.status = err.message;
               break;
             default:

@@ -1,5 +1,5 @@
 <template lang="pug">
-base-layout(page-title="Verify Your Registration")
+base-layout(page-title="Verify Account Deletion")
   template(v-slot:title)
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
@@ -9,9 +9,9 @@ base-layout(page-title="Verify Your Registration")
           p
             | The link already expired.
           p
-            | Click the link below to send it again.
-          a(href="/user/resend-verification")
-            | Resend registration verification
+            | Click the link below to request again.
+          a(href="/user/delete")
+            | Reset password again
 
       info-sheet(type="error", v-if="status == 'token-invalid'")
         template(v-slot:content)
@@ -19,34 +19,23 @@ base-layout(page-title="Verify Your Registration")
             | The link is invalid.
           p
             | In case you pasted the link make sure you copied the entire link.
-            | We can also send another verification e-mail to you.
-          a(href="#/resend-verification")
-            | Resend registration verification
+            | You can also request deletion again.
+          a(href="/user/delete")
+            | Reset password again
 
-      info-sheet(type="error", v-if="status == 'unknown-user'")
+      info-sheet(type="error", v-if="status == 'user-not-found'")
         template(v-slot:content)
           p
             | There is no user attached to this link
           p
-            | Perhaps you want to register again?
-          a(href="#/register")
-            | Register an account
-
-      info-sheet(type="error", v-if="status == 'user-already-verified'")
-        template(v-slot:content)
-          p
-            | The account is already verified.
-          p
-            | In case you have troubles logging in, consider to reset your password.
-          a(href="#/reset-password")
-            | Reset your password
+            | It seems you already deleted your account
 
       info-sheet(type="success", v-if="status == 'OK'")
         template(v-slot:content)
           p
-            | Your registration was successful.
+            | The deletion of your account was successful.
           p
-            | You get redirected
+            | We hope to see you again!
 </template>
 <script>
 // REF: test all links in above error modes.. didn't test them all
@@ -70,20 +59,17 @@ export default {
     submit() {
       const token = this.$route.params.id;
       this.$store
-        .dispatch("registerVerify", token)
+        .dispatch("deleteUserVerify", token)
         .then((res) => {
           this.status = "OK";
           this.showInfoSheet = true;
-          if (res.data.lists && res.data.lists.length) {
-            this.invites = res.data.lists;
-            // this doesn't loooooad users, hence no login!
-            this.nav("/user/approve-invites");
-          } else {
-            this.nav("/app/list");
-          }
+          setTimeout( ()=> {
+            //this.nav( "/")
+                     }, 3000);
         })
         .catch((err) => {
           this.showInfoSheet = true;
+          console.log( err )
           switch (err.status) {
             case 400:
               this.status = "idle";

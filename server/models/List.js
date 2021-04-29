@@ -57,6 +57,10 @@ const ListSchema = new mongoose.Schema(
     description: {
       type: "String",
     },
+    creatorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     items: [ItemSchema],
     users: [
       {

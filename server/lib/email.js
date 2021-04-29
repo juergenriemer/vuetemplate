@@ -10,6 +10,12 @@ var send = (opts) => {
   opts.from = "TEST<juergen.riemer@segestria.at>";
   console.log(opts);
 
+  const fs = require("fs");
+  file = `../tests/test-files/${opts.subject}.eml`;
+  fs.writeFile(file, opts.text, (err) => {
+    console.log(err);
+  });
+
   var p = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve();
@@ -18,6 +24,7 @@ var send = (opts) => {
   p.then(() => {
     return true;
   });
+
   return;
   return transport
     .sendMail(opts)

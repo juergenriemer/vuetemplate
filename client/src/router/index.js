@@ -131,13 +131,21 @@ const routes = self.isWeb
         component: () => import("@/pages/user/ResetPassword.vue"),
       },
       {
-        path: "/user/reset-password-verify",
+        path: "/user/reset-password-verify/:id",
         component: () => import("@/pages/user/ResetPasswordVerify.vue"),
       },
       {
         path: "/user/approve-invites",
         alias: "/app/approve-invites",
         component: () => import("@/pages/user/ApproveInvites.vue"),
+      },
+      {
+        path: "/user/delete",
+        component: () => import("@/pages/user/Delete.vue"),
+      },
+      {
+        path: "/user/delete-verify/:id",
+        component: () => import("@/pages/user/DeleteVerify.vue"),
       },
     ];
 

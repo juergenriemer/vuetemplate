@@ -89,6 +89,27 @@ const actions = {
   offlineUser({ commit }) {
     commit("offlineUser");
   },
+
+  async deleteUser({ commit, getters }, creds) {
+    if (wire(arguments)) {
+      return http()
+        .post(`${root}/delete`, creds)
+        .then((res) => {
+          return res;
+        });
+    }
+  },
+
+  async deleteUserVerify({ commit }, token) {
+    if (wire(arguments)) {
+      return http()
+        .get(`${root}/deleteVerify/${token}`)
+        .then((res) => {
+          commit("deleteUser");
+          return res;
+        });
+    }
+  },
 };
 
 const mutations = {
@@ -103,6 +124,13 @@ const mutations = {
     localStorage.setItem("token", token);
   },
   clearUser: (state) => (state.user = {}),
+  deleteUser: (state) => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("store");
+    var mydate = new Date();
+    mydate.setTime(mydate.getTime() - 1);
+    document.cookie = "_csrf=; expires=" + mydate.toGMTString();
+  },
   logout: (state) => {
     localStorage.removeItem("token");
     sessionStorage.removeItem("csrf");

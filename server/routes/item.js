@@ -132,7 +132,6 @@ router.post(
     req.list
       .save()
       .then((list) => {
-        res.status(200).json({ item });
         utils.broadcast(req, list, {
           type: "addItem",
           data: {
@@ -140,6 +139,7 @@ router.post(
             item,
           },
         });
+        res.status(200).json({ item });
       })
       .catch((error) => {
         next(error);

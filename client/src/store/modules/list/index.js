@@ -52,7 +52,8 @@ const getters = {
   members: (state, getters, rootState) => {
     let members = {};
     const owner = rootState.user.user;
-    members[owner.userId] = owner;
+    // REF: below is needed for registration cases.. improve
+    if (owner) members[owner.userId] = owner;
     if (state.lists)
       state.lists.forEach((lst) => {
         lst.users.forEach((usr) => (members[usr.userId] = usr));
@@ -63,7 +64,8 @@ const getters = {
   getMember: (state, getters, rootState) => (memberId) => {
     let members = {};
     const owner = rootState.user.user;
-    members[owner.userId] = owner;
+    // REF: below is needed for registration cases.. improve
+    if (owner) members[owner.userId] = owner;
     if (state.lists)
       state.lists.forEach((lst) => {
         return lst.users.forEach((usr) => (members[usr.userId] = usr));
