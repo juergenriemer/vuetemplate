@@ -10,6 +10,7 @@ base-layout(page-title="Delete Account")
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
+            id="delete-email",
               name="email",
               type="email",
               rules="required,email",

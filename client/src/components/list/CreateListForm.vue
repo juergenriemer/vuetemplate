@@ -16,7 +16,7 @@
         <ion-textarea name="description" rows="5"></ion-textarea>
       </ion-item>
     </ion-list>
-    <ion-button :disabled="disabled" type="submit" expand="block"
+    <ion-button class="btn-app-add" :disabled="disabled" type="submit" expand="block"
       >Save</ion-button
     >
   </form>

@@ -64,7 +64,7 @@ export default {
           this.status = "OK";
           this.showInfoSheet = true;
           setTimeout( ()=> {
-            //this.nav( "/")
+            this.nav( "/")
                      }, 3000);
         })
         .catch((err) => {

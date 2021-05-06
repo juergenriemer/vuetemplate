@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-describe("My First Test", () => {
+describe("Registration", () => {
   it("test client side error handling", () => {
     const requiredError = "This field is required";
     const emailError = "This is no valid e-mail";
@@ -31,7 +31,12 @@ describe("My First Test", () => {
     cy.get("button").click();
     cy.get("[for='retypedPassword']").should("have.text", retypedError);
   });
-  it.only("test registration", () => {
+
+  it("register user", () => {
+    cy.registerUser("fake@email.com", "Test123!", "Test", "User");
+  });
+
+  it("register with same email", () => {
     cy.visit("http://10.0.0.165:8100/user/register");
     cy.get('[name="firstName"]').clear().type("Test");
     cy.get('[name="lastName"]').clear().type("User");
@@ -39,18 +44,15 @@ describe("My First Test", () => {
     cy.get('[name="password"]').clear().type("Test123!");
     cy.get('[name="retypedPassword"]').clear().type("Test123!");
     cy.get("button").click();
-    cy.get(".message").should(
+    // REF: test for all text content (iincl links)
+    cy.get(".message p:nth-child(1)").should(
       "have.text",
-      "Your registration was successful.Please check your mailbox for a verification e-mail."
+      "The account exists already."
     );
-    cy.readFile("./test-files/Registration at L.eml").then((str) => {
-      let rx = /(http:\/\/[^ ]*)/;
-      let url = str.match(rx)[1];
-      cy.visit(url);
-    });
-    cy.url().should("contain", "/app/list");
-    cy.request("DELETE", "http://10.0.0.165:3003/users");
-    cy.visit("http://10.0.0.165:8100");
-    cy.url().should("contain", "/user/login");
+  });
+
+  it("delete test user", () => {
+    cy.login("fake@email.com", "Test123!");
+    cy.deleteUser("fake@email.com", "Test123!");
   });
 });

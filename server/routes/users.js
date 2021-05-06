@@ -251,11 +251,11 @@ router.post("/resetPassword", (req, res, next) => {
     .then((token) => {
       const text = `
         To finish your password reset click here:
-        ${baseUrl}#/reset-password-verify/${token}
+        ${baseUrl}/user/reset-password-verify/${token}
       `;
       var opts = {
         to: email,
-        subject: "Password reset at L",
+        subject: "Reset Password at L",
         text,
       };
       return mail.send(opts);
@@ -368,6 +368,7 @@ router.get("/deleteVerify/:token", (req, res, next) => {
   if (new Date(data.expiry) < new Date())
     next(new ApiError(422, "token-expired"));
   let ownerLists = [];
+  let userLists = [];
   Promise.resolve()
     .then(() => {
       log += " > find user";
@@ -383,25 +384,29 @@ router.get("/deleteVerify/:token", (req, res, next) => {
       return true;
     })
     .then(() => {
-      log += " > set user 'deleted' role in all lists";
-      return List.updateMany(
-        { "users.userId": deleteId },
-        {
-          $set: { "users.$.role": "deleted" },
-        },
-        { multi: true, upsert: true }
-      );
-    })
-    .then(() => {
       log += " > load all lists";
       return List.find({ "users.userId": deleteId }).select(
         "users _id creatorId"
       );
     })
     .then((lists) => {
+      userLists = lists;
+      log += " > set user 'deleted' role in all lists";
+      const hasLists = lists.length;
+      if (userLists.length > 0)
+        return List.updateMany(
+          { "users.userId": deleteId },
+          {
+            $set: { "users.$.role": "deleted" },
+          },
+          { multi: true, upsert: true }
+        );
+      return true;
+    })
+    .then(() => {
       log += " > analyze data";
       let notify = new Map();
-      lists.forEach((lst) => {
+      userLists.forEach((lst) => {
         if (lst.creatorId == deleteId) ownerLists.push(lst._id);
         lst.users.forEach((usr) => {
           if (!usr.userId == deleteId) notify[usr.userId] = 1;
@@ -422,7 +427,7 @@ router.get("/deleteVerify/:token", (req, res, next) => {
     })
     .then(() => {
       log += " > delete all user's own lists";
-      return List.remove({ creatorId: deletedId });
+      return List.remove({ creatorId: deleteId });
     })
     .then(() => {
       log += " > delete all lists's upload folders";

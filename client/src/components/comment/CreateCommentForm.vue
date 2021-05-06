@@ -1,11 +1,11 @@
 <template>
   <form id="bottom-input" class="ion-padding" @submit.prevent="submit">
     <ion-fab vertical="bottomxl" horizontal="startx" xslot="fixed">
-      <ion-fab-button id="comment-fab" color="primary" size="small">
+      <ion-fab-button aria-label="attachment" id="comment-fab" color="primary" size="small">
         <ion-icon :icon="attach"></ion-icon>
       </ion-fab-button>
       <ion-fab-list side="top">
-        <ion-fab-button @click="$refs.upload.click()">
+        <ion-fab-button aria-label="upload" @click="$refs.upload.click()">
           <ion-icon :icon="image" size="medium"></ion-icon>
           <input
             ref="upload"
@@ -42,11 +42,11 @@
         </div>
       </div>
       <ion-buttons id="comment-buttons" slot="end">
-        <ion-button @click="reset">
+        <ion-button aria-label="close-comment" @click="reset">
           <ion-icon :icon="close" size="medium"></ion-icon>
         </ion-button>
-        <ion-button :disabled="saveDisabled" @click="submit">
-          <ion-icon :icon="send" size="medium"></ion-icon>
+        <ion-button aria-label="save-comment" :disabled="saveDisabled" @click="submit">
+          xxx<ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>

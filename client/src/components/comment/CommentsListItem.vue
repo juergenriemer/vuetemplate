@@ -7,6 +7,7 @@
       ion-icon.menu(
         slot="icon-only",
         :icon="ellipsisVertical",
+        aria-label="delete-comment"
         @click="showMenu"
       )
     img.ion-hide.thumb(ref="thumb", @click="openPicture(comment.imageFile)")

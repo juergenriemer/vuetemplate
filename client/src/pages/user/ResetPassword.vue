@@ -7,38 +7,35 @@ base-layout(page-title="Reset Password", :link="link")
       ion-icon(:icon="key", size="large")
   template(v-slot:content)
     .ion-padding
-      form(v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
+      form(ref="form", v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
         ion-list
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
               name="email",
               type="email",
-              v-model="form.email",
               rules="required,email",
               :disabled="disabled"
             )
-          form-error(:error="errors.email")
+          form-error(for="email", :error="errors.email")
           ion-item
             ion-label(position="floating") Password
             ion-input(
               name="password",
               type="text",
-              v-model="form.password",
-              rules="password",
+              rules="required,password",
               :disabled="disabled"
             )
-          form-error(:error="errors.password")
+          form-error(for="password", :error="errors.password")
           ion-item
             ion-label(position="floating") Retype Password
             ion-input(
               name="retypedPassword",
               type="text",
-              v-model="form.retypedPassword",
-              rules="equal:password",
+              rules="required,equal:password",
               :disabled="disabled"
             )
-          form-error(:error="errors.retypedPassword")
+          form-error(for="retypedPassword", :error="errors.retypedPassword")
         ion-button(type="submit", expand="block", :disabled="disabled") RESET
         button.hide(type="submit", :disabled="disabled")
 
@@ -96,11 +93,6 @@ export default {
   data: () => ({
     key,
     showInfoSheet: false,
-    form: {
-      email: "juergen.riemer@gmail.com",
-      password: "Test!234",
-      retypedPassword: "Test!234",
-    },
   }),
   computed: {
     // REF: move to baselayout.. same in ItemsPage.vue

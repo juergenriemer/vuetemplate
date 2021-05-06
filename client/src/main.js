@@ -71,7 +71,7 @@ app.mixin({
     },
     scrollToBottom() {
       this.$nextTick(() => {
-        document.querySelector("#content-area").scrollToBottom();
+        document.querySelector(".content-area").scrollToBottom();
       });
     },
     showError(err) {

@@ -15,7 +15,7 @@ var send = (opts) => {
   fs.writeFile(file, opts.text, (err) => {
     console.log(err);
   });
-
+  console.log("FIIIIIILLEE", file);
   var p = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve();

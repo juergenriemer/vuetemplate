@@ -32,7 +32,7 @@ base-layout(page-title="Login")
               :disabled="disabled"
             )
           form-error(:error="errors.password")
-        ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
+        ion-button.btn-login(type="submit", expand="block", :disabled="disabled") LOGIN
         button.ion-hide(type="submit", :disabled="disabled")
         ul
           li
@@ -117,6 +117,7 @@ export default {
   }),
   computed: {},
   mounted() {
+    return;
     setTimeout(() => {
       this.$refs.form.querySelector("[name='email']").value =
         "juergen.riemer@gmail.com";

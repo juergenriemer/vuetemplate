@@ -1,5 +1,5 @@
 <template>
-  <base-layout page-title="Listle">
+  <base-layout page-title="Listle" page-id="ListsPage">
     <template v-slot:title>
       <avatar
         style="cursor: pointer"
@@ -80,7 +80,7 @@ export default {
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;
-        case "delete-account":
+        case "delete-user":
           var link = `/user/delete`;
           this.nav(link);
           break;

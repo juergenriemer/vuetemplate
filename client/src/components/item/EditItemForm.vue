@@ -12,11 +12,11 @@
         v-model="itemInEditMode.title"
       ></ion-input>
       <ion-buttons slot="end">
-        <ion-button @click="stopEditing">
+        <ion-button aria-label="close-edit" @click="stopEditing">
           <ion-icon :icon="close" size="medium"></ion-icon>
         </ion-button>
         <ion-button :disabled="sendDisabled" @click="submit">
-          <ion-icon :icon="send" size="medium"></ion-icon>
+          <ion-icon aria-label="save-edit" :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>

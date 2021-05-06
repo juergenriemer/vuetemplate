@@ -4,7 +4,7 @@
     <menu-item label="My Memberships" :icon="people" data="memberships" />
     <menu-item label="My Invitations" :icon="mail" data="approve-invites" />
     <menu-item label="Change Password" :icon="key" data="reset-password" />
-    <menu-item label="Delete Account" :icon="trash" data="delete-account" />
+    <menu-item label="Delete Account" :icon="trash" data="delete-user" />
   </ion-list>
 </template>
 <script>

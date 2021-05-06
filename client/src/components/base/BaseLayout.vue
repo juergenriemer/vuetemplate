@@ -1,9 +1,11 @@
 <template>
-  <page>
+  <page
+      :id="pageId"
+    >
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button @click="back(link)" v-if="link">
+          <ion-button class="btn-base-back" @click="back(link)" v-if="link">
             <ion-icon slot="icon-only" :icon="icon" size="large"></ion-icon>
           </ion-button>
           <slot name="title"></slot>
@@ -17,8 +19,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content
-      id="content-area"
-      class="scroller"
+      class="content-area"
       style="--offset-bottom: 58px"
     >
       <slot class="scroller" name="content" />
@@ -46,7 +47,7 @@ import WebPage from "./MyPage.vue";
 const Page = window.isWeb ? WebPage : IonPage;
 
 export default {
-  props: ["pageTitle", "link", "pageDefaultBackLink"],
+  props: ["pageTitle", "pageId", "link", "pageDefaultBackLink"],
   components: {
     IonPage,
     Page,

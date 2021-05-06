@@ -1,5 +1,5 @@
 <template>
-  <base-layout :page-title="currentItem.title" :link="link">
+  <base-layout :page-title="currentItem.title" page-id="CommentsPage" :link="link">
     <template v-slot:title>
       <avatar size="large" :list-title="currentList.title" />
     </template>

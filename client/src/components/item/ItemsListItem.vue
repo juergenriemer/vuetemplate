@@ -12,6 +12,7 @@
       </ion-label>
       <ion-buttons slot="start">
         <ion-button
+          aria-label="item-status"
           :class="item.done ? 'done2' : 'undone2'"
           @click="checkItem(item._id)"
         >
@@ -21,11 +22,14 @@
 
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
-        <ion-button @click="loadComments(item._id)" v-if="item.comments.length">
+        <ion-button aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
           <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
         </ion-button>
-        <ion-button @click="showMenu($event)">
-          <ion-icon slot="icon-only" :icon="ellipsisVertical"></ion-icon>
+        <ion-button 
+            aria-label="item-menu"
+          @click="showMenu($event)">
+          <ion-icon 
+            slot="icon-only" :icon="ellipsisVertical"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-item>
