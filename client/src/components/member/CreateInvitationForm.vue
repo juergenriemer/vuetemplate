@@ -6,7 +6,7 @@
       <ion-input type="text" :disabled="disabled" rules="email" name="email" />
     </ion-item>
     <form-error :error="errors.email"></form-error>
-    <ion-button type="submit" :disabled="disabled" expand="block"
+    <ion-button aria-label="invite-friend" type="submit" :disabled="disabled" expand="block"
       >INVITE</ion-button
     >
   </form>
@@ -44,6 +44,7 @@ export default {
     return {};
   },
   mounted() {
+    return;
     setTimeout(() => {
       this.$refs.form.querySelector("[name='email']").value = "mordret@sms.at";
     }, 1000);
