@@ -12,7 +12,6 @@
         </ion-buttons>
         <ion-title>
           {{ pageTitle }}
-          - {{ pageId}}
         </ion-title>
         <ion-buttons slot="end">
           <slot name="actions-end"></slot>

@@ -14,6 +14,7 @@ const host = "http://localhost:8100";
 Cypress.Commands.add("home", () => {
   cy.visit(host + "/app/list");
   cy.url().should("include", "/app/list");
+  cy.reload();
 });
 Cypress.Commands.add("itemAdd", (title) => {
   cy.get("#ItemsPage .native-input").should("have.value", "");
@@ -161,6 +162,14 @@ Cypress.Commands.add("login", (email, password) => {
   cy.get(".btn-login").click();
   cy.url().should("contain", "/app/list");
 });
+Cypress.Commands.add("logout", (email, password) => {
+  cy.visit(host + "/app/list");
+  cy.reload();
+  cy.url().should("contain", "/app/list");
+  cy.get(".buttons-first-slot > #avatar > div").click();
+  cy.get("[data='logout'] ion-label").click();
+  cy.url().should("contain", "/user/login");
+});
 Cypress.Commands.add("deleteUser", (email, password) => {
   cy.visit(host + "/app/list");
   cy.reload();
@@ -169,9 +178,8 @@ Cypress.Commands.add("deleteUser", (email, password) => {
   cy.get("[data='delete-user'] ion-label").click();
   cy.url().should("contain", "/user/delete");
   cy.reload();
-  cy.get('[name="email"]').clear().type(email);
-  cy.get('[name="password"]').type(password);
-
+  cy.get('[name="email"]').then((node) => node.val(email));
+  cy.get('[name="password"]').then((node) => node.val(password));
   cy.get("button").click();
   cy.get(".message p:nth-child(1)").should(
     "have.text",
@@ -188,7 +196,7 @@ Cypress.Commands.add("deleteUser", (email, password) => {
 
 Cypress.Commands.add("user", (action, name) => {
   const email = `tu${name}@listle.app`;
-  const lastName = ["1one", "2two", "3three"];
+  const lastName = ["0zero", "1one", "2two", "3three"];
   switch (action) {
     case "create":
       cy.registerUser(email, "Test123!", "TestUser", lastName[name]);
@@ -202,33 +210,6 @@ Cypress.Commands.add("user", (action, name) => {
   }
 });
 
-Cypress.Commands.add("createTestUser1", () => {
-  cy.registerUser("tu1@listle.app", "Test123!", "TestUser", "1one");
-});
-Cypress.Commands.add("createTestUser2", () => {
-  cy.registerUser("tu2@listle.app", "Test123!", "TestUser", "2two");
-});
-Cypress.Commands.add("createTestUser3", () => {
-  cy.registerUser("tu3@listle.app", "Test123!", "TestUser", "3three");
-});
-Cypress.Commands.add("loginTestUser1", () => {
-  cy.login("tu1@listle.app", "Test123!");
-});
-Cypress.Commands.add("loginTestUser2", () => {
-  cy.login("tu2@listle.app", "Test123!");
-});
-Cypress.Commands.add("loginTestUser3", () => {
-  cy.login("tu3@listle.app", "Test123!");
-});
-Cypress.Commands.add("deleteTestUser1", () => {
-  cy.deleteTestUser1("tu1@listle.app", "Test123!");
-});
-Cypress.Commands.add("deleteTestUser2", () => {
-  cy.deleteTestUser1("tu2@listle.app", "Test123!");
-});
-Cypress.Commands.add("deleteTestUser3", () => {
-  cy.deleteTestUser1("tu3@listle.app", "Test123!");
-});
 Cypress.Commands.add("registerUser", (email, password, firstName, lastName) => {
   cy.visit(host + "/user/register");
   cy.get('[name="firstName"]').then((node) => node.val(firstName));
@@ -246,7 +227,6 @@ Cypress.Commands.add("registerUser", (email, password, firstName, lastName) => {
     let url = str.match(rx)[1];
     cy.visit(url);
   });
-  cy.url().should("contain", "/app/list");
 });
 //
 Cypress.Commands.add("resetPassword", (email, password) => {

@@ -1,5 +1,5 @@
 <template lang="pug">
-base-layout(page-title="My Invitations", link="/app/list")
+base-layout(page-title="My Invitations", page-id="ApproveInvites", link="/app/list")
   template(v-slot:title)
     avatar(size="large", logo="Listle")
   template(v-slot:actions-end)
