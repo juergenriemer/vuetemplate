@@ -16,7 +16,20 @@
  * @type {Cypress.PluginConfig}
  */
 // eslint-disable-next-line no-unused-vars
+
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-}
+  on("task", {
+    zog(message) {
+      console.log("zog: " + message);
+      return null;
+    },
+    stopBackend() {
+      console.log("stopping backend");
+      const cmd = "kill $(ps aux | grep 'node app.js' | awk '{print $2}')";
+      cy.exec(cmd).then((res) => {
+        console.log("stopped backend");
+        return null;
+      });
+    },
+  });
+};
