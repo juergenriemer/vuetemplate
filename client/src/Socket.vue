@@ -17,8 +17,6 @@ import { cloudOffline } from "ionicons/icons";
 import { alertController } from "@ionic/core";
 import Dates from "@/mixins/Dates";
 import * as io from "socket.io-client";
-import mitt from "mitt";
-window.bus = mitt();
 
 export default {
   mixins: [Dates],
@@ -27,9 +25,11 @@ export default {
   },
   data() {
     return {
-      infoWindow: null,
+      offlineTolerance :2000,
       cloudOffline,
-      offline: false,
+      offline : null,
+      offlineInfo : null,
+      syncInfo : null,
       allowedActions: [
         "addList",
         "updateList",
@@ -46,22 +46,26 @@ export default {
       ],
     };
   },
-  computed: {
-    userId() {
-      let user = this.$store.getters.user;
-      return user ? user._id : "";
-    },
-  },
   created() {
-    this.listenOnNetworkStatus();
-    if (window.networkStatus !== "offline") {
+    if( window.$$.appMode == "online" ) {
+      if( window.$$.network == "offline") this.setOfflineMode();
+      this.listenOnNetworkStatus();
       this.connectToSocket();
-    } else {
-      this.offline = true;
-      this.showOfflineInfo();
     }
   },
   methods: {
+    setOfflineMode() {
+      this.offline = true;
+      const offlineSince = localStorage.getItem( "offine-since");
+      if( !offlineSince ) localStorage.setItem("offline-since", this.now());
+      this.showOfflineInfo();
+    },
+    hideAlerts() {
+      if (this.offlineInfo && !this.offlineInfo._detached) this.offlineInfo.dismiss();
+      if (this.syncInfo && !this.syncInfo._detached) this.syncInfo.dismiss();
+      this.offlineInfo = null;
+      this.syncInfo = null;
+    },
     async showOfflineInfo() {
       alertController
         .create({
@@ -81,12 +85,12 @@ export default {
           ],
         })
         .then((res) => {
-          if (this.infoWindow) this.infoWindow.dismiss();
-          this.infoWindow = res;
-          this.infoWindow.present();
+          this.hideAlerts();
+          this.offlineInfo = res;
+          this.offlineInfo.present();
         });
     },
-    async confirmSynchronization() {
+    async showSyncInfo() {
       alertController
         .create({
           header: "Synchronize with the server",
@@ -116,42 +120,42 @@ export default {
           ],
         })
         .then((res) => {
-          if (this.infoWindow) this.infoWindow.dismiss();
-          this.infoWindow = res;
-          this.infoWindow.present();
+          this.hideAlerts();
+          this.syncInfo = res;
+          this.syncInfo.present();
         });
     },
     listenOnNetworkStatus() {
-      window.bus.on("network-status", (status) => {
-        switch (status) {
+      window.bus.on("network-status", () => {
+        switch (window.$$.network) {
           case "online":
-            console.log("online");
-            if (this.infoWindow) this.infoWindow.dismiss();
             this.offline = false;
-            window.networkStatus = "online";
-            const offlineSince = localStorage.getItem("offline-since");
-            if (offlineSince) this.confirmSynchronization();
+            this.hideAlerts();
+            if (window.checkNeedForSync()) this.showSyncInfo();
             break;
           case "offline":
-            console.log("offline");
+            setTimeout( () => {
+              if( window.$$.network == "offline") this.setOfflineMode();
+            }, this.offlineTolerance )
             // REF: wait 10 secs before doing
-            localStorage.setItem("offline-since", this.now());
-            if (!this.offline) this.showOfflineInfo();
-            this.offline = true;
-            window.networkStatus = "offline";
             break;
         }
       });
     },
     // REF: DONST SEND invitees in list object to users only to owner
     connectToSocket() {
-      if (!this.isLocal) {
         this.waitFor().then(() => {
           const socket = io(process.env.VUE_APP_SOCKET);
           const csrf = sessionStorage.getItem("csrf");
           socket.on("connect", () => {
-            window.bus.emit("network-status", "online");
-            socket.emit("join", { userId: this.userId, csrf });
+            let user = this.$store.getters.user;
+            socket.emit("join", { userId: user._id, csrf });
+            window.$$.network = "online";
+            window.bus.emit("network-status");
+          });
+          socket.on("disconnect", () => {
+            window.$$.network = "offline";
+            window.bus.emit("network-status");
           });
           socket.on(csrf, (res) => {
             let { type, data } = res;
@@ -160,17 +164,14 @@ export default {
             if (this.allowedActions.includes(type))
               this.$store.dispatch(type, data);
           });
-          socket.on("disconnect", () => {
-            window.bus.emit("network-status", "offline");
-          });
         });
-      }
     },
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {
           if (sessionStorage.getItem("csrf")) return resolve();
-          setTimeout(waitForFoo, 30);
+          console.log( 'x')
+          setTimeout(waitForFoo, 1000);
         })();
       });
     },

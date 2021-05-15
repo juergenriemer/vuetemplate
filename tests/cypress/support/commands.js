@@ -11,6 +11,17 @@
 //
 // -- This is a parent command --
 const host = "http://localhost:8100";
+
+Cypress.Commands.add("startBackend", () => {
+  const start = ". ./startBackend.sh";
+  cy.exec(start); //.its("code").should("eq", 0);
+});
+Cypress.Commands.add("stopBackend", () => {
+  const stop =
+    "kill -9 $(ps aux | grep '[l]istle-server.js' | awk '{print $2}')";
+  cy.exec(stop).its("code").should("eq", 0);
+});
+
 Cypress.Commands.add("home", () => {
   cy.visit(host + "/app/list");
   cy.url().should("include", "/app/list");

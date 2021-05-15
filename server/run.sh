@@ -1,2 +1,3 @@
-cd /usr/projects/vue/template/server
-fuser -k 3003/tcp | nodemon app.js
+kill -9 $(ps aux | grep '[l]istle-server.js' | awk '{print $2}')
+cd /Users/juergenriemer/Projects/todo/vuetemplate/server/ 
+nodemon listle-server.js

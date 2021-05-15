@@ -49,10 +49,12 @@ http.interceptors.request.use(
 );
 
 const setNetworkStatus = (status) => {
+  /*
   if (window.networkStatus !== status) {
     window.networkStatus = status;
     window.bus.emit("network-status", status);
   }
+*/
 };
 
 http.interceptors.response.use(

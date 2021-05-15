@@ -23,13 +23,5 @@ module.exports = (on, config) => {
       console.log("zog: " + message);
       return null;
     },
-    stopBackend() {
-      console.log("stopping backend");
-      const cmd = "kill $(ps aux | grep 'node app.js' | awk '{print $2}')";
-      cy.exec(cmd).then((res) => {
-        console.log("stopped backend");
-        return null;
-      });
-    },
   });
 };

@@ -10,13 +10,26 @@
 //ionic build
 // to updateuse: npx cap copy
 // npx cap open android
+import mitt from "mitt";
+window.bus = mitt();
 
+window.$$ = {
+  network : "unkown"
+  , appMode : "online"
+};
 window.isLocal = false;
 window.isWeb = false;
 window.networkStatus = "unknown";
 window.initialDataLoad = false;
-window.appConnectionMode = "online";
+window.appConnectionMode = "online"; // duplicate of isLocal?
 
+window.checkNeedForSync = () => {
+  const sOD = localStorage.getItem("sOD");
+  const offlineSince = localStorage.getItem("offline-since");
+  console.log( sOD )
+  console.log( offlineSince )
+  return (sOD)
+}
 window.onerror = (a, b, c) => {
   alert(a);
 };

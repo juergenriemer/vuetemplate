@@ -10,18 +10,23 @@ import WebView from "../views/Web.vue";
 const View = self.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
+  /*
   const wasOffline = localStorage.getItem("offline-since");
-  console.log(wasOffline);
+  console.log("was offline", wasOffline);
   const loadInitialData =
     !wasOffline &&
     window.appConnectionMode == "online" &&
     window.initialDataLoad == false &&
     window.isLocal == false;
+  console.log("load init data", loadInitialData);
   if (loadInitialData) {
     //console.log("would load now");
     //    next();
   }
+
   // return;
+  */
+  const loadInitialData = true;
   if (loadInitialData) {
     store
       .dispatch("info")
@@ -34,6 +39,13 @@ const ensureData = (to, next) => {
         next();
       })
       .catch((err) => {
+        if (err && err.message) {
+          if (err.message == "network-error") {
+            console.log("offline");
+            window.$$.network = "offline";
+            window.bus.emit("network-status");
+          }
+        }
         console.warn(err);
         next();
       });

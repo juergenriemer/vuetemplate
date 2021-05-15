@@ -38,12 +38,7 @@ export default {
     this.synchronize();
   },
   methods: {
-
-    synchronize() {
-      let icon = this.$el.querySelector( ".icon ion-icon" );
-      function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-        }
+    getActions() {
       const lists = [...this.$store.getters.lists];
       const offlineChanges = this.getOfflineChanges(lists);
       let sOD = localStorage.getItem("sOD");
@@ -57,8 +52,14 @@ export default {
       const actions = [...offlineChanges, ...offlineDeletions, lastAction].sort((a, b) =>
         a.order > b.order ? 1 : -1
       );
-      console.log( actions );
-//      return;
+      return actions;
+    },
+    synchronize() {
+      let icon = this.$el.querySelector( ".icon ion-icon" );
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        const actions = this.getActions();
       const updateIds = ( key, oldId, newId ) => {
         actions
           .filter( act => act.params[key] == oldId )

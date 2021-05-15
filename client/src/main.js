@@ -25,15 +25,21 @@ import "@ionic/vue/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-
+//Vue.prototype.$dmiep = "ASDF";
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
   .use(store);
 
 app.component("base-layout", BaseLayout);
+app.config.globalProperties.$networkStatus = "unknown";
 
 app.mixin({
+  data() {
+    return {
+      networkStatus: "unknown",
+    };
+  },
   computed: {
     currentList() {
       const listId = this.$route.params.id;
@@ -75,6 +81,12 @@ app.mixin({
       });
     },
     showError(err) {
+      if (err && err.message) {
+        if (err.message == "network-error") {
+          window.$$.network = "offline";
+          window.bus.emit("network-status");
+        }
+      }
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
       console.warn(err);
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
