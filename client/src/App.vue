@@ -24,11 +24,22 @@ window.initialDataLoad = false;
 window.appConnectionMode = "online"; // duplicate of isLocal?
 
 window.checkNeedForSync = () => {
-  const sOD = localStorage.getItem("sOD");
-  const offlineSince = localStorage.getItem("offline-since");
-  console.log( sOD )
-  console.log( offlineSince )
-  return (sOD)
+  const deletions = localStorage.getItem("sOD");
+  if( deletions ) return true;
+  const localStore = localStorage.getItem( "store")
+  if( localStore ) {
+    const store = JSON.parse( localStore );
+    let modifications = false;
+    const check = ( elems ) => {
+      for( let elem in elems ){
+        if( typeof( elems[elem]) == "object" && ! modifications) check( elems[elem] )
+        else if( elem == "offline" ) modifications = true;
+      }
+    }
+    if( store && store.list && store.list.lists ) check( store.list.lists)
+    return modifications;
+  }
+  else return false;
 }
 window.onerror = (a, b, c) => {
   alert(a);

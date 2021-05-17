@@ -26,7 +26,11 @@ const ensureData = (to, next) => {
 
   // return;
   */
-  const loadInitialData = true;
+  const loadInitialData =
+    window.$$.appMode == "online" &&
+    !window.initialDataLoad &&
+    !window.checkNeedForSync();
+  console.warn("init load? " + loadInitialData);
   if (loadInitialData) {
     store
       .dispatch("info")

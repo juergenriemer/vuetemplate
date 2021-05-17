@@ -134,24 +134,37 @@ export default {
             if (window.checkNeedForSync()) this.showSyncInfo();
             break;
           case "offline":
+            // wait a bit before telling user
             setTimeout( () => {
               if( window.$$.network == "offline") this.setOfflineMode();
             }, this.offlineTolerance )
-            // REF: wait 10 secs before doing
             break;
         }
       });
     },
     // REF: DONST SEND invitees in list object to users only to owner
     connectToSocket() {
-        this.waitFor().then(() => {
-          const socket = io(process.env.VUE_APP_SOCKET);
-          const csrf = sessionStorage.getItem("csrf");
-          socket.on("connect", () => {
-            let user = this.$store.getters.user;
-            socket.emit("join", { userId: user._id, csrf });
-            window.$$.network = "online";
-            window.bus.emit("network-status");
+        const socket = io(process.env.VUE_APP_SOCKET);
+        const csrf = sessionStorage.getItem("csrf");
+        socket.on('connect_error', err => {
+          if( /Error: xhr poll error/.test( err )){
+            setTimeout( () => {
+              if( window.$$.network !== "offline") {
+                window.$$.network = "offline";
+                window.bus.emit("network-status");
+              }
+            }, this.offlineTolerance )
+            console.log( '!!!!!!!!')
+          }
+        });
+        socket.on("connect", () => {
+          console.log( 'connect')
+          this.waitFor().then(() => {
+              let user = this.$store.getters.user;
+              socket.emit("join", { userId: user._id, csrf });
+              window.$$.network = "online";
+              window.bus.emit("network-status");
+            });
           });
           socket.on("disconnect", () => {
             window.$$.network = "offline";
@@ -164,7 +177,6 @@ export default {
             if (this.allowedActions.includes(type))
               this.$store.dispatch(type, data);
           });
-        });
     },
     waitFor() {
       return new Promise(function (resolve, reject) {

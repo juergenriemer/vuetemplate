@@ -21,13 +21,13 @@ describe("Use Case 1", () => {
   it("create items", () => {
     cy.user("login", 0);
     cy.listAdd("test list 1", "adsf asdf");
-    cy.itemAdd("item 1");
-    cy.itemAdd("item 2");
-    cy.itemAdd("item 3");
-    cy.itemAssert(["item 1", "item 2", "item 3"]);
-    cy.itemDelete("item 2");
-    cy.itemAssert(["item 1", "item 3"]);
-    cy.itemMenu("item 1");
+    cy.itemAdd("test list 1", "item 1");
+    cy.itemAdd("test list 1", "item 2");
+    cy.itemAdd("test list 1", "item 3");
+    cy.itemAssert("test list 1", ["item 1", "item 2", "item 3"]);
+    cy.itemDelete("test list 1", "item 2");
+    cy.itemAssert("test list 1", ["item 1", "item 3"]);
+    cy.itemMenu("test list 1", "item 1");
     cy.assertMenu(["edit-mode", "comments", "delete-item"]);
     cy.back();
     cy.listDelete("test list 1");
@@ -37,13 +37,13 @@ describe("Use Case 1", () => {
     const back = "{Backspace}{Backspace}{Backspace}{Backspace}";
     cy.user("login", 0);
     cy.listAdd("test list 1", "adsf asdf");
-    cy.itemAdd("item");
-    cy.itemMenu("item", "edit-mode");
+    cy.itemAdd("test list 1", "item");
+    cy.itemMenu("test list 1", "item", "edit-mode");
     cy.wait(delay);
     cy.get("#ItemsPage .native-input").type("1234");
     cy.get("#ItemsPage .native-input").type("{Enter}");
     cy.wait(delay);
-    cy.itemMenu("item1234", "edit-mode");
+    cy.itemMenu("test list 1", "item1234", "edit-mode");
     cy.get("#ItemsPage .native-input").should("have.value", "item1234");
     cy.wait(delay);
     cy.get("#ItemsPage .native-input").type(back);
@@ -52,7 +52,7 @@ describe("Use Case 1", () => {
     cy.wait(delay);
     cy.get("#ItemsPage .native-input").type("{esc}");
     cy.wait(delay);
-    cy.itemMenu("item1234", "edit-mode");
+    cy.itemMenu("test list 1", "item1234", "edit-mode");
     cy.get("#ItemsPage .native-input").should("have.value", "item1234");
     cy.get("#ItemsPage .native-input").type("{esc}");
     cy.back();
@@ -63,8 +63,8 @@ describe("Use Case 1", () => {
     const back = "{Backspace}{Backspace}{Backspace}{Backspace}";
     cy.user("login", 0);
     cy.listAdd("test list 1", "adsf asdf");
-    cy.itemAdd("item");
-    cy.itemMenu("item", "comments");
+    cy.itemAdd("test list 1", "item");
+    cy.itemMenu("test list 1", "item", "comments");
     cy.wait(delay);
     cy.get("#CommentsPage [contenteditable]").type("1234");
     cy.get("#comment-buttons > :nth-child(2)").click();
@@ -93,5 +93,9 @@ describe("Use Case 1", () => {
   it("assert empty", () => {
     cy.user("login", 0);
     cy.get("#ItemsPage ion-item").should("not.exist");
+  });
+  it("delete test users", () => {
+    cy.user("login", 0);
+    cy.user("delete", 0);
   });
 });
