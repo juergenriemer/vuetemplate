@@ -1,5 +1,5 @@
 <template lang="pug">
-base-layout(page-title="Synchronize Lists")
+base-layout(page-title="Synchronize Lists",page-id="Synchronize")
   template(v-slot:title)
     avatar(size="large", logo="Listle")
   template(v-slot:actions-end)
@@ -31,7 +31,7 @@ export default {
   data: () => ({
     sync,
     action:"initializing...",
-    errorInfo: true,
+    errorInfo: false,
     errors:[]
   }),
   mounted() {
@@ -58,8 +58,8 @@ export default {
       let icon = this.$el.querySelector( ".icon ion-icon" );
       function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        const actions = this.getActions();
+      }
+      const actions = this.getActions();
       const updateIds = ( key, oldId, newId ) => {
         actions
           .filter( act => act.params[key] == oldId )
@@ -81,16 +81,19 @@ export default {
             // update temp ids with actual server ones
             switch( action.method ) {
               case "addList" : 
+
+                window.x += " list: " + res.data.list._id;
                 updateIds( "listId", action.tempId, res.data.list._id );
               break;
               case "addItem" : 
+                window.x += " item: " + res.data.item._id;
                 updateIds( "itemId", action.tempId, res.data.item._id );
               break;
               case "addComment" : 
                 updateIds( "commentId", action.tempId, res.data.comment._id );
               break;
             }
-            await sleep( 666 );
+            await sleep( 2000 );
           } catch (e) {
             let msg = ( e.message ) ? e.message : "error occurred";
             this.errors.unshift( `${msg} (${++count})` );
@@ -98,7 +101,9 @@ export default {
         }
         localStorage.removeItem("sOD");
         localStorage.removeItem("offline-since");
-        if (errors.length) this.errorInfo = true;
+        window.x += " err0r: " + this.errors
+        window.x += " >>>>>>>>.: " + JSON.stringify( actions )
+        if (this.errors.length) this.errorInfo = true;
         else this.nav( "/app/list" );
         return;
       })();

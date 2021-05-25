@@ -59,19 +59,50 @@ Cypress.Commands.add("listMenu", (title, item) => {
     });
 });
 
+Cypress.Commands.add("listEdit", (list, title, description) => {
+  cy.log("listEdit:" + [list, title, description].join(", "));
+  description = description ? description : "";
+  cy.visit(config.host + "/app/list");
+  cy.url().should("contain", "/app/list");
+  cy.listMenu(list, "edit");
+  cy.url().should("include", "/app/edit");
+  cy.get('[name="title"]').then((node) => node.val(title));
+  cy.get('[name="description"]').then((node) => node.val(description));
+  cy.get(".btn-app-edit").should("not.be.disabled");
+  cy.get(".btn-app-edit").click();
+  cy.url().should("include", "/app/items");
+  //cy.reload();
+  cy.get("ion-title").should("have.text", title);
+});
+
 Cypress.Commands.add("listAdd", (title, description) => {
   cy.log("listAdd:" + [title, description].join(", "));
   description = description ? description : "n/a";
   cy.visit(config.host + "/app/list");
   cy.url().should("contain", "/app/list");
   cy.get("ion-toolbar ion-button").click();
-  cy.url().should("include", "/app/add");
-  //cy.get('[name="title"]').clear().type(title);
-  //cy.get('[name="description"]').clear().type(description);
-  cy.get('[name="title"]').then((node) => node.val(title));
-  cy.get('[name="description"]').then((node) => node.val(description));
-  cy.get(".btn-app-add").click();
+  cy.url().should("contain", "/app/add");
+  cy._addList(title, description);
+});
+
+Cypress.Commands.add("listAddOffline", (title, description) => {
+  cy.log("listAdd:" + [title, description].join(", "));
+  description = description ? description : "n/a";
+  cy.visit(config.host + "/app/add");
+  cy.get("#offline", { timeout: 50000 }).should("be.visible");
+  cy.ensureOffline();
+  cy._addList(title, description);
+});
+
+Cypress.Commands.add("_addList", (title, description) => {
+  cy.get('#AddListPage [name="title"]').then((node) => node.val(title));
+  cy.get('#AddListPage [name="description"]').then((node) =>
+    node.val(description)
+  );
+  cy.get(".ion-padding > .button:visible").should("not.be.disabled");
+  cy.get(".ion-padding > .button:visible").click();
   cy.url().should("include", "/app/items");
-  cy.reload();
-  cy.get("ion-title").should("have.text", title);
+  cy.get(
+    "#ItemsPage > .header-md > .toolbar-title-default > .title-default"
+  ).should("have.text", title);
 });

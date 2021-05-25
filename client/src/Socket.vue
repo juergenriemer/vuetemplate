@@ -56,12 +56,18 @@ export default {
   methods: {
     setOfflineMode() {
       this.offline = true;
-      const offlineSince = localStorage.getItem( "offine-since");
-      if( !offlineSince ) localStorage.setItem("offline-since", this.now());
-      this.showOfflineInfo();
+      this.hideAlerts();
+      const offlineSince = localStorage.getItem( "offline-since");
+      if( !offlineSince ) {
+        localStorage.setItem("offline-since", this.now());
+      // only show offline info if we first enter offline mode
+        this.showOfflineInfo();
+      }
     },
     hideAlerts() {
+      console.log( 'hide oI', this.offlineInfo )
       if (this.offlineInfo && !this.offlineInfo._detached) this.offlineInfo.dismiss();
+      console.log( 'hide sI', this.syncInfo )
       if (this.syncInfo && !this.syncInfo._detached) this.syncInfo.dismiss();
       this.offlineInfo = null;
       this.syncInfo = null;
@@ -145,7 +151,25 @@ export default {
     // REF: DONST SEND invitees in list object to users only to owner
     connectToSocket() {
         const socket = io(process.env.VUE_APP_SOCKET);
-        const csrf = sessionStorage.getItem("csrf");
+        socket.on("connect", () => {
+          window.$$.network = "online";
+          window.bus.emit("network-status");
+          this.waitFor().then(( csrf ) => {
+            const user = this.$store.getters.user;
+            socket.emit("join", { userId: user._id, csrf });
+          });
+        });
+        socket.on("disconnect", () => {
+          window.$$.network = "offline";
+          window.bus.emit("network-status");
+        });
+        socket.on(csrf, (res) => {
+          let { type, data } = res;
+          console.log( "socket", type, data)
+          data.socket = true;
+          if (this.allowedActions.includes(type))
+            this.$store.dispatch(type, data);
+        });
         socket.on('connect_error', err => {
           if( /Error: xhr poll error/.test( err )){
             setTimeout( () => {
@@ -154,34 +178,15 @@ export default {
                 window.bus.emit("network-status");
               }
             }, this.offlineTolerance )
-            console.log( '!!!!!!!!')
+            console.log( 'could not connect!!!!!!!!')
           }
         });
-        socket.on("connect", () => {
-          console.log( 'connect')
-          this.waitFor().then(() => {
-              let user = this.$store.getters.user;
-              socket.emit("join", { userId: user._id, csrf });
-              window.$$.network = "online";
-              window.bus.emit("network-status");
-            });
-          });
-          socket.on("disconnect", () => {
-            window.$$.network = "offline";
-            window.bus.emit("network-status");
-          });
-          socket.on(csrf, (res) => {
-            let { type, data } = res;
-            console.log( "socket", type, data)
-            data.socket = true;
-            if (this.allowedActions.includes(type))
-              this.$store.dispatch(type, data);
-          });
     },
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {
-          if (sessionStorage.getItem("csrf")) return resolve();
+          const csrf = sessionStorage.getItem("csrf")
+          if ( csrf ) return resolve(csrf );
           console.log( 'x')
           setTimeout(waitForFoo, 1000);
         })();

@@ -10,7 +10,7 @@ Cypress.Commands.add("login", (email, password) => {
 
 Cypress.Commands.add("logout", (email, password) => {
   cy.visit(config.host + "/app/list");
-  cy.reload();
+  //  cy.reload();
   cy.url().should("contain", "/app/list");
   cy.get(".buttons-first-slot > #avatar > div").click();
   cy.get("[data='logout'] ion-label").click();
@@ -19,12 +19,12 @@ Cypress.Commands.add("logout", (email, password) => {
 
 Cypress.Commands.add("deleteUser", (email, password) => {
   cy.visit(config.host + "/app/list");
-  cy.reload();
+  // cy.reload();
   cy.url().should("contain", "/app/list");
   cy.get(".buttons-first-slot > #avatar > div").click();
   cy.get("[data='delete-user'] ion-label").click();
   cy.url().should("contain", "/user/delete");
-  cy.reload();
+  //  cy.reload();
   cy.get('[name="email"]').then((node) => node.val(email));
   cy.get('[name="password"]').then((node) => node.val(password));
   cy.get("button").click();
@@ -41,15 +41,41 @@ Cypress.Commands.add("deleteUser", (email, password) => {
   cy.url().should("contain", "/user/login");
 });
 
-Cypress.Commands.add("registerUser", (email, password, firstName, lastName) => {
-  cy.visit(config.host + "/user/register");
-  cy.get('[name="firstName"]').then((node) => node.val(firstName));
-  cy.get('[name="lastName"]').then((node) => node.val(lastName));
+Cypress.Commands.add("resetPassword", (email, password) => {
+  cy.visit(config.host + "/app/list");
+  // cy.reload();
+  cy.url().should("contain", "/app/list");
+  cy.get(".buttons-first-slot > #avatar > div").click();
+  cy.get("[data='reset-password'] ion-label").click();
+  cy.url().should("contain", "/user/reset-password");
+  //  cy.reload();
   cy.get('[name="email"]').then((node) => node.val(email));
   cy.get('[name="password"]').then((node) => node.val(password));
-  cy.get('[name="retypedPassword"]').then((node) => node.val(password));
   cy.get("button").click();
-  cy.get(".message").should(
+  cy.get(".message p:nth-child(1)").should(
+    "have.text",
+    "Your request to change the password was successful."
+  );
+  cy.readFile("./test-files/Reset Password at L.eml").then((str) => {
+    let rx = /(http:\/\/[^ ]*)/;
+    let url = str.match(rx)[1];
+    cy.visit(url);
+  });
+  cy.url().should("contain", "/user/reset-password-verify");
+  cy.url().should("contain", "/app/list");
+});
+
+Cypress.Commands.add("registerUser", (email, password, firstName, lastName) => {
+  cy.visit(config.host + "/user/register");
+  cy.get('#Register [name="firstName"]').then((node) => node.val(firstName));
+  cy.get('#Register [name="lastName"]').then((node) => node.val(lastName));
+  cy.get('#Register [name="email"]').then((node) => node.val(email));
+  cy.get('#Register [name="password"]').then((node) => node.val(password));
+  cy.get('#Register [name="retypedPassword"]').then((node) =>
+    node.val(password)
+  );
+  cy.get("#Register button").click();
+  cy.get("#Register .message").should(
     "have.text",
     "Your registration was successful.Please check your mailbox for a verification e-mail."
   );

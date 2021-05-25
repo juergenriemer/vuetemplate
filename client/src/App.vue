@@ -22,7 +22,7 @@ window.isWeb = false;
 window.networkStatus = "unknown";
 window.initialDataLoad = false;
 window.appConnectionMode = "online"; // duplicate of isLocal?
-
+window.x = 666;
 window.checkNeedForSync = () => {
   const deletions = localStorage.getItem("sOD");
   if( deletions ) return true;

@@ -20,7 +20,7 @@
         ></ion-textarea>
       </ion-item>
     </ion-list>
-    <ion-button :disabled="disabled" type="submit" expand="block"
+    <ion-button class="btn-app-edit" :disabled="disabled" type="submit" expand="block"
       >Save</ion-button
     >
   </form>

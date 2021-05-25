@@ -4,7 +4,7 @@ Cypress.Commands.add("commentOpen", (list, item) => {
   cy.log("commentOpen:" + [list, item].join(", "));
   cy.visit(config.host + "/app/list");
   cy.listOpen(list);
-  cy.itemMenu(item, "comments");
+  cy.itemMenu(list, item, "comments");
   cy.wait(config.delay);
 });
 

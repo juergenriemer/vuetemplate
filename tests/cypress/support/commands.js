@@ -2,18 +2,31 @@ const config = require("../support/config");
 
 Cypress.Commands.add("startBackend", () => {
   const start = ". ./startBackend.sh";
-  cy.exec(start); //.its("code").should("eq", 0);
+  cy.exec(start, { failOnNonZeroExit: false }); //.its("code").should("eq", 0);
+  cy.wait(5000);
 });
-Cypress.Commands.add("stopBackend", () => {
+
+Cypress.Commands.add("ensureBackendOff", () => {
   const stop =
     "kill -9 $(ps aux | grep '[l]istle-server.js' | awk '{print $2}')";
-  cy.exec(stop).its("code").should("eq", 0);
+  cy.exec(stop, { failOnNonZeroExit: false });
+});
+
+Cypress.Commands.add("ensureOffline", () => {
+  cy.get("#offline", { timeout: 50000 }).should("be.visible");
+});
+
+Cypress.Commands.add("stopBackend", () => {
+  cy.ensureBackendOff();
+  cy.get(".alert-button", { timeout: 50000 }).should("exist");
+  cy.get(".alert-button").click();
+  cy.get("#offline").should("be.visible");
 });
 
 Cypress.Commands.add("home", () => {
   cy.visit(config.host + "/app/list");
   cy.url().should("include", "/app/list");
-  cy.reload();
+  //cy.reload();
 });
 
 Cypress.Commands.add("confirm", (action) => {

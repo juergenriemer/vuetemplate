@@ -51,8 +51,15 @@ describe("Registration", () => {
     );
   });
 
-  it("delete test user", () => {
+  it("reset password", () => {
     cy.login("fake@email.com", "Test123!");
-    cy.deleteUser("fake@email.com", "Test123!");
+    cy.resetPassword("fake@email.com", "Test123!!");
+    cy.logout();
+    cy.login("fake@email.com", "Test123!!");
+  });
+
+  it("delete test user", () => {
+    cy.login("fake@email.com", "Test123!!");
+    cy.deleteUser("fake@email.com", "Test123!!");
   });
 });

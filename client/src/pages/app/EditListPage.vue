@@ -1,5 +1,5 @@
 <template>
-  <base-layout :page-title="list.title" link="/app/list">
+  <base-layout :page-title="list.title" page-id="EditListPage" link="/app/list">
     <template v-slot:title>
       <avatar size="large" :list-title="list.title" />
     </template>

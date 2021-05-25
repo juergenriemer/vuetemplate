@@ -1,4 +1,3 @@
-import User from "@/services/UserService";
 import Api from "@/services/Api";
 const wire = Api.wire;
 const http = Api.http;
@@ -24,43 +23,49 @@ const getters = {
 };
 
 const actions = {
-  async registerUser({ commit }, data) {
-    return User.register(data).then((res) => res);
+  async registerUser({ commit }, creds) {
+    return http().post(`${root}/register`, creds);
   },
 
   async registerVerifyResend({ commit }, email) {
-    return User.registerVerifyResend(email).then((res) => res);
+    return http().post(`${this.root}/registerVerifyResend`, email);
   },
 
   async registerVerify({ commit }, token) {
-    return User.registerVerify(token).then((res) => {
-      commit("fetchUser", res.data.token);
-      commit("setToken", res.data.token);
-      return res;
-    });
+    return http()
+      .get(`${root}/registerVerify/${token}`)
+      .then((res) => {
+        commit("fetchUser", res.data.token);
+        commit("setToken", res.data.token);
+        return res;
+      });
   },
 
   async resetPassword({ commit }, data) {
-    return User.resetPassword(data).then((res) => res);
+    return http().post(`${root}/resetPassword`, data);
   },
 
   async resetPasswordVerify({ commit }, token) {
-    return User.resetPasswordVerify(token).then((res) => {
-      commit("fetchUser", res.data.userdata);
-      commit("setToken", res.data.token);
-      return res;
-    });
+    return http()
+      .get(`${root}/resetPasswordVerify/${token}`)
+      .then((res) => {
+        commit("fetchUser", res.data.userdata);
+        commit("setToken", res.data.token);
+        return res;
+      });
   },
 
-  async login({ commit }, data) {
-    return User.login(data).then((res) => {
-      if (res && res.data) {
-        console.log(res.data);
-        commit("fetchUser", res.data.user);
-        commit("setToken", res.data.token);
-      }
-      return res;
-    });
+  async login({ commit }, creds) {
+    return http()
+      .post(`${root}/login`, creds)
+      .then((res) => {
+        if (res && res.data) {
+          console.log(res.data);
+          commit("fetchUser", res.data.user);
+          commit("setToken", res.data.token);
+        }
+        return res;
+      });
   },
 
   async info({ commit, getters }) {

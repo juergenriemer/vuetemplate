@@ -1,5 +1,5 @@
 <template lang="pug">
-base-layout(page-title="Register")
+base-layout(page-title="Register", page-id="Register")
   template(v-slot:title)
     avatar(size="large", list-title="Listle")
   template(v-slot:content)
