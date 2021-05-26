@@ -31,6 +31,7 @@ export default {
       offlineInfo : null,
       syncInfo : null,
       allowedActions: [
+        "invite",
         "addList",
         "updateList",
         "deleteList",
@@ -157,18 +158,21 @@ export default {
           this.waitFor().then(( csrf ) => {
             const user = this.$store.getters.user;
             socket.emit("join", { userId: user._id, csrf });
+            socket.on(csrf, (res) => {
+              let { type, data } = res;
+              console.log( "socket", type, data)
+              data.socket = true;
+              if (this.allowedActions.includes(type))
+                this.$store.dispatch(type, data);
+              else if( type == "info") {
+                  alert( data.message )
+              }
+            });
           });
         });
         socket.on("disconnect", () => {
           window.$$.network = "offline";
           window.bus.emit("network-status");
-        });
-        socket.on(csrf, (res) => {
-          let { type, data } = res;
-          console.log( "socket", type, data)
-          data.socket = true;
-          if (this.allowedActions.includes(type))
-            this.$store.dispatch(type, data);
         });
         socket.on('connect_error', err => {
           if( /Error: xhr poll error/.test( err )){

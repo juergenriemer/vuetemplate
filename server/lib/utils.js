@@ -11,7 +11,6 @@ const PUB_KEY = fs.readFileSync(pathToPubKey, "utf8");
 
 const jwt = require("jwt-simple");
 const secret = "MIICCgKCAgEA8a9w5sGtJuDXegso3LQOZA3YutQivO/dFnz";
-let users = { ok: true, not: false };
 /**
  * -------------- HELPER FUNCTIONS ----------------
  */
@@ -112,6 +111,7 @@ const validateToken = (token) => {
   }
 };
 
+let users = { ok: true, not: false };
 function broadcast(req, list, data) {
   data.csrf = req.headers["xsrf-token"];
   data.listId = list._id;
@@ -120,16 +120,29 @@ function broadcast(req, list, data) {
     if (users[user.userId]) {
       users[user.userId].forEach((usr) => {
         // don't emit to myself
-        if (usr !== data.csrf) io.emit(usr, data);
+        if (usr !== data.csrf) {
+          io.emit(usr, data);
+        }
       });
     }
   });
+}
+function notifySingleUser(req, userId, data) {
+  console.log("notifySingle", userId);
+  const io = req.app.get("io");
+  if (users[userId]) {
+    users[userId].forEach((usr) => {
+      console.log("notifySingle", usr);
+      io.emit(usr, data);
+    });
+  }
 }
 
 module.exports.clientToken = clientToken;
 module.exports.createToken = createToken;
 module.exports.validateToken = validateToken;
 module.exports.broadcast = broadcast;
+module.exports.notifySingleUser = notifySingleUser;
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;

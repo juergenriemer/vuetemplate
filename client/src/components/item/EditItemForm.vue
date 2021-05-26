@@ -7,6 +7,7 @@
   >
     <ion-toolbar>
       <ion-input
+        hasFocus
         placeholder="EDIT ITEM"
         rules="required"
         v-model="itemInEditMode.title"
@@ -74,10 +75,6 @@ export default {
       if (evt.key == "Escape") this.stopEditing();
     });
     this.origTitle = this.itemInEditMode.title;
-    setTimeout(() => {
-      const input = this.$el.querySelector("input");
-      input.focus();
-    }, 800);
   },
   methods: {
     stopEditing() {

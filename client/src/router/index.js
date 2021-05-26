@@ -10,22 +10,6 @@ import WebView from "../views/Web.vue";
 const View = self.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
-  /*
-  const wasOffline = localStorage.getItem("offline-since");
-  console.log("was offline", wasOffline);
-  const loadInitialData =
-    !wasOffline &&
-    window.appConnectionMode == "online" &&
-    window.initialDataLoad == false &&
-    window.isLocal == false;
-  console.log("load init data", loadInitialData);
-  if (loadInitialData) {
-    //console.log("would load now");
-    //    next();
-  }
-
-  // return;
-  */
   const loadInitialData =
     window.$$.appMode == "online" &&
     !window.initialDataLoad &&

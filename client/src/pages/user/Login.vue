@@ -17,6 +17,7 @@ base-layout(page-title="Login")
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
+              hasFocus
               name="email",
               type="email",
               rules="required,email",
@@ -115,16 +116,6 @@ export default {
     showInfoSheet: false,
     showIntro: true,
   }),
-  computed: {},
-  mounted() {
-    return;
-    setTimeout(() => {
-      this.$refs.form.querySelector("[name='email']").value =
-        "juergen.riemer@gmail.com";
-      this.$refs.form.querySelector("[name='password']").value = "Test!234";
-    }, 1000);
-    //  this.showIntro = this.firstTimer;
-  },
   methods: {
     toLogin() {
       this.showIntro = false;

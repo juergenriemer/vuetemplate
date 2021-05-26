@@ -27,7 +27,7 @@ base-layout(page-title="My Invitations", page-id="ApproveInvites", link="/app/li
               @click="approves[invite._id] = !approves[invite._id]"
             )
           ion-button(type="submit", expand="block", :disabled="disabled") JOIN
-          button.hide(type="submit", :disabled="disabled")
+          button.ion-hide(type="submit", :disabled="disabled")
     .ion-padding(v-else)
       p
         | There are no invitations at the moment.

@@ -4,6 +4,7 @@
       <ion-item>
         <ion-label position="floating">Title</ion-label>
         <ion-input
+          hasFocus
           name="title"
           type="text"
           v-model="list.title"
@@ -51,9 +52,6 @@ export default {
     IonTextarea,
     IonButton,
     IonIcon,
-  },
-  data() {
-    return {};
   },
   methods: {
     submit() {

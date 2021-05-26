@@ -46,7 +46,7 @@
           <ion-icon :icon="close" size="medium"></ion-icon>
         </ion-button>
         <ion-button aria-label="save-comment" :disabled="saveDisabled" @click="submit">
-          xxx<ion-icon :icon="send" size="medium"></ion-icon>
+          <ion-icon :icon="send" size="medium"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -131,7 +131,7 @@ export default {
       this.imageFile = image || this.$refs.upload.files[0];
       const url = window.URL.createObjectURL(this.imageFile);
       this.$refs.thumb.src = url;
-      //this.setFocus();
+      //this.setFocus(); no focus because I only want to see them normally? true for items as well?
     },
     submit() {
       let text = this.text;

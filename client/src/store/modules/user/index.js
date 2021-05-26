@@ -16,7 +16,6 @@ const getters = {
     return state.user && state.user._id ? state.user._id : null;
   },
   isLoggedIn: () => localStorage.getItem("token"),
-  isLocal: () => localStorage.getItem("token") == "local",
   short: (state) =>
     state.user.firstName.charAt(0) + state.user.lastName.charAt(0),
   token: () => localStorage.getItem("token"),
@@ -60,7 +59,6 @@ const actions = {
       .post(`${root}/login`, creds)
       .then((res) => {
         if (res && res.data) {
-          console.log(res.data);
           commit("fetchUser", res.data.user);
           commit("setToken", res.data.token);
         }
@@ -119,12 +117,10 @@ const actions = {
 
 const mutations = {
   fetchUser: (state, { user }) => {
-    console.log(state);
     state.user = user;
   },
   removeUser: (state) => (state.user = null),
   setToken: (state, token) => {
-    self.isLocal = false;
     localStorage.setItem("last-visit", new Date());
     localStorage.setItem("token", token);
   },
@@ -145,7 +141,6 @@ const mutations = {
     document.cookie = "_csrf=; expires=" + mydate.toGMTString();
   },
   offlineUser: (state) => {
-    self.isLocal = true;
     state.user = {
       firstName: "Local",
       lastName: "Listle",

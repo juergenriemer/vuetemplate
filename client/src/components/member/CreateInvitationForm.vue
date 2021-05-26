@@ -3,7 +3,7 @@
   <form ref="form" class="ion-padding" @submit.prevent="validate" novalidate>
     <ion-item>
       <ion-label position="floating">Email of friend</ion-label>
-      <ion-input type="text" :disabled="disabled" rules="email" name="email" />
+      <ion-input hasFocus type="text" :disabled="disabled" rules="email" name="email" />
     </ion-item>
     <form-error :error="errors.email"></form-error>
     <ion-button aria-label="invite-friend" type="submit" :disabled="disabled" expand="block"
@@ -40,16 +40,6 @@ export default {
     IonInput,
     IonButton,
   },
-  data() {
-    return {};
-  },
-  mounted() {
-    return;
-    setTimeout(() => {
-      this.$refs.form.querySelector("[name='email']").value = "mordret@sms.at";
-    }, 1000);
-    //  this.showIntro = this.firstTimer;
-  },
   methods: {
     submit() {
       const serverErrors = {
@@ -61,6 +51,10 @@ export default {
           listId: this.listId,
           email: this.form.email,
           role: "user",
+        })
+        .then( ()=>{
+          this.resetForm();
+          this.formFocus()
         })
         .catch((err) => {
           if (err.message && serverErrors[err.message]) {

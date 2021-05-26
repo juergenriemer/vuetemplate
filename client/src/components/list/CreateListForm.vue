@@ -4,6 +4,7 @@
       <ion-item>
         <ion-label position="floating">Title</ion-label>
         <ion-input
+          hasFocus
           name="title"
           type="text"
           rules="required"
@@ -48,9 +49,6 @@ export default {
     IonTextarea,
     IonButton,
     IonIcon,
-  },
-  data() {
-    return {};
   },
   methods: {
     async submit() {

@@ -7,6 +7,7 @@
   >
     <ion-toolbar>
       <ion-input
+        hasFocus
         placeholder="NEW ITEM"
         name="title"
         v-model="title"
@@ -71,20 +72,10 @@ export default {
       return this.disabled || !this.title;
     },
   },
-  watch: {
-    "$route.params.listId": function () {
-      this.setFocus();
-    },
-  },
   methods: {
     stopCreating() {
       this.input.value = "";
       this.input.blur();
-    },
-    setFocus() {
-      let input = this.$el.querySelector("input");
-      input.value = "";
-      input.focus();
     },
     async submit() {
 
@@ -105,7 +96,8 @@ export default {
           this.showError(err);
         })
         .finally(() => {
-          this.setFocus();
+          this.resetForm();
+          this.formFocus();
         });
     },
   },

@@ -1,7 +1,6 @@
 <template>
   <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
-    <div v-if="listTitle" class="avatar-jd" v-html="jdIcon"></div>
-    <div v-else v-html="initials"></div>
+    <div v-html="content()"></div>
     <ion-icon
       v-if="role == 'owner' || role == 'admin'"
       :class="role"
@@ -15,7 +14,8 @@ import { toSvg } from "jdenticon";
 import { star, build } from "ionicons/icons";
 
 export default {
-  props: ["size", "role", "short", "userId", "listTitle", "logo"],
+  // types: list-title, initials, logo
+  props: ["size", "role", "initials", "listTitle", "logo"],
   components: {
     IonAvatar,
     IonIcon,
@@ -23,22 +23,16 @@ export default {
   data() {
     return { star, build };
   },
-  computed: {
-    initials() {
-      if (this.logo) return "LL";
-      if (this.short) return this.short;
-      let user = this.$store.getters.getMember(this.userId);
-      return user && user.short ? user.short : "";
-    },
-    jdIcon() {
-      return toSvg(this.listTitle, 40);
-    },
-  },
   methods: {
+    content(){
+      if( this.listTitle) return toSvg(this.listTitle, 40);
+      else if( this.initials) return this.initials
+      else if( this.logo) return "Li"
+    },
     color() {
-      if (this.logo) return "crimson";
-      else if (this.initials) return this.avatarColor(this.initials);
-      return "whitesmoke";
+      if( this.listTitle) return "whitesmoke"
+      else if( this.initials) return this.avatarColor(this.initials);
+      else if( this.logo) return "crimson"
     },
     avatarColor(str) {
       if (!str) str = "XXX";
@@ -60,7 +54,9 @@ export default {
 #avatar {
   position: relative;
   display: flex;
-  box-shadow: 6px 6px 10px #666 inset;
+  xbox-shadow: 6px 6px 10px #666 inset;
+-webkit-box-shadow: 4px 4px 10px -6px #000000; 
+box-shadow: 4px 4px 10px -6px #000000;
 }
 #avatar div {
   color: #444;

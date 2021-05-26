@@ -8,11 +8,13 @@ const passport = require("passport");
 const userInfo = require("../middleware/userInfo.js");
 const validateIds = require("../middleware/validateIds.js");
 const nodemailer = require("nodemailer");
+const mail = require("../lib/email");
 const role = require("../middleware/role.js");
 const roles = { admin: "admin", user: "user" };
 const utils = require("../lib/utils");
+const te = require("../texts/en.js");
 const ApiError = require("../middleware/ApiError");
-
+const lang = "en";
 // show lists a user is invited to
 router.get(
   "/myInvites",
@@ -48,6 +50,12 @@ router.get(
       throw new ApiError(422, "user-already-member");
     if (req.list.invitees.find((usr) => usr.email == email))
       throw new ApiError(422, "user-already-invited");
+    const tokens = {
+      invitingUser: req.user.name,
+      listTitle: req.list.title,
+      baseUrl,
+      email,
+    };
     const info = {
       listId,
       email,
@@ -65,58 +73,39 @@ router.get(
       port: 25,
       host: "localhost",
     });
-    let mail = {
+    let opts = {
       from: "TEST<test@test.com>",
       to: email,
-      subject: `${invitingUser} wants to share his listle "${listTitle}" with you!`,
-      text: `
-Dear ${email},
-
-${invitingUser} has invited you to collaborate on this listle list "${listTitle}"!`,
+      subject: te.xt("mail_subject_share", lang, tokens),
+      text: te.xt("mail_body_share_begin", lang, tokens),
     };
-    User.findOne({ email })
-      .then((user) => {
-        if (user && user.is_verified) {
-          mail.text += `
-Please visit 
-
-  ${baseUrl}/user/approve-invites 
-
-to approve.`;
-        } else if (user && !user.is_verified) {
-          mail.text += `
-It seems you already tried to register with listle.
-
-In case you did not receive the confirmation e-mail please visit 
-
-  ${baseUrl}/user/resend-verification
-
-to request another e-mail.
-            `;
-        } else {
-          mail.text += `
-It seems you did not yet register with listle.
-
-Please visit 
-
-  ${baseUrl}/user/register
-
-to create an account, the lists will be shared with you automatically.
-            `;
-        }
-        console.log(">>> MAIL >>>");
-        console.log(mail);
-        console.log("<<< MAIL <<<");
-        return user;
-        //return transport.sendMail(mail);
+    let existingUser = null;
+    let log = `INVITE(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > find_user";
+        return User.findOne({ email });
       })
       .then((user) => {
-        if (user) {
+        existingUser = user;
+        log += " > send_email";
+        if (user && user.is_verified) {
+          opts.text += te.xt("mail_body_share_verified_user", lang, tokens);
+        } else if (user && !user.is_verified) {
+          opts.text += te.xt("mail_body_share_unverified_user", lang, tokens);
+        } else {
+          opts.text += te.xt("mail_body_share_unregistered_user", lang, tokens);
+        }
+        return mail.send(opts);
+      })
+      .then(() => {
+        log += " > update_list";
+        if (existingUser) {
           invitee = {
             email,
-            userId: user.userId,
-            name: user.name,
-            short: user.short,
+            userId: existingUser.userId,
+            name: existingUser.name,
+            short: existingUser.short,
             role: roles[role],
           };
         }
@@ -124,12 +113,24 @@ to create an account, the lists will be shared with you automatically.
           req.list.invitees.push(invitee);
         return req.list.save();
       })
-      .then(() => {
-        return res.status(200).json({ invitee });
+      .then((list) => {
+        log += " > notify_single_user";
+        console.log(existingUser);
+        if (existingUser)
+          utils.notifySingleUser(req, existingUser._id, {
+            type: "info",
+            data: {
+              message: "You have been invited!",
+            },
+          });
       })
-      .catch((error) => {
-        next(error);
-      });
+      .then(() => {
+        res.status(200).json();
+      })
+      .catch((err) => {
+        next(err);
+      })
+      .finally((_) => console.log(log));
   }
 );
 

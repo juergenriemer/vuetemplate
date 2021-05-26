@@ -1,7 +1,7 @@
 <template lang="pug">
 base-layout(page-title="Register", page-id="Register")
   template(v-slot:title)
-    avatar(size="large", list-title="Listle")
+    avatar(size="large", logo="Listle")
   template(v-slot:content)
     .ion-padding
       form(ref="form", v-if="!showInfoSheet", @submit.prevent="validate", novalidate)
@@ -9,6 +9,7 @@ base-layout(page-title="Register", page-id="Register")
           ion-item
             ion-label(position="floating") First Name
             ion-input(
+              hasFocus
               name="firstName",
               type="text",
               rules="required",
@@ -52,7 +53,7 @@ base-layout(page-title="Register", page-id="Register")
             )
           form-error(:error="errors.retypedPassword",for="retypedPassword")
         ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
-        button.hide(type="submit", :disabled="disabled")
+        button.ion-hide(type="submit", :disabled="disabled")
 
       info-sheet(type="error", v-if="status == 'is-registered'")
         template(v-slot:content)
@@ -107,23 +108,6 @@ export default {
   data: () => ({
     showInfoSheet: false,
   }),
-  mounted() {
-    return;
-    const form = {
-      firstName: "Juergen",
-      lastName: "Riemer",
-      email: "juergen.riemer@gmail.com",
-      password: "Test!234",
-      retypedPassword: "Test!234",
-    }
-    setTimeout( ()=>{
-    for( var field in form ){
-      document.querySelector( "[name='"+ field +"']").value = form[field]
-    }
-
-    }, 500)
-  }
-  ,
   methods: {
     async submit() {
       return this.$store

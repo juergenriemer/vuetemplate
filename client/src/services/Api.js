@@ -48,26 +48,13 @@ http.interceptors.request.use(
   }
 );
 
-const setNetworkStatus = (status) => {
-  /*
-  if (window.networkStatus !== status) {
-    window.networkStatus = status;
-    window.bus.emit("network-status", status);
-  }
-*/
-};
-
 http.interceptors.response.use(
   (res) => {
-    setNetworkStatus("online");
     return res;
   },
   (err) => {
     if (/Network Error/.test(err)) {
-      setNetworkStatus("offline");
       return Promise.reject({ status: 0, message: "network-error" });
-    } else {
-      setNetworkStatus("online");
     }
     const status = err && err.response && err.response.status;
     if (status == 401) {
@@ -82,7 +69,8 @@ http.interceptors.response.use(
   }
 );
 const wire = (args) => {
-  if (self.isLocal || self.offline) return false;
+  if (window.$$.appMode !== "online" || window.$$.network == "offline")
+    return false;
   if (args && args[1] && args[1].socket) return false;
   return true;
 };

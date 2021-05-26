@@ -81,12 +81,9 @@ export default {
             // update temp ids with actual server ones
             switch( action.method ) {
               case "addList" : 
-
-                window.x += " list: " + res.data.list._id;
                 updateIds( "listId", action.tempId, res.data.list._id );
               break;
               case "addItem" : 
-                window.x += " item: " + res.data.item._id;
                 updateIds( "itemId", action.tempId, res.data.item._id );
               break;
               case "addComment" : 
@@ -101,8 +98,6 @@ export default {
         }
         localStorage.removeItem("sOD");
         localStorage.removeItem("offline-since");
-        window.x += " err0r: " + this.errors
-        window.x += " >>>>>>>>.: " + JSON.stringify( actions )
         if (this.errors.length) this.errorInfo = true;
         else this.nav( "/app/list" );
         return;

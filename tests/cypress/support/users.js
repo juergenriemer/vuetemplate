@@ -27,7 +27,7 @@ Cypress.Commands.add("deleteUser", (email, password) => {
   //  cy.reload();
   cy.get('[name="email"]').then((node) => node.val(email));
   cy.get('[name="password"]').then((node) => node.val(password));
-  cy.get("button").click();
+  cy.get("form > .button").click();
   cy.get(".message p:nth-child(1)").should(
     "have.text",
     "Your deletion request was successful."
@@ -74,7 +74,7 @@ Cypress.Commands.add("registerUser", (email, password, firstName, lastName) => {
   cy.get('#Register [name="retypedPassword"]').then((node) =>
     node.val(password)
   );
-  cy.get("#Register button").click();
+  cy.get("#Register .button").click();
   cy.get("#Register .message").should(
     "have.text",
     "Your registration was successful.Please check your mailbox for a verification e-mail."

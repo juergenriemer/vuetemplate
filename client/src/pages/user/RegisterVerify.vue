@@ -1,7 +1,7 @@
 <template lang="pug">
 base-layout(page-title="Verify Your Registration")
   template(v-slot:title)
-    avatar(size="large", list-title="Listle")
+    avatar(size="large", logo="Listle")
   template(v-slot:content)
     .ion-padding
       info-sheet(type="error", v-if="status == 'token-expired'")

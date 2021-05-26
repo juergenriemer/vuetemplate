@@ -2,7 +2,7 @@
   <ion-list lines="none" @click="action">
     <menu-item
       label="Withdraw Invitation"
-      :icon="informationCircle"
+      :icon="trash"
       data="uninvite"
     />
   </ion-list>

@@ -13,7 +13,6 @@ window.storeAction = (method, params, title) => {
       if (/^id/.test(params[id])) return;
     }
   }
-  console.log("STOOOORE ACTIN");
   let sOD = localStorage.getItem("sOD");
   let store = sOD ? JSON.parse(sOD) : [];
   store.push({
@@ -49,7 +48,7 @@ const getters = {
     return getters.listById(listId).users.find((usr) => usr.userId == userId);
   },
   // create new store!!!
-  members: (state, getters, rootState) => {
+  xxxxxxxxxxmembers: (state, getters, rootState) => {
     let members = {};
     const owner = rootState.user.user;
     // REF: below is needed for registration cases.. improve
@@ -64,11 +63,12 @@ const getters = {
   getMember: (state, getters, rootState) => (memberId) => {
     let members = {};
     const owner = rootState.user.user;
-    // REF: below is needed for registration cases.. improve
     if (owner) members[owner.userId] = owner;
     if (state.lists)
       state.lists.forEach((lst) => {
-        return lst.users.forEach((usr) => (members[usr.userId] = usr));
+        return lst.users.forEach((usr) => {
+          if (usr.userId != owner.userId) members[usr.userId] = usr;
+        });
       });
     return members[memberId];
   },

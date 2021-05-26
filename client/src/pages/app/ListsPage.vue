@@ -2,9 +2,9 @@
   <base-layout page-title="Listle" page-id="ListsPage">
     <template v-slot:title>
       <avatar
-        style="cursor: pointer"
+        class="personalAvatar"
         size="large"
-        :userId="userId"
+        :initials="initials"
         @click="showMenu($event)"
       ></avatar>
     </template>
@@ -42,9 +42,9 @@ export default {
     return { add };
   },
   computed: {
-    userId() {
+    initials() {
       let user = this.$store.getters.user;
-      return user ? user._id : "";
+      return user ? user.short : "";
     },
     lists() {
       return this.$store.getters.lists;
@@ -94,3 +94,9 @@ export default {
   },
 };
 </script>
+<style>
+.personalAvatar {
+  margin-left:0.5em;
+    cursor: pointer;
+  }
+</style>

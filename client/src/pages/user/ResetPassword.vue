@@ -12,6 +12,7 @@ base-layout(page-title="Reset Password", :link="link")
           ion-item
             ion-label(position="floating") E-Mail
             ion-input(
+              hasFocus
               name="email",
               type="email",
               rules="required,email",
@@ -37,7 +38,7 @@ base-layout(page-title="Reset Password", :link="link")
             )
           form-error(for="retypedPassword", :error="errors.retypedPassword")
         ion-button(type="submit", expand="block", :disabled="disabled") RESET
-        button.hide(type="submit", :disabled="disabled")
+        button.ion-hide(type="submit", :disabled="disabled")
 
       info-sheet(type="error", v-if="status == 'no-user'")
         template(v-slot:content)

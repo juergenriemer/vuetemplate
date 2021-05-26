@@ -157,7 +157,8 @@ router.delete(
       })
       .catch((err) => {
         next(new ApiError(501, log, err));
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 // REF: just update list title

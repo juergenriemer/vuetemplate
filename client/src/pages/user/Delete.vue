@@ -1,7 +1,7 @@
 <template lang="pug">
 base-layout(page-title="Delete Account")
   template(v-slot:title)
-    avatar(size="large", list-title="Listle")
+    avatar(size="large", logo="Listle")
   template(v-slot:content)
     .ion-padding
       p Note that if you delete your account all your lists will get deleted. They can not be recovered at a later stage.
@@ -11,6 +11,7 @@ base-layout(page-title="Delete Account")
             ion-label(position="floating") E-Mail
             ion-input(
             id="delete-email",
+              hasFocus
               name="email",
               type="email",
               rules="required,email",
@@ -27,7 +28,7 @@ base-layout(page-title="Delete Account")
             )
           form-error(for="password", :error="errors.password")
         ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
-        button.hide(type="submit", :disabled="disabled")
+        button.ion-hide(type="submit", :disabled="disabled")
 
 
       info-sheet(type="error", v-if="status == 'wrong-creds'")

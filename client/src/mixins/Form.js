@@ -11,6 +11,17 @@ export default {
       return this.sending == true;
     },
   },
+  watch: {
+    $route(to, from) {
+      this.formFocus();
+    },
+  },
+  updated() {
+    this.formFocus();
+  },
+  mounted() {
+    this.formFocus();
+  },
   methods: {
     getFields() {
       if (this.fields) return this.fields;
@@ -99,6 +110,16 @@ export default {
     },
     resetForm() {
       this.$refs.form.reset();
+    },
+    formFocus() {
+      const form = this.$refs.form;
+      const focus = () => {
+        const field = form.querySelector(`[hasFocus] input`);
+        field && field.focus();
+      };
+      form && setTimeout(focus, 99);
+      // second one because ionic blurs my item edit focus.. need to check
+      form && setTimeout(focus, 999);
     },
   },
   /*
