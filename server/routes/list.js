@@ -48,22 +48,29 @@ router.put(
     const { listId } = req.params;
     const userIx = req.list.users.findIndex((usr) => usr.userId == req.userId);
     if (userIx < 0) throw new ApiError(500, "user-not-in-list");
-    req.list.users[userIx].lastSeen = new Date();
-    req.list
-      .save()
+    let log = `SAW_LIST(${JSON.stringify(req.params)})::`;
+    log += "::" + req.userId + "::";
+    Promise.resolve()
+      .then(() => {
+        log += " > update";
+        return List.updateOne(
+          { _id: listId, "users.userId": req.userId },
+          { $set: { "users.$.lastSeen": new Date() } },
+          { timestamps: false, upsert: true, new: true }
+        );
+      })
       .then((list) => {
         /* use this to indicate who is currently in a list 
         utils.broadcast(req, list, {
           type: "sawList",
           listId,
           req.userId
-        });
         */
-        res.status(200).json();
       })
       .catch((err) => {
-        next(err);
-      });
+        next(new ApiError(501, log, err));
+      })
+      .finally((_) => console.log(log));
   }
 );
 

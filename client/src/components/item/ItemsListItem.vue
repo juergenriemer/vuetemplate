@@ -1,9 +1,9 @@
 <template>
   <div>
-    <hr />
     <ion-item
       style="--padding-bottom: 6px; --padding-top: 6px"
       lines="full"
+      :class="item.updatedAt>lastSeen ? 'new': ''"
       detail="false"
       button="true"
     >
@@ -23,7 +23,10 @@
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
         <ion-button aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
-          <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
+          <div class="chat-wrapper">
+            <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
+            <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
+          </div>
         </ion-button>
         <ion-button 
             aria-label="item-menu"
@@ -47,6 +50,7 @@ import {
   IonButtons,
   IonPopover,
   IonToolbar,
+  IonBadge,
 } from "@ionic/vue";
 import {
   chevronForward,
@@ -63,7 +67,7 @@ import MenuComponent from "@/components/item/ItemMenu.vue";
 import Menu from "@/mixins/Menu";
 import Alert from "@/mixins/Alert";
 export default {
-  props: ["listId", "item", "reorderMode", "itemInCommentMode"],
+  props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode"],
   emits: ["change-mode"],
   mixins: [Menu, Alert],
   data() {
@@ -90,6 +94,14 @@ export default {
     IonButtons,
     IonButton,
     IonPopover,
+    IonBadge,
+  },
+  computed: {
+    newComments() {
+      let count = this.item.comments.filter( cmt => cmt.updatedAt > this.lastSeen).length;
+      console.log( count); 
+    return count;
+    }
   },
   methods: {
     menuAction(action) {
@@ -114,7 +126,7 @@ export default {
       }
     },
     loadComments(itemId) {
-      const route = `/app/comments/${this.listId}/${itemId}`;
+      const route = `/app/comments/${this.listId}/${itemId}/${this.lastSeen}`;
       this.nav(route);
     },
     checkItem() {
@@ -145,6 +157,9 @@ export default {
   padding: 0px;
   font-size: 1.4em !important;
 }
+ion-item.new {
+    --ion-item-background:lightyellow !important;
+}
 .undone2 {
   color: #444;
   --background: whitesmoke !important;
@@ -154,5 +169,21 @@ export default {
   color: #fff;
   --background: green !important;
   --ionicon-stroke-width: 90px;
+}
+.chat-wrapper {
+  position:relative;
+}
+.chat-wrapper ion-badge {
+  --padding-bottom:3px;
+  --padding-top:3px;
+  --padding-left:1px;
+  --padding-right:1px;
+  font-size:10px;
+  z-index:99;
+  position:absolute;
+  top:0;
+  right:0;
+  margin-top:-4px;
+  margin-right:-5px;
 }
 </style>

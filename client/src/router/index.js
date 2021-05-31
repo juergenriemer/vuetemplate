@@ -94,7 +94,7 @@ const routes = self.isWeb
         component: () => import("@/pages/app/EditListPage.vue"),
       },
       {
-        path: "/app/comments/:id/:itemId",
+        path: "/app/comments/:id/:itemId/:lastSeen",
         component: () => import("@/pages/app/CommentsPage.vue"),
       },
       {

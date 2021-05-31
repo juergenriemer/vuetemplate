@@ -14,7 +14,7 @@
       </ion-button>
     </template>
     <template v-slot:content>
-      <lists-list v-if="lists" :lists="lists"></lists-list>
+      <lists-list v-if="lists" :lists="lists" :lastSeen="lastSeen"></lists-list>
       <div v-if="!lists">loading</div>
     </template>
   </base-layout>
@@ -84,6 +84,12 @@ export default {
           var link = `/user/delete`;
           this.nav(link);
           break;
+          case "toggle-app-mode":
+            let appMode = localStorage.getItem( "appMode") || "online";
+            appMode = ( appMode == "online") ? "offline" : "online";
+            localStorage.setItem( "appMode", appMode )
+            self.location.reload();
+            break;
         case "memberships":
           var link = `/app/memberships`;
           link += listId ? `/${listId}` : ``;

@@ -16,7 +16,7 @@ const actions = {
           commit("addItem", { listId, item });
           return res;
         });
-    item.offline = true;
+    if (self.$$.network !== "online") item.offline = true;
     commit("addItem", { listId, item });
   },
 
@@ -29,7 +29,7 @@ const actions = {
           commit("updateItem", { listId, itemId, item });
           return res;
         });
-    item.offline = true;
+    if (self.$$.network !== "online") item.offline = true;
     commit("updateItem", { listId, itemId, item });
   },
 
@@ -41,6 +41,7 @@ const actions = {
           commit("deleteItem", { listId, itemId });
         });
     window.storeAction(
+      arguments,
       "deleteItem",
       { listId, itemId },
       "delete item " + itemId

@@ -102,10 +102,10 @@ io.on("connection", (socket) => {
     if (utils.users[userId]) {
       if (!utils.users[userId].includes(csrf)) utils.users[userId].push(csrf);
     } else utils.users[userId] = [csrf];
-    let count = Object.keys(utils.users).length - 2;
+    let count = Object.keys(utils.users).length;
     let date = new Date().toLocaleString();
     console.log(
-      `${date}::${userdata.userId} joined: ${count} unique user(s) online`
+      `${date}::${userdata.userId}::${csrf} joined: ${count} unique user(s) online`
     );
   });
   socket.on("disconnect", () => {
@@ -117,6 +117,8 @@ io.on("connection", (socket) => {
     }
     let count = Object.keys(userdata).length;
     let date = new Date().toLocaleString();
-    console.log(`${date}::${userdata.userId} left now ${count} users online`);
+    console.log(
+      `${date}::${userdata.userId}::${csrf} left now ${count} users online`
+    );
   });
 });

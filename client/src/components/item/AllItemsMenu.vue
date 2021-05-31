@@ -9,14 +9,14 @@
     <menu-item v-else label="Show all items" :icon="eye" data="showMode" />
     <menu-item
       v-if="data.toggleMode"
-      label="Mark all items undone"
-      :icon="checkmarkCircleOutline"
+      label="Mark all items done"
+      :icon="checkmarkCircle"
       data="toggleMode"
     />
     <menu-item
       v-else
-      label="Mark all items done"
-      :icon="checkmarkCircle"
+      label="Mark all items undone"
+      :icon="checkmarkCircleOutline"
       data="toggleMode"
     />
     <menu-item

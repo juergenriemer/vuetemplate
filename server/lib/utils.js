@@ -111,7 +111,7 @@ const validateToken = (token) => {
   }
 };
 
-let users = { ok: true, not: false };
+let users = {}; // ok: true, not: false };
 function broadcast(req, list, data) {
   data.csrf = req.headers["xsrf-token"];
   data.listId = list._id;
@@ -122,17 +122,17 @@ function broadcast(req, list, data) {
         // don't emit to myself
         if (usr !== data.csrf) {
           io.emit(usr, data);
+          console.log("notify", user.userId, data.type);
         }
       });
     }
   });
 }
 function notifySingleUser(req, userId, data) {
-  console.log("notifySingle", userId);
   const io = req.app.get("io");
   if (users[userId]) {
     users[userId].forEach((usr) => {
-      console.log("notifySingle", usr);
+      console.log("notifySingle", userId, data.type);
       io.emit(usr, data);
     });
   }

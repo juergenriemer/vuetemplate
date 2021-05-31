@@ -25,6 +25,8 @@ export default {
   },
   data() {
     return {
+      socketId : null,
+      listening : false,
       offlineTolerance :2000,
       cloudOffline,
       offline : null,
@@ -56,6 +58,7 @@ export default {
   },
   methods: {
     setOfflineMode() {
+      console.log( '>>>>>> setOfflineMode')
       this.offline = true;
       this.hideAlerts();
       const offlineSince = localStorage.getItem( "offline-since");
@@ -66,9 +69,7 @@ export default {
       }
     },
     hideAlerts() {
-      console.log( 'hide oI', this.offlineInfo )
       if (this.offlineInfo && !this.offlineInfo._detached) this.offlineInfo.dismiss();
-      console.log( 'hide sI', this.syncInfo )
       if (this.syncInfo && !this.syncInfo._detached) this.syncInfo.dismiss();
       this.offlineInfo = null;
       this.syncInfo = null;
@@ -142,8 +143,13 @@ export default {
             break;
           case "offline":
             // wait a bit before telling user
+            console.log( "really offline now?")
             setTimeout( () => {
-              if( window.$$.network == "offline") this.setOfflineMode();
+              if( window.$$.network == "offline" && ! this.offline) {
+                // trigger just once
+                console.log( 'set offline mode')
+                  this.setOfflineMode();
+                }
             }, this.offlineTolerance )
             break;
         }
@@ -152,46 +158,53 @@ export default {
     // REF: DONST SEND invitees in list object to users only to owner
     connectToSocket() {
         const socket = io(process.env.VUE_APP_SOCKET);
+          socket.on("disconnect", () => {
+            console.log( "DISCONNECT")
+            window.$$.network = "offline";
+            window.bus.emit("network-status");
+          });
         socket.on("connect", () => {
+          console.log( "CONNNNNNNNNNNNECTTTT")
           window.$$.network = "online";
           window.bus.emit("network-status");
-          this.waitFor().then(( csrf ) => {
-            const user = this.$store.getters.user;
-            socket.emit("join", { userId: user._id, csrf });
-            socket.on(csrf, (res) => {
-              let { type, data } = res;
-              console.log( "socket", type, data)
-              data.socket = true;
-              if (this.allowedActions.includes(type))
-                this.$store.dispatch(type, data);
-              else if( type == "info") {
-                  alert( data.message )
+            this.waitFor().then(( csrf ) => {
+              console.warn( "> init join > " + csrf)
+              const user = this.$store.getters.user;
+              socket.emit("join", { userId: user._id, csrf });
+              if( ! this.listening ) {
+                this.listening = true;
+                socket.on(csrf, (res) => {
+                  let { type, data } = res;
+                  console.log( "socket", type, data)
+                  data.socket = true;
+                  if (this.allowedActions.includes(type))
+                    this.$store.dispatch(type, data);
+                  else if( type == "info") {
+                      alert( data.message )
+                  }
+                });
               }
             });
-          });
         });
-        socket.on("disconnect", () => {
-          window.$$.network = "offline";
-          window.bus.emit("network-status");
-        });
-        socket.on('connect_error', err => {
+          console.log( '??1')
+          /*
+        socket.once('connect_error', err => {
+          console.log( '??')
+          console.log( "IIIII error code: " + err)
           if( /Error: xhr poll error/.test( err )){
-            setTimeout( () => {
-              if( window.$$.network !== "offline") {
-                window.$$.network = "offline";
-                window.bus.emit("network-status");
-              }
-            }, this.offlineTolerance )
-            console.log( 'could not connect!!!!!!!!')
+                console.warn( "IIII TRIGGER OFFLINE!!!")
+                  window.$$.network = "offline";
+                  window.bus.emit("network-status");
           }
         });
+           */
     },
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {
           const csrf = sessionStorage.getItem("csrf")
           if ( csrf ) return resolve(csrf );
-          console.log( 'x')
+          console.log( 'polling for csrf')
           setTimeout(waitForFoo, 1000);
         })();
       });

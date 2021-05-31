@@ -17,6 +17,7 @@
         v-if="list2"
         :listId="list2._id"
         :items="list2.items"
+        :lastSeen="lastSeen"
         :reorderMode="reorderMode"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
@@ -57,6 +58,7 @@ import MenuComponent from "@/components/item/AllItemsMenu.vue";
 
 import Menu from "@/mixins/Menu";
 export default {
+  name: "ItemsPage",
   mixins: [Menu],
   components: {
     Avatar,
@@ -75,18 +77,31 @@ export default {
     return {
       edit: {},
       actionItem: {},
-      toggleMode: false,
+      lastSeen:null,
       reorderMode: false,
       ellipsisVertical,
       itemInEditMode: null,
       itemInCommentMode: null,
     };
   },
+  mounted() {
+    this.seeList();
+  },
+  watch : {
+    '$route': function( to, from ) {
+      if( /^.app.items/.test( to.path)){
+        this.seeList();
+      }
+    }
+  },
   computed: {
-    // REF: move to baselayout.. same in ResetPassword.vue
+    toggleMode() {
+      return this.list2.items.filter( itm => itm.done ).length !== this.list2.items.length;
+    },
     link() {
       return self.isWeb ? "" : "/app/list";
     },
+    // REF: move to baselayout.. same in ResetPassword.vue
     list2() {
       const listId = this.$route.params.id;
       if (listId) {
@@ -108,13 +123,26 @@ export default {
     },
   },
   methods: {
+    seeList() {
+      const params= this.$route.params;
+      if( params && params.id ){
+        const userId = this.$store.getters.userId;
+        this.lastSeen = this.list2.users.find( usr => usr.userId == userId ).lastSeen;
+        return this.$store
+          .dispatch("sawList", { listId: params.id, userId })
+          .then(() => {
+            //this.nav(`/app/items/${this.list._id}`);
+          })
+          .catch((err) => this.showError(err));
+      }
+    },
     menuAction(action) {
       switch (action) {
         case "reorderMode":
           this.reorderMode = !this.reorderMode;
           break;
         case "toggleMode":
-          this.toggleMode = !this.toggleMode;
+          //this.toggleMode = !this.toggleMode;
           this.$store
             .dispatch("toggleList", {
               listId: this.list2._id,

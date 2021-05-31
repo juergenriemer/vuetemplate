@@ -16,7 +16,7 @@ const actions = {
           commit("addComment", { listId, itemId, comment });
           return res;
         });
-    comment.offline = true;
+    if (self.$$.network !== "online") comment.offline = true;
     commit("addComment", { listId, itemId, comment });
   },
 
@@ -28,6 +28,7 @@ const actions = {
           commit("deleteComment", { listId, itemId, commentId });
         });
     window.storeAction(
+      arguments,
       "deleteComment",
       { listId, itemId, commentId },
       "delete comment " + commentId

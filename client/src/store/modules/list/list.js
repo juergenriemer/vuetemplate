@@ -25,7 +25,7 @@ const actions = {
           commit("addList", { list });
           return res;
         });
-    list.offline = true;
+    if (self.$$.network !== "online") list.offline = true;
     commit("addList", { list });
   },
 
@@ -38,7 +38,7 @@ const actions = {
           commit("updateList", { listId, list });
           return res;
         });
-    list.offline = true;
+    if (self.$$.network !== "online") list.offline = true;
     commit("updateList", { listId, list });
   },
 
@@ -51,7 +51,12 @@ const actions = {
           return res;
         });
     commit("deleteList", { listId });
-    window.storeAction("deleteList", { listId }, "delete list " + listId);
+    window.storeAction(
+      arguments,
+      "deleteList",
+      { listId },
+      "delete list " + listId
+    );
   },
   async fetchLists({ commit }) {
     if (wire(arguments))
@@ -63,7 +68,7 @@ const actions = {
         });
   },
 
-  async sawList({ commit }, { listId, userId }) {
+  async sawList({ commit, getter }, { listId, userId }) {
     commit("sawList", { listId, userId });
     if (wire(arguments)) return http().put(`${root}/sawList/${listId}`);
   },
@@ -76,6 +81,7 @@ const actions = {
           commit("toggleList", { listId, done });
         });
     window.storeAction(
+      arguments,
       "toggleList",
       { listId, done },
       "toggle all items in " + listId
@@ -97,6 +103,7 @@ const actions = {
           commit("reorderList", { listId, from, to });
         });
     window.storeAction(
+      arguments,
       "reorderList",
       { listId, from, to },
       "reorder list " + listId

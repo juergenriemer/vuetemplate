@@ -60,6 +60,7 @@ export default {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
       const actions = this.getActions();
+      console.log( "actions", actions)
       const updateIds = ( key, oldId, newId ) => {
         actions
           .filter( act => act.params[key] == oldId )
@@ -90,7 +91,7 @@ export default {
                 updateIds( "commentId", action.tempId, res.data.comment._id );
               break;
             }
-            await sleep( 2000 );
+            await sleep( 200 );
           } catch (e) {
             let msg = ( e.message ) ? e.message : "error occurred";
             this.errors.unshift( `${msg} (${++count})` );

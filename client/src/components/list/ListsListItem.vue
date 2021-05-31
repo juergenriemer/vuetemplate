@@ -1,6 +1,9 @@
 <template>
-  <ion-item @click="nav(`/app/items/${list._id}`)" button="true">
-    <avatar size="medium" :list-title="list.title"></avatar>
+  <ion-item @click="nav(`/app/items/${list._id}`)"
+      lines="full"
+      detail="false"
+    button="true">
+    <avatar size="medium" :list-title="list.title" :updates=updates></avatar>
     <ion-label class="title">
       {{ list.title }}
     </ion-label>
@@ -25,6 +28,7 @@ import Menu from "@/mixins/Menu";
 import Alert from "@/mixins/Alert";
 
 export default {
+  name : "ListsListItem",
   props: ["list"],
   mixins: [Menu, Alert],
   data() {
@@ -40,6 +44,33 @@ export default {
     IonIcon,
     IonItem,
     IonLabel,
+  },
+  computed: {
+    lastSeen() {
+      const userId = this.$store.getters.userId;
+      return this.list.users.find( usr => usr.userId == userId ).lastSeen;
+    },
+    lastModified() {
+       return this.list.updatedAt;
+    },
+    updates() {
+      let count = 0;
+      const lastSeen = this.lastSeen;
+      if ( this.lastModified > lastSeen ) {
+        const check = ( elems ) => {
+          for( let elem in elems ){
+            if( typeof( elems[elem]) == "object" ) check( elems[elem] )
+            else if( elem == "updatedAt" && elems[elem] > lastSeen ) { console.warn( elems);
+              count++;
+            }
+          }
+        }
+        check( this.list.items )
+        console.warn( count )
+        return count;
+      }
+      return 0;
+    }
   },
   methods: {
     menuAction(action) {

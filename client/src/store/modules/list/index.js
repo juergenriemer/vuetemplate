@@ -5,11 +5,13 @@ import share from "@/store/modules/list/share";
 import comment from "@/store/modules/list/comment";
 import file from "@/store/modules/list/file";
 
-window.storeAction = (method, params, title) => {
+window.storeAction = (args, method, params, title) => {
   if (window.networkStatus == "online") return;
   if (window.appConnectionMode == "offline") return;
+  if (args && args[1] && args[1].socket) return;
   if (/^delete/.test(method)) {
     for (var id in params) {
+      // don't store deletions of items created while offline
       if (/^id/.test(params[id])) return;
     }
   }

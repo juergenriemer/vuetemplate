@@ -1,24 +1,28 @@
 <template>
-  <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
-    <div v-html="content()"></div>
-    <ion-icon
-      v-if="role == 'owner' || role == 'admin'"
-      :class="role"
-      :icon="star"
-    ></ion-icon>
-  </ion-avatar>
+  <div class="avatar-wrapper">
+    <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
+      <div v-html="content()"></div>
+      <ion-icon
+        v-if="role == 'owner' || role == 'admin'"
+        :class="role"
+        :icon="star"
+      ></ion-icon>
+    </ion-avatar>
+    <IonBadge v-if="updates" color="danger">{{updates}}</IonBadge>
+  </div>
 </template>
 <script>
-import { IonAvatar, IonIcon } from "@ionic/vue";
+import { IonAvatar, IonIcon, IonBadge } from "@ionic/vue";
 import { toSvg } from "jdenticon";
 import { star, build } from "ionicons/icons";
 
 export default {
   // types: list-title, initials, logo
-  props: ["size", "role", "initials", "listTitle", "logo"],
+  props: ["size", "role", "initials", "listTitle", "logo", "updates"],
   components: {
     IonAvatar,
     IonIcon,
+    IonBadge,
   },
   data() {
     return { star, build };
@@ -68,8 +72,16 @@ box-shadow: 4px 4px 10px -6px #000000;
   height: 100%;
 }
 
-#avatar .avatar-jd {
+.avatar-wrapper {
+  position:relative;
+}
+
+.avatar-wrapper ion-badge {
   position: absolute;
+  top:0px;
+  right:0px;
+  margin-top:-5px;
+  margin-right:-5px;
   z-index: 1;
 }
 

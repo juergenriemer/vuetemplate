@@ -15,6 +15,7 @@ import { IonList } from "@ionic/vue";
 import ListsListItem from "./ListsListItem.vue";
 
 export default {
+  name: "ListsList",
   props: ["lists"],
   components: {
     IonList,

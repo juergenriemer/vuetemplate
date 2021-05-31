@@ -10,6 +10,7 @@
         :key="item._id"
         :listId="listId"
         :item="item"
+        :lastSeen="lastSeen"
         :itemInEditMode="itemInEditMode"
         :reorderMode="reorderMode"
       ></items-list-item>
@@ -23,7 +24,7 @@ import ItemsListItem from "./ItemsListItem.vue";
 
 export default {
   emits: ["change-mode"],
-  props: ["listId", "items", "reorderMode", "itemInEditMode"],
+  props: ["listId", "items", "reorderMode", "itemInEditMode", "lastSeen"],
   components: {
     IonList,
     IonReorderGroup,

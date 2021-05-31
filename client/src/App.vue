@@ -10,12 +10,19 @@
 //ionic build
 // to updateuse: npx cap copy
 // npx cap open android
+/* bugs/todo 
+O no offline mode when menu is open
+O if ajax before socket in offline... broken when reordering
+O socket message not sent if user gets back online after other user already got online and added item (test with settimeout for particular csrf)
+O Prevent deletion of items if now allowed also in offline mode
+X toggle all does not account for inital state (e.g. all done)
+*/
 import mitt from "mitt";
 window.bus = mitt();
 
 window.$$ = {
   network : "unkown"
-  , appMode : "online"
+  , appMode : localStorage.getItem( "appMode") || "online"
 };
 window.isWeb = false;
 window.networkStatus = "unknown";
@@ -23,6 +30,7 @@ window.initialDataLoad = false;
 window.appConnectionMode = "online";
 window.checkNeedForSync = () => {
   const deletions = localStorage.getItem("sOD");
+  if( deletions ) console.warn( "!!!sync needed: deletions")
   if( deletions ) return true;
   const localStore = localStorage.getItem( "store")
   if( localStore ) {
@@ -31,10 +39,11 @@ window.checkNeedForSync = () => {
     const check = ( elems ) => {
       for( let elem in elems ){
         if( typeof( elems[elem]) == "object" && ! modifications) check( elems[elem] )
-        else if( elem == "offline" ) modifications = true;
+        else if( elem == "offline" ) { console.warn( elems);modifications = true;}
       }
     }
     if( store && store.list && store.list.lists ) check( store.list.lists)
+    if( modifications ) console.warn( "!!!sync needed: offline activity")
     return modifications;
   }
   else return false;
