@@ -41,7 +41,7 @@ export default {
         "addItem",
         "deleteItem",
         "addComment",
-        "removeComment",
+        "deleteComment",
         "toggleList",
         "toggleAdmin",
         "reorderList",
@@ -58,7 +58,6 @@ export default {
   },
   methods: {
     setOfflineMode() {
-      console.log( '>>>>>> setOfflineMode')
       this.offline = true;
       this.hideAlerts();
       const offlineSince = localStorage.getItem( "offline-since");
@@ -143,11 +142,9 @@ export default {
             break;
           case "offline":
             // wait a bit before telling user
-            console.log( "really offline now?")
             setTimeout( () => {
               if( window.$$.network == "offline" && ! this.offline) {
                 // trigger just once
-                console.log( 'set offline mode')
                   this.setOfflineMode();
                 }
             }, this.offlineTolerance )
@@ -159,52 +156,67 @@ export default {
     connectToSocket() {
         const socket = io(process.env.VUE_APP_SOCKET);
           socket.on("disconnect", () => {
-            console.log( "DISCONNECT")
             window.$$.network = "offline";
             window.bus.emit("network-status");
           });
         socket.on("connect", () => {
-          console.log( "CONNNNNNNNNNNNECTTTT")
           window.$$.network = "online";
           window.bus.emit("network-status");
-            this.waitFor().then(( csrf ) => {
-              console.warn( "> init join > " + csrf)
-              const user = this.$store.getters.user;
-              socket.emit("join", { userId: user._id, csrf });
-              if( ! this.listening ) {
-                this.listening = true;
-                socket.on(csrf, (res) => {
-                  let { type, data } = res;
-                  console.log( "socket", type, data)
+          this.waitFor().then(( csrf ) => {
+            const user = this.$store.getters.user;
+            socket.emit("join", { userId: user._id, csrf });
+            if( ! this.listening ) {
+              this.listening = true;
+              socket.on(csrf, (res) => {
+                let { type, data } = res;
+                console.log( "socket", type, data)
+                if (this.allowedActions.includes(type)) {
                   data.socket = true;
-                  if (this.allowedActions.includes(type))
-                    this.$store.dispatch(type, data);
-                  else if( type == "info") {
-                      alert( data.message )
-                  }
-                });
-              }
-            });
+                  //                  data = this.preventSeenUpdates( type, data )
+                  this.$store.dispatch(type, data);
+                }
+                else if( type == "info") {
+                    alert( data.message )
+                }
+              });
+            }
+          });
         });
-          console.log( '??1')
-          /*
-        socket.once('connect_error', err => {
-          console.log( '??')
-          console.log( "IIIII error code: " + err)
-          if( /Error: xhr poll error/.test( err )){
-                console.warn( "IIII TRIGGER OFFLINE!!!")
-                  window.$$.network = "offline";
-                  window.bus.emit("network-status");
-          }
-        });
-           */
     },
+    /*
+    preventSeenUpdates( type, data ){
+      const params = this.$route.params;
+      if( params && params.id ) {
+        if( /Item$/.test( type )){
+          let cur = `/app/items/${params.id}`;
+          if( this.$route.path == cur ) {
+            const now = this.$store.getters.list(params.id).updatedAt;
+            this.$store.getters
+              if( data.item )
+                data.item.updatedAt = now;
+              else data.updatedAt = now;
+          }
+        }
+        else if( /Comment$/.test( type )){
+          if( params && params.id && params.itemId) {
+            let cur = `/app/comments/${params.id}/${params.itemId}`;
+            if( this.$route.path == cur ) {
+              const now = this.$store.getters.list(params.id).updatedAt;
+              if( data.comment )
+                data.comment.updatedAt = now;
+              else data.updatedAt = now;
+            }
+          }
+        }
+      }
+      return data;
+    },
+     */
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {
           const csrf = sessionStorage.getItem("csrf")
           if ( csrf ) return resolve(csrf );
-          console.log( 'polling for csrf')
           setTimeout(waitForFoo, 1000);
         })();
       });

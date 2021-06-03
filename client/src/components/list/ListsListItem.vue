@@ -3,9 +3,9 @@
       lines="full"
       detail="false"
     button="true">
-    <avatar size="medium" :list-title="list.title" :updates=updates></avatar>
+    <avatar size="medium" :list-title="list.title" :updates=newItemComments></avatar>
     <ion-label class="title">
-      {{ list.title }}
+      {{ list.title }} 
     </ion-label>
     <ion-buttons slot="end">
       <ion-button @click="showMenu($event, { list })">
@@ -34,6 +34,8 @@ export default {
   data() {
     return {
       ellipsisVertical,
+      updates : 0,
+      newItemComments : 0
     };
   },
   components: {
@@ -45,7 +47,26 @@ export default {
     IonItem,
     IonLabel,
   },
+  mounted() {
+      this.checkUpdates();
+      this.$nextTick(() => {
+        this.highlight();
+      } )
+  },
+  watch : {
+    listUpdated() {
+      this.checkUpdates();
+    },
+    '$route': function( to, from ) {
+      if( /^.app.list/.test( to.path)){
+        this.checkUpdates();
+      }
+    }
+  },
   computed: {
+    listUpdated() {
+      return this.list.updatedAt;
+    },
     lastSeen() {
       const userId = this.$store.getters.userId;
       return this.list.users.find( usr => usr.userId == userId ).lastSeen;
@@ -53,26 +74,54 @@ export default {
     lastModified() {
        return this.list.updatedAt;
     },
-    updates() {
-      let count = 0;
-      const lastSeen = this.lastSeen;
-      if ( this.lastModified > lastSeen ) {
-        const check = ( elems ) => {
-          for( let elem in elems ){
-            if( typeof( elems[elem]) == "object" ) check( elems[elem] )
-            else if( elem == "updatedAt" && elems[elem] > lastSeen ) { console.warn( elems);
-              count++;
-            }
-          }
-        }
-        check( this.list.items )
-        console.warn( count )
-        return count;
-      }
-      return 0;
-    }
   },
   methods: {
+    highlight() {
+            // REF: same in commentlistitem.vuej
+      this.$nextTick(() => {
+        const node = this.$el//.querySelector( ".highlight");
+        let flagged = node.classList.contains( "new");
+        if( ! flagged ) {
+          let _new = false;
+          const userId = this.$store.getters.userId;
+            // REF: same in itemlistitem.vuej
+          let user = this.list.lastSeen.find( elem => elem.userId == userId );
+          if( ! user ) _new = true;
+          else if( this.list.lastAction > user.seen ) _new = true;
+          if( _new ) {
+            node.classList.add( "new")
+            setTimeout( ()=>{
+              this.$store
+                .dispatch("sawList", {
+                  listId: this.listId,
+                  userId,
+                  seen: this.list.lastAction
+                })
+                .catch((err) => this.showError(err));
+              if( node ) node.classList.remove( "new")
+            }, 4000 );
+          }
+        }
+      });
+    },
+    checkUpdates() {
+      console.log( 'do it ')
+      const userId = this.$store.getters.userId;
+      let count = 0;
+      this.list.items.forEach( itm => {
+        let user = itm.lastSeen.find( elem => elem.userId == userId );
+        if( ! user ) count++;
+        else if( itm.lastAction > user.seen ) count++;
+        itm.comments.forEach( cmt => {
+          // REF: same in comentsitempage.vuej
+          let user = cmt.lastSeen.find( elem => elem.userId == userId );
+          if( ! user ) count++;
+          else if( cmt.lastAction > user.seen ) count++;
+        })
+      })
+      console.log( "check for LIST updates now: " + count)
+      this.newItemComments = count;
+    },
     menuAction(action) {
       switch (action) {
         case "delete":

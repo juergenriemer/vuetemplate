@@ -85,12 +85,12 @@ export default {
     };
   },
   mounted() {
-    this.seeList();
+    this.saw();
   },
   watch : {
     '$route': function( to, from ) {
       if( /^.app.items/.test( to.path)){
-        this.seeList();
+        this.saw();
       }
     }
   },
@@ -123,6 +123,17 @@ export default {
     },
   },
   methods: {
+    saw() {
+      console.log( ">> saw items")
+      try {
+        const listId = this.$route.params.id;
+        const userId = this.$store.getters.userId;
+        this.$store
+          .dispatch("sawItems", { listId, userId })
+          .catch((err) => this.showError(err));
+      }
+      catch( e ) { /* swallow */ }
+    },
     seeList() {
       const params= this.$route.params;
       if( params && params.id ){

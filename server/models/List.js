@@ -21,6 +21,16 @@ const CommentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    lastAction: Date,
+    lastSeen: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        seen: Date,
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -42,6 +52,16 @@ const ItemSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    lastAction: Date,
+    lastSeen: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        seen: Date,
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -62,6 +82,16 @@ const ListSchema = new mongoose.Schema(
       ref: "User",
     },
     items: [ItemSchema],
+    lastAction: Date,
+    lastSeen: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        seen: Date,
+      },
+    ],
     users: [
       {
         userId: {
@@ -71,7 +101,6 @@ const ListSchema = new mongoose.Schema(
         email: String,
         name: String,
         short: String,
-        lastSeen: Date,
         role: String,
       },
     ],

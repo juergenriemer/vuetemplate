@@ -17,58 +17,71 @@ router.put(
   validateIds,
   role("user"),
   (req, res, next) => {
-    let { listId, done } = req.params;
-    done = done == "true"; // done is string, convert to bool
-    req.list.items.forEach((item) => (item.done = done));
-    req.list
-      .save()
+    const seen = new Date();
+    const { listId, done } = req.params;
+    const newState = done == "true"; // done is string, convert to bool
+    const userId = req.userId;
+    req.list.items.forEach((item) => {
+      if (item.done !== newState) {
+        item.lastAction = seen;
+        item.lastSeen.find((usr) => usr.userId == userId).seen = seen;
+        item.done = newState;
+      }
+    });
+    let log = `TOGGLE_LIST(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > save list";
+        return req.list.save();
+      })
       .then((list) => {
+        log += " > respond";
+        const data = {
+          listId,
+          done: newState,
+          seen,
+        };
         utils.broadcast(req, list, {
           type: "toggleList",
-          data: {
-            listId,
-            done,
-          },
+          data,
         });
-        res.status(200).json();
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 
 // set last seen date for user
 router.put(
-  "/sawList/:listId",
+  "/saw",
   passport.authenticate("jwt", { session: false }),
   userInfo,
-  role("user"),
   (req, res, next) => {
-    const { listId } = req.params;
-    const userIx = req.list.users.findIndex((usr) => usr.userId == req.userId);
-    if (userIx < 0) throw new ApiError(500, "user-not-in-list");
-    let log = `SAW_LIST(${JSON.stringify(req.params)})::`;
-    log += "::" + req.userId + "::";
+    const seen = new Date();
+    const userId = req.userId;
+    let log = `SAW_LISTS(${JSON.stringify(req.params)})::`;
     Promise.resolve()
       .then(() => {
         log += " > update";
-        return List.updateOne(
-          { _id: listId, "users.userId": req.userId },
-          { $set: { "users.$.lastSeen": new Date() } },
+        return List.updateMany(
+          { "lastSeen.userId": userId },
+          { $set: { "lastSeen.$.seen": seen } },
           { timestamps: false, upsert: true, new: true }
         );
       })
       .then((list) => {
-        /* use this to indicate who is currently in a list 
-        utils.broadcast(req, list, {
-          type: "sawList",
-          listId,
-          req.userId
-        */
+        log += " > respond";
+        const data = {
+          userId,
+          seen,
+        };
+        res.status(200).json(data);
       })
       .catch((err) => {
-        next(new ApiError(501, log, err));
+        next(err);
       })
       .finally((_) => console.log(log));
   }
@@ -97,21 +110,23 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    console.log("username: " + req.name);
+    const seen = new Date();
     const data = (({ title }) => ({ title }))(req.body);
+    const userId = req.userId;
     let list = new List(data);
     list._id = new mongoose.mongo.ObjectId();
     list.creatorId = req.userId;
     list.users = [
       {
-        userId: req.userId,
+        userId,
         email: req.email,
         name: req.name,
         short: req.short,
-        lastSeen: new Date(),
         role: "owner",
       },
     ];
+    list.lastAction = seen;
+    list.lastSeen = [{ userId, seen }];
     list
       .save()
       .then((list) => {
@@ -184,6 +199,7 @@ router.put(
     req.list
       .save()
       .then((list) => {
+        Object.assign(update, { updatedAt: list.updatedAt });
         utils.broadcast(req, list, {
           type: "updateList",
           data: {
@@ -207,25 +223,51 @@ router.put(
   validateIds,
   role("user"),
   (req, res, next) => {
+    let log = `REORDER_LIST(${JSON.stringify(req.params)})::`;
+    const seen = new Date();
     const { listId, from, to } = req.params;
-    const draggedItem = req.list.items.splice(from, 1)[0];
-    req.list.items.splice(to, 0, draggedItem);
-    req.list
-      .save()
+    const userId = req.userId;
+    Promise.resolve()
+      .then(() => {
+        log += " > prepare data";
+        try {
+          const draggedItem = req.list.items.splice(from, 1)[0];
+          req.list.items.splice(to, 0, draggedItem);
+          console.log(from, to);
+          req.list.items[from].lastAction = seen;
+          req.list.items[from].lastSeen.find(
+            (usr) => usr.userId == userId
+          ).seen = seen;
+          req.list.items[to].lastAction = seen;
+          req.list.items[to].lastSeen.find(
+            (usr) => usr.userId == userId
+          ).seen = seen;
+          return true;
+        } catch (err) {
+          throw new Error(err);
+        }
+      })
+      .then(() => {
+        log += " > save list";
+        return req.list.save();
+      })
       .then((list) => {
+        const data = {
+          listId,
+          from,
+          to,
+          seen,
+        };
         utils.broadcast(req, list, {
           type: "reorderList",
-          data: {
-            listId,
-            from,
-            to,
-          },
+          data,
         });
-        res.status(200).json();
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 

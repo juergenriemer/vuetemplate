@@ -159,9 +159,9 @@ router.post(
                   email: req.email,
                   name: req.name,
                   short: req.short,
-                  lastSeen: new Date(),
                   role,
                 });
+                lst.lastSeen.push({ userId: req.userId, seen: new Date() });
               }
               // and remove from invitees
               lst.invitees = lst.invitees.filter((inv) => inv.email != email);

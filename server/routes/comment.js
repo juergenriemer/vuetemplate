@@ -6,8 +6,48 @@ const utils = require("../lib/utils");
 const { deleteFile, isEmptyFolder, deleteFolder } = require("../lib/files.js");
 const userInfo = require("../middleware/userInfo.js");
 const role = require("../middleware/role.js");
+//const updateLastSeen = require("../middleware/updateLastSeen.js");
 const validateIds = require("../middleware/validateIds.js");
 const ApiError = require("../middleware/ApiError");
+
+router.put(
+  "/saw/:listId/:itemId",
+  passport.authenticate("jwt", { session: false }),
+  userInfo,
+  role("user"),
+  (req, res, next) => {
+    const seen = new Date();
+    const { listId, itemId } = req.params;
+    const userId = req.userId;
+    const item = req.list.items.find((itm) => itm._id == itemId);
+    item.comments.forEach((comment) => {
+      let userIx = comment.lastSeen.findIndex((elem) => elem.userId == userId);
+      if (userIx == -1) comment.lastSeen.push({ userId, seen });
+      else comment.lastSeen[userIx].seen = seen;
+    });
+    let log = `SAW_COMMENTS(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > update list";
+        return req.list.save();
+      })
+      .then((list) => {
+        log += " > respond";
+        const data = {
+          listId,
+          itemId,
+          userId,
+          seen,
+        };
+        res.status(200).json(data);
+      })
+      .catch((error) => {
+        // REF: this error handling or the one from delete??
+        next(error);
+      })
+      .finally((_) => console.log(log));
+  }
+);
 
 // create comment
 router.post(
@@ -16,11 +56,16 @@ router.post(
   validateIds,
   userInfo,
   role("user"),
+  //updateLastSeen,
   (req, res, next) => {
+    const seen = new Date();
     const { listId, itemId } = req.params;
+    const userId = req.userId;
     const comment = (({ text, imageFile }) => ({ text, imageFile }))(req.body);
     comment._id = new mongoose.mongo.ObjectId();
-    comment.creatorId = req.userId;
+    comment.creatorId = userId;
+    comment.lastAction = seen;
+    comment.lastSeen = [{ userId, seen }];
     let log = `COMMENT_CREATE(${JSON.stringify(req.params)})::`;
     Promise.resolve()
       .then(() => {
@@ -34,24 +79,26 @@ router.post(
       })
       .then((list) => {
         log += " > broadcast";
-        return utils.broadcast(req, list, {
+        comment.updatedAt = list.updatedAt;
+        const data = {
+          listId,
+          itemId,
+          comment,
+        };
+        utils.broadcast(req, list, {
           type: "addComment",
-          data: {
-            listId,
-            itemId,
-            comment,
-          },
+          data,
         });
+        return data;
       })
-      .then(() => {
-        res.status(200).json({ comment });
+      .then((data) => {
+        res.status(200).json(data);
+        log += " > respond";
       })
       .catch((err) => {
-        next(new ApiError(501, log, err));
+        next(err);
       })
-      .finally(() => {
-        console.log("SUCCESS: " + log);
-      });
+      .finally((_) => console.log(log));
   }
 );
 
@@ -62,6 +109,7 @@ router.delete(
   validateIds,
   userInfo,
   role("user"),
+  // updateLastSeen,
   (req, res, next) => {
     // get data
     const { listId, itemId, commentId } = req.params;
@@ -112,19 +160,22 @@ router.delete(
       })
       .then((list) => {
         log += " > broadcast";
+        const data = {
+          listId,
+          itemId,
+          commentId,
+          updatedAt: list.updatedAt,
+        };
         utils.broadcast(req, list, {
-          type: "removeComment",
-          data: {
-            listId,
-            itemId,
-            commentId,
-          },
+          type: "deleteComment",
+          data,
         });
-        res.status(200).json();
+        res.status(200).json(data);
       })
       .catch((err) => {
-        next(new ApiError(501, log, err));
-      });
+        next(err);
+      })
+      .finally((_) => console.log(log));
   }
 );
 

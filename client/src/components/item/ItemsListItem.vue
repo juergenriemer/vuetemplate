@@ -3,12 +3,12 @@
     <ion-item
       style="--padding-bottom: 6px; --padding-top: 6px"
       lines="full"
-      :class="item.updatedAt>lastSeen ? 'new': ''"
+      class="highlight"
       detail="false"
       button="true"
     >
       <ion-label @dblclick="checkItem(item)" class="title">
-        {{ item.title }}
+        {{ item.title }} {{ item.lastAction}}
       </ion-label>
       <ion-buttons slot="start">
         <ion-button
@@ -70,18 +70,6 @@ export default {
   props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode"],
   emits: ["change-mode"],
   mixins: [Menu, Alert],
-  data() {
-    return {
-      ellipsisVertical,
-      chatboxEllipses,
-      checkmark,
-      chevronForward,
-      thumbsUp,
-      heart,
-      trash,
-      settings,
-    };
-  },
   components: {
     //   CommentsList,
     MenuComponent,
@@ -96,14 +84,85 @@ export default {
     IonPopover,
     IonBadge,
   },
-  computed: {
-    newComments() {
-      let count = this.item.comments.filter( cmt => cmt.updatedAt > this.lastSeen).length;
-      console.log( count); 
-    return count;
+  data() {
+    return {
+      ellipsisVertical,
+      chatboxEllipses,
+      checkmark,
+      chevronForward,
+      thumbsUp,
+      heart,
+      trash,
+      settings,
+      newComments: 0,
+    };
+  },
+  mounted() {
+      this.checkUpdates();
+      this.$nextTick(() => {
+        this.highlight();
+      } )
+  },
+  watch : {
+    itemUpdated() {
+      this.checkUpdates();
+      this.highlight();
+    },
+    '$route': function( to, from ) {
+      if( /^.app.items/.test( to.path)){
+        this.checkUpdates();
+        //this.highlight();
+      }
     }
   },
+  computed: {
+    itemUpdated() {
+      return this.item.lastAction;
+    },
+  },
   methods: {
+    highlight() {
+            // REF: same in commentlistitem.vuej
+      this.$nextTick(() => {
+        const node = this.$el.querySelector( ".highlight");
+        let flagged = node.classList.contains( "new");
+        if( ! flagged ) {
+          let _new = false;
+          const userId = this.$store.getters.userId;
+            // REF: same in itemlistitem.vuej
+          let user = this.item.lastSeen.find( elem => elem.userId == userId );
+          console.log( this.item.lastAction )
+          console.log( user.seen)
+          if( ! user ) _new = true;
+          else if( this.item.lastAction > user.seen ) _new = true;
+          if( _new ) {
+            node.classList.add( "new")
+              this.$store
+                .dispatch("sawItem", {
+                  listId: this.listId,
+                  itemId: this.item._id,
+                  userId,
+                  seen: this.item.lastAction
+                })
+                .catch((err) => this.showError(err));
+            setTimeout( ()=>{
+              if( node ) node.classList.remove( "new")
+            }, 4000 );
+          }
+        }
+      });
+    },
+    checkUpdates() {
+      const userId = this.$store.getters.userId;
+      let count = 0;
+      this.item.comments.forEach( cmt => {
+        // REF: same in comentsitempage.vuej
+        let user = cmt.lastSeen.find( elem => elem.userId == userId );
+        if( ! user ) count++;
+        else if( cmt.lastAction > user.seen ) count++;
+      })
+      this.newComments = count;
+    },
     menuAction(action) {
       switch (action) {
         case "delete-item":
@@ -126,7 +185,7 @@ export default {
       }
     },
     loadComments(itemId) {
-      const route = `/app/comments/${this.listId}/${itemId}/${this.lastSeen}`;
+      const route = `/app/comments/${this.listId}/${itemId}`;
       this.nav(route);
     },
     checkItem() {

@@ -14,7 +14,7 @@
       </ion-button>
     </template>
     <template v-slot:content>
-      <lists-list v-if="lists" :lists="lists" :lastSeen="lastSeen"></lists-list>
+      <lists-list v-if="lists" :lists="lists"></lists-list>
       <div v-if="!lists">loading</div>
     </template>
   </base-layout>
@@ -41,6 +41,16 @@ export default {
   data() {
     return { add };
   },
+  mounted() {
+    this.saw();
+  },
+  watch : {
+    '$route': function( to, from ) {
+      if( /^.app.list/.test( to.path)){
+        this.saw();
+      }
+    }
+  },
   computed: {
     initials() {
       let user = this.$store.getters.user;
@@ -57,6 +67,15 @@ export default {
     },
   },
   methods: {
+    saw() {
+      console.log( ">> saw list")
+      try {
+        this.$store
+          .dispatch("sawLists")
+          .catch((err) => this.showError(err));
+      }
+      catch( e ) {  }
+    },
     menuAction(action) {
       switch (action) {
         case "logout":

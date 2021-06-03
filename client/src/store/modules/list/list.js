@@ -68,25 +68,35 @@ const actions = {
         });
   },
 
-  async sawList({ commit, getter }, { listId, userId }) {
-    commit("sawList", { listId, userId });
-    if (wire(arguments)) return http().put(`${root}/sawList/${listId}`);
+  async sawLists({ commit }) {
+    if (wire(arguments))
+      return http()
+        .put(`${root}/saw`)
+        .then((res) => {
+          commit("sawLists", res.data);
+        });
+    // we are offline no need?? commit("sawList", { listId, userId,  });
   },
 
-  async toggleList({ commit }, { listId, done }) {
+  async sawList({ commit }, { listId, userId, seen }) {
+    commit("sawList", { listId, userId, seen });
+  },
+
+  async toggleList({ commit }, { listId, done, seen }) {
     if (wire(arguments))
       return http()
         .put(`${root}/toggle/${listId}/${done}`)
-        .then((_) => {
-          commit("toggleList", { listId, done });
+        .then((res) => {
+          res.data.actor = true;
+          commit("toggleList", res.data);
         });
     window.storeAction(
       arguments,
       "toggleList",
-      { listId, done },
+      { listId, done, seen },
       "toggle all items in " + listId
     );
-    commit("toggleList", { listId, done });
+    commit("toggleList", { listId, done, seen });
   },
 
   async toggleAdmin({ commit }, { listId, userId, isAdmin }) {
@@ -95,20 +105,21 @@ const actions = {
       return http().put(`${root}/toggleAdmin/${listId}/${userId}/${isAdmin}`);
   },
 
-  async reorderList({ commit }, { listId, from, to }) {
+  async reorderList({ commit }, { listId, from, to, seen }) {
     if (wire(arguments))
       return http()
         .put(`${root}/reorder/${listId}/${from}/${to}`)
-        .then((_) => {
-          commit("reorderList", { listId, from, to });
+        .then((res) => {
+          res.data.actor = true;
+          commit("reorderList", res.data);
         });
     window.storeAction(
       arguments,
       "reorderList",
-      { listId, from, to },
+      { listId, from, to, seen },
       "reorder list " + listId
     );
-    commit("reorderList", { listId, from, to });
+    commit("reorderList", { listId, from, to, seen });
   },
 };
 
@@ -116,6 +127,10 @@ const mutations = {
   clearLists: (state) => (state.lists = []),
   synchronize: (state, { lists }) => {},
   fetchLists: (state, { lists }) => (state.lists = lists),
+  listUpdated: (state, { listId, updatedAt }) => {
+    const list = state.lists.find((list) => list._id == listId);
+    list.updatedAt = updatedAt;
+  },
   addList: (state, { list }) => {
     state.lists.unshift(list);
   },
@@ -125,24 +140,44 @@ const mutations = {
   },
   deleteList: (state, { listId }) =>
     (state.lists = state.lists.filter((lst) => lst._id !== listId)),
-  sawList: (state, { listId, userId }) => {
-    const list = state.lists.find((list) => list._id == listId);
-    let user = list.users.find((usr) => usr.userId == userId);
-    user.lastSeen = new Date();
+
+  sawLists: (state, { userId, seen }) => {
+    state.lists.forEach((lst) => {
+      lst.lastSeen.find((usr) => usr.userId == userId).seen = seen;
+    });
   },
-  toggleList: (state, { listId, done }) => {
+  sawList: (state, { listId, userId, seen }) => {
+    const list = state.lists.find((lst) => lst._id == listId);
+    let userIx = list.lastSeen.findIndex((elem) => elem.userId == userId);
+    if (userIx == -1) list.lastSeen.push({ userId, seen });
+    else list.lastSeen[userIx].seen = seen;
+  },
+  toggleList: (state, { listId, done, seen, actor }) => {
     const list = state.lists.find((list) => list._id == listId);
-    list.items.forEach((item) => (item.done = done));
+    list.items.forEach((item) => {
+      if (item.done !== done) {
+        if (!actor) {
+          item.lastAction = seen;
+          list.updatedAt = seen;
+        }
+        item.done = done;
+      }
+    });
   },
   toggleAdmin: (state, { listId, userId, isAdmin }) => {
     const list = state.lists.find((list) => list._id == listId);
     let user = list.users.find((usr) => usr.userId == userId);
     user.role = isAdmin ? "admin" : "user";
   },
-  reorderList: (state, { listId, from, to }) => {
+  reorderList: (state, { listId, from, to, seen, actor }) => {
     const list = state.lists.find((lst) => lst._id == listId);
     const draggedItem = list.items.splice(from, 1)[0];
     list.items.splice(to, 0, draggedItem);
+    if (!actor) {
+      list.items[from].lastAction = seen;
+      list.items[to].lastAction = seen;
+      list.updatedAt = seen;
+    }
   },
 };
 

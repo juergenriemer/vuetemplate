@@ -62,6 +62,16 @@ export default {
       itemInCommentMode: null,
     };
   },
+  mounted() {
+    this.saw();
+  },
+  watch : {
+    '$route': function( to, from ) {
+      if( /^.app.comments/.test( to.path)){
+        this.saw();
+      }
+    }
+  },
   computed: {
     // REF: move to baselayout.. same in ResetPassword.vue
     link() {
@@ -70,6 +80,21 @@ export default {
     },
   },
   methods: {
+    saw() {
+      setTimeout( ()=>{
+      console.log( ">> saw comments")
+      try {
+        const listId = this.$route.params.id;
+        const itemId = this.$route.params.itemId;
+        const userId = this.$store.getters.userId;
+        this.$store
+          .dispatch("sawComments", { listId, itemId, userId })
+          .catch((err) => this.showError(err));
+      }
+      catch( e ) { /* swallow */ }
+
+      }, 1000)
+    },
     changeMode({ mode, item }) {
       this.itemInEditMode = null;
       this.itemInCommentMode = null;

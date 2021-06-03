@@ -70,36 +70,73 @@ export default {
     IonButton,
     IonPopover,
   },
+  updated() {
+  },
   mounted() {
-    if (this.comment.imageFile) {
-      var imageFile = this.comment.imageFile;
-      var host = process.env.VUE_APP_BACKEND;
-      var root = "file";
-      var listId = this.listId;
-      var itemId = this.item._id;
-      var url = `${host}/${root}/${listId}/${itemId}/thumb_${imageFile}`;
-      var opts = {
-        credentials: "include",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-          "Content-Type": "application/json",
-        },
-      };
-      fetch(url, opts)
-        .then((res) => res.blob())
-        .then((image) => {
-          var outside = URL.createObjectURL(image);
-          this.$refs.thumb.setAttribute("src", outside);
-          this.$refs.thumb.classList.remove("ion-hide");
-        })
-        .catch((err) => {
-          this.showError(err);
-        });
-    }
+    this.loadPicture();
+    this.$nextTick(() => {
+        this.highlight();
+    } )
   },
   methods: {
+    highlight() {
+      this.$nextTick(() => {
+        const node = this.$el//.querySelector( ".highlight");
+        let flagged = node.classList.contains( "new");
+        if( ! flagged ) {
+          let _new = false;
+          const userId = this.$store.getters.userId;
+            // REF: same in itemlistitem.vuej
+          let user = this.comment.lastSeen.find( elem => elem.userId == userId );
+          if( ! user ) _new = true;
+          else if( this.comment.lastAction > user.seen ) _new = true;
+          if( _new ) {
+            node.classList.add( "new")
+            setTimeout( ()=>{
+              this.$store
+                .dispatch("sawComment", {
+                  listId: this.listId,
+                  itemId: this.item._id,
+                  commentId: this.comment._id,
+                  userId,
+                  seen: this.comment.lastAction
+                })
+                .catch((err) => this.showError(err));
+              if( node ) node.classList.remove( "new")
+            }, 4000 );
+          }
+        }
+      });
+    },
     pos(comment) {
-      return this.myId !== comment.creatorId ? "right" : "left";
+      return this.$store.getters.userId == comment.creatorId ? "right" : "left";
+    },
+    loadPicture() {
+      if (this.comment.imageFile) {
+        var imageFile = this.comment.imageFile;
+        var host = process.env.VUE_APP_BACKEND;
+        var root = "file";
+        var listId = this.listId;
+        var itemId = this.item._id;
+        var url = `${host}/${root}/${listId}/${itemId}/thumb_${imageFile}`;
+        var opts = {
+          credentials: "include",
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        };
+        fetch(url, opts)
+          .then((res) => res.blob())
+          .then((image) => {
+            var outside = URL.createObjectURL(image);
+            this.$refs.thumb.setAttribute("src", outside);
+            this.$refs.thumb.classList.remove("ion-hide");
+          })
+          .catch((err) => {
+            this.showError(err);
+          });
+      }
     },
     openPicture(imageFile) {
       var listId = this.listId;
@@ -209,5 +246,19 @@ export default {
 
 .comment-background {
   background: #ffe3cd !important;
+}
+.bubble.new {
+    border: solid lightyellow !important;
+    background:lightyellow !important;
+}
+.bubble.new .bubble-content {
+    background:lightyellow !important;
+  }
+
+.bubble.right.new:before {
+  border-color: transparent transparent transparent lightyellow;
+}
+.bubble.new:before {
+  border-color: transparent lightyellow transparent transparent;
 }
 </style>

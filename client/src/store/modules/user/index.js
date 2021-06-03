@@ -73,7 +73,8 @@ const actions = {
         .then((res) => {
           const user = res.data.user;
           const tzo = res.data.tzo + new Date().getTimezoneOffset();
-          window.tzo = tzo;
+          window.tzo = tzo * -1;
+          console.warn("server tzo: " + tzo + " -> client: " + window.tzo);
           commit("fetchUser", { user });
           return res;
         });
