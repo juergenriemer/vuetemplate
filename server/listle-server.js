@@ -42,6 +42,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Allows our Angular application to make HTTP requests to Express application
 
+// Allow dotfiles - this is required for verification by Lets Encrypt's certbot
+app.use(express.static(path.join(__dirname, 'build'), {dotfiles: 'allow'}));
+
 const corsConfig = {
   origin: true,
   credentials: true,
@@ -60,6 +63,9 @@ app.get("/users", csrfProtection, function (req, res) {
     .json({ count: Object.keys(utils.users).length, users: utils.users });
 });
 
+//
+//
+//
 // Where Angular builds to - In the ./angular/angular.json file, you will find this configuration
 // at the property: projects.angular.architect.build.options.outputPath
 // When you run `ng build`, the output will go to the ./public directory
@@ -78,22 +84,20 @@ app.use(require("./middleware/apiErrorHandler"));
  */
 
 // Server listens on http://localhost:3000
+
+
 let http = app.listen(3003);
 
 const io = require("socket.io")(http, {
-  allowEIO3: true,
+  allowEIO4: true,
   cors: {
-    origin: [
-      process.env.CLIENT_HOST,
-      process.env.CLIENT_HOST2,
-      process.env.CLIENT_HOST3,
-    ],
+    origin: true,
     credentials: true,
     methods: ["GET", "POST"],
   },
 });
-
 app.set("io", io);
+
 io.on("connection", (socket) => {
   let userdata = null;
   socket.on("join", (data) => {
@@ -122,3 +126,6 @@ io.on("connection", (socket) => {
     );
   });
 });
+
+
+
