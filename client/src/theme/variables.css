@@ -234,3 +234,10 @@ http://ionicframework.com/docs/theming/ */
   }
 }
 
+/* width bug of popovers (menus) on ios */
+.popover-content {
+  width: 80vw;
+  min-width: 270px !important;
+  max-width: 80% !important;
+  box-shadow: 4px 4px 10px -6px #000000 !important;
+}

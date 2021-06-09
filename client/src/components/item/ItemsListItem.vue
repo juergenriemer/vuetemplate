@@ -7,28 +7,28 @@
       detail="false"
       button="true"
     >
-      <ion-label @dblclick="checkItem(item)" class="title">
-        {{ item.title }} {{ item.lastAction}}
-      </ion-label>
-      <ion-buttons slot="start">
-        <ion-button
+      <ion-avatar id="check-outer"
           aria-label="item-status"
-          :class="item.done ? 'done2' : 'undone2'"
+          :class="item.done ? 'done' : ''"
+      >
+        <ion-icon 
           @click="checkItem(item._id)"
-        >
-          <ion-icon slot="icon-only" :icon="checkmark"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+          id="check-inner" :icon="checkmark"></ion-icon>
+      </ion-avatar>
+      <ion-label @dblclick="checkItem(item)" class="title">
+        {{ item.title }}
+      </ion-label>
 
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
-        <ion-button aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
+        <ion-button color="dark"
+          aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
           <div class="chat-wrapper">
             <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
             <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
           </div>
         </ion-button>
-        <ion-button 
+        <ion-button color="dark"
             aria-label="item-menu"
           @click="showMenu($event)">
           <ion-icon 
@@ -117,7 +117,7 @@ export default {
   },
   computed: {
     itemUpdated() {
-      return this.item.lastAction;
+      return this.item.updatedAt;
     },
   },
   methods: {
@@ -219,15 +219,23 @@ export default {
 ion-item.new {
     --ion-item-background:lightyellow !important;
 }
-.undone2 {
-  color: #444;
-  --background: whitesmoke !important;
+#check-outer {
+  background: green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#check-outer.done {
+  background: #efefef;
+}
+#check-outer #check-inner {
+  color:#fff;
+  font-size:20px;
+  font-weight:bold;
   --ionicon-stroke-width: 90px;
 }
-.done2 {
-  color: #fff;
-  --background: green !important;
-  --ionicon-stroke-width: 90px;
+#check-outer.done #check-inner {
+  color:#000;
 }
 .chat-wrapper {
   position:relative;
@@ -245,4 +253,5 @@ ion-item.new {
   margin-top:-4px;
   margin-right:-5px;
 }
+
 </style>

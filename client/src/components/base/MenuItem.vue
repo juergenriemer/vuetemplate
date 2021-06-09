@@ -1,5 +1,5 @@
 <template>
-  <ion-item button="true" :data="data">
+  <ion-item width="300" detail="false" button="true" :data="data">
     <ion-label class="title">{{ label }}</ion-label>
     <ion-icon slot="end" class="menu-icon" :icon="icon" size="small"></ion-icon>
   </ion-item>

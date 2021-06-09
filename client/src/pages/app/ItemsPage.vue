@@ -4,7 +4,7 @@
       <avatar size="large" :list-title="list2.title"></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="showMenu($event, menuData)">
+      <ion-button color="dark" @click="showMenu($event, menuData)">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"

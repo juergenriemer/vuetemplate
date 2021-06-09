@@ -14,12 +14,10 @@ const ensureData = (to, next) => {
     window.$$.appMode == "online" &&
     !window.initialDataLoad &&
     !window.checkNeedForSync();
-  console.warn("init load? " + loadInitialData);
   if (loadInitialData) {
     store
       .dispatch("info")
       .then(() => {
-        console.warn("!!!!!!!!!!!!!!!!!!!!!LOOOOOOOADED");
         return store.dispatch("fetchLists");
       })
       .then((res) => {
@@ -29,7 +27,6 @@ const ensureData = (to, next) => {
       .catch((err) => {
         if (err && err.message) {
           if (err.message == "network-error") {
-            console.log("offline");
             window.$$.network = "offline";
             window.bus.emit("network-status");
           }

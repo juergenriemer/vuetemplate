@@ -5,7 +5,6 @@
       <item
         @uninvite="uninvite"
         v-for="item in items"
-        :key="item._id"
         :item="item"
       ></item>
     </ion-list>

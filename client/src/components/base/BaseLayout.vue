@@ -5,7 +5,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button class="btn-base-back" @click="back(link)" v-if="link">
+          <ion-button color="dark" class="btn-base-back" @click="back(link)" v-if="link">
             <ion-icon slot="icon-only" :icon="icon" size="large"></ion-icon>
           </ion-button>
           <slot name="title"></slot>

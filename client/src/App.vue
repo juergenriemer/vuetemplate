@@ -1,7 +1,7 @@
 <template>
   <ion-app>
     <socket v-if="app" />
-    <ion-router-outlet />
+    <ion-router-outlet animated="false" />
   </ion-app>
 </template>
 
@@ -11,6 +11,7 @@
 // to updateuse: npx cap copy
 // npx cap open android
 /* bugs/todo 
+O dark mode in ipad: https://ionicframework.com/docs/theming/dark-mode
 O no offline mode when menu is open
 O if ajax before socket in offline... broken when reordering
 O socket message not sent if user gets back online after other user already got online and added item (test with settimeout for particular csrf)
@@ -51,12 +52,12 @@ window.checkNeedForSync = () => {
 window.onerror = (a, b, c) => {
   alert(a);
 };
-//window.console.warn = (a) => {
-// alert(a);
-//};
-//window.console.log = (a) => {
-// alert(a);
-//};
+window.console.warn = (a) => {
+  //alert(a);
+};
+window.console.log = (a) => {
+  //alert(a);
+};
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
@@ -94,7 +95,7 @@ ion-header ion-title {
 }
 
 .checkbox.done {
-  background: green;
+  background: red;
   color: white;
 }
 .checkbox [role="img"] {
@@ -123,7 +124,6 @@ form#bottom-input ion-fab {
   align-self: flex-end;
   margin-bottom: -8px;
 }
-
 form#bottom-input input {
   background: white;
   border-radius: 5px;
@@ -145,5 +145,8 @@ form#bottom-input input {
 }
 ::-webkit-scrollbar-track {
   background: #e0e0e0;
+}
+.sc-ion-popover-md-h {
+  --width:auto !important;
 }
 </style>

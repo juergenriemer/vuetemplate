@@ -16,7 +16,7 @@ import { IonButton, IonIcon } from "@ionic/vue";
 import { cloudOffline } from "ionicons/icons";
 import { alertController } from "@ionic/core";
 import Dates from "@/mixins/Dates";
-import * as io from "socket.io-client";
+import socketClient from "socket.io-client";
 
 export default {
   mixins: [Dates],
@@ -32,6 +32,7 @@ export default {
       offline : null,
       offlineInfo : null,
       syncInfo : null,
+      serverInfo : null,
       allowedActions: [
         "invite",
         "addList",
@@ -70,8 +71,10 @@ export default {
     hideAlerts() {
       if (this.offlineInfo && !this.offlineInfo._detached) this.offlineInfo.dismiss();
       if (this.syncInfo && !this.syncInfo._detached) this.syncInfo.dismiss();
+      if (this.serverInfo && !this.serverInfo._detached) this.serverInfo.dismiss();
       this.offlineInfo = null;
       this.syncInfo = null;
+      this.serverInfo = null;
     },
     async showOfflineInfo() {
       alertController
@@ -154,7 +157,7 @@ export default {
     },
     // REF: DONST SEND invitees in list object to users only to owner
     connectToSocket() {
-        const socket = io(process.env.VUE_APP_SOCKET);
+      const socket = socketClient(process.env.VUE_APP_BACKEND);
           socket.on("disconnect", () => {
             window.$$.network = "offline";
             window.bus.emit("network-status");
@@ -172,46 +175,56 @@ export default {
                 console.log( "socket", type, data)
                 if (this.allowedActions.includes(type)) {
                   data.socket = true;
-                  //                  data = this.preventSeenUpdates( type, data )
                   this.$store.dispatch(type, data);
                 }
                 else if( type == "info") {
-                    alert( data.message )
+                  this.showServerInfo( data );
                 }
               });
             }
           });
         });
     },
-    /*
-    preventSeenUpdates( type, data ){
-      const params = this.$route.params;
-      if( params && params.id ) {
-        if( /Item$/.test( type )){
-          let cur = `/app/items/${params.id}`;
-          if( this.$route.path == cur ) {
-            const now = this.$store.getters.list(params.id).updatedAt;
-            this.$store.getters
-              if( data.item )
-                data.item.updatedAt = now;
-              else data.updatedAt = now;
+    async showServerInfo( data ) {
+      const close = ( url ) => {
+        console.log( data.button, this.$route.path )
+        if( data.event == "unshare") {
+          if( this.$route.params && this.$route.params.id == data.listId ) {
+            this.nav( "/app/list" )
           }
         }
-        else if( /Comment$/.test( type )){
-          if( params && params.id && params.itemId) {
-            let cur = `/app/comments/${params.id}/${params.itemId}`;
-            if( this.$route.path == cur ) {
-              const now = this.$store.getters.list(params.id).updatedAt;
-              if( data.comment )
-                data.comment.updatedAt = now;
-              else data.updatedAt = now;
-            }
-          }
+        else if( data.button && ( data.button.url == this.$route.path ) ) {
+          console.log( "!!!reload" )
+          self.location.reload();
         }
+      };
+      const buttons = [
+        {
+          text: "CLOSE",
+          handler: () => close()
+        }
+      ];
+      if( data.button ){
+        buttons.push({
+          text: data.button.text,
+          handler: () => {
+            close();
+            this.nav( data.button.url );
+          }
+        })
       }
-      return data;
+      alertController
+        .create({
+          header: "Notification!",
+          message : data.message ,
+          buttons,
+        })
+        .then((res) => {
+          this.hideAlerts();
+          this.serverInfo = res;
+          this.serverInfo.present();
+        });
     },
-     */
     waitFor() {
       return new Promise(function (resolve, reject) {
         (function waitForFoo() {

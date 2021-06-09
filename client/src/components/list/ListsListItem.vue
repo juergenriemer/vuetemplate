@@ -56,6 +56,7 @@ export default {
   watch : {
     listUpdated() {
       this.checkUpdates();
+      this.highlight();
     },
     '$route': function( to, from ) {
       if( /^.app.list/.test( to.path)){
@@ -105,7 +106,6 @@ export default {
       });
     },
     checkUpdates() {
-      console.log( 'do it ')
       const userId = this.$store.getters.userId;
       let count = 0;
       this.list.items.forEach( itm => {
@@ -119,7 +119,6 @@ export default {
           else if( cmt.lastAction > user.seen ) count++;
         })
       })
-      console.log( "check for LIST updates now: " + count)
       this.newItemComments = count;
     },
     menuAction(action) {

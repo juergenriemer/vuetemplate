@@ -55,22 +55,23 @@ const mutations = {
     const list = state.lists.find((lst) => lst._id == listId);
     const item = list.items.find((item) => item._id == itemId);
     item.comments.push(comment);
-    item.updatedAt = comment.updatedAt;
-    list.updatedAt = comment.updatedAt;
+    item.updatedAt = comment.lastAction;
+    list.updatedAt = comment.lastAction;
   },
   deleteComment: (state, { listId, itemId, commentId, updatedAt }) => {
     const list = state.lists.find((list) => list._id == listId);
     const item = list.items.find((item) => item._id == itemId);
     item.comments = item.comments.filter((comment) => comment._id != commentId);
-    item.updatedAt = updatedAt;
     list.updatedAt = updatedAt;
-    //list.users.find( usr => usr.userId == lastSeen = updatedAt;
+    item.updatedAt = updatedAt;
   },
   updateComment: (state, { listId, itemId, commentId, comment }) => {
     const list = state.lists.find((lst) => lst._id == listId);
     const item = list.items.find((item) => item._id == itemId);
     const commentIx = item.comments.findIndex((cmt) => cmt._id == commentId);
     Object.assign(item.comments[commentIx], comment);
+    list.updatedAt = comment.lastAction;
+    item.updatedAt = comment.lastAction;
   },
   sawComments: (state, { listId, itemId, userId, seen }) => {
     const list = state.lists.find((lst) => lst._id == listId);

@@ -52,7 +52,6 @@ app.mixin({
       const listId = this.$route.params.id;
       const itemId = this.$route.params.itemId;
       if (listId && itemId) {
-        console.log(this.$store.getters.item(listId, itemId));
         return this.$store.getters.item(listId, itemId);
       }
       return {};
@@ -76,9 +75,11 @@ app.mixin({
       //window.bus.emit("navigate", data);
     },
     scrollToBottom() {
+      /*
       this.$nextTick(() => {
         document.querySelector(".content-area").scrollToBottom();
       });
+    */
     },
     showError(err) {
       if (err && err.message) {

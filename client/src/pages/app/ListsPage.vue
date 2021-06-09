@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     saw() {
-      console.log( ">> saw list")
       try {
         this.$store
           .dispatch("sawLists")
@@ -113,6 +112,9 @@ export default {
           var link = `/app/memberships`;
           link += listId ? `/${listId}` : ``;
           this.nav(link);
+          break;
+        case "reload":
+          self.location.reload();
           break;
       }
     },
