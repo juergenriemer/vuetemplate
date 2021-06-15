@@ -89,7 +89,7 @@ export default {
         .then((res) => {
           this.resetForm();
           setTimeout(() => {
-            this.scrollToBottom();
+            this.scrollToBottom("ItemsPage");
           }, 0);
         })
         .catch((err) => {

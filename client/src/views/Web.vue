@@ -132,6 +132,15 @@ export default {
   height: 100vh;
   box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
 }
+
+/* IONIC CHANGES */
+/* IONIC CHANGES */
+  .content-area {
+    --offset-bottom: 58px;
+  }
+/* IONIC CHANGES */
+/* IONIC CHANGES */
+
 /* IPAD issues */
 /* 100vh doen't work in ipad */
 .is-safari #box {
@@ -184,14 +193,9 @@ export default {
 
 @media (min-width: 400px) {
   .WebPage {
-    xborder:10px solid pink;
     height: calc(100vh - 125px);
   }
-  .content-area {
-    --offset-bottom: 58px;
-  }
   #box.app {
-    xborder:10px solid red;
     margin-top: 0px !important;
     margin: 0 auto;
     height: calc(100vh);
@@ -201,16 +205,12 @@ export default {
 /* large normal view */
 @media (min-width: 1225px) {
   #box.app {
-    xborder:10px solid blue;
     margin-top: 20px !important;
     margin: 0 auto;
     height: calc(100vh - 40px);
   }
-  .content-area {
-    --offset-bottom: 58px;
-  }
   .WebPage {
-    xborder:10px solid green;
+    border:10px solid blue;
     height: calc(100vh - 167px);
   }
 }

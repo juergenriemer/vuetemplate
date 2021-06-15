@@ -75,12 +75,12 @@ app.mixin({
       router.push(path);
       //window.bus.emit("navigate", data);
     },
-    scrollToBottom() {
-      /*
+    scrollToBottom(pageId) {
       this.$nextTick(() => {
-        document.querySelector(".content-area").scrollToBottom();
+        console.log(pageId);
+        const page = document.querySelector(`#${pageId} ion-content`);
+        page && page.scrollToBottom();
       });
-    */
     },
     showError(err) {
       if (err && err.message) {

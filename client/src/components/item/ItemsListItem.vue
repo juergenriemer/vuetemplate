@@ -1,19 +1,20 @@
 <template>
     <ion-item
+      v-if="!item.done || itemShowMode"
       lines="full"
       class="highlight"
       detail="false"
-      button="true">
+      button="false">
       <div>
         <ion-avatar id="tickbox"
             aria-label="item-status"
             :class="item.done ? 'done' : ''">
           <ion-icon 
-            @click="checkItem(item._id)"
+            @click="checkItem($event)"
             id="check-inner" :icon="checkmark"></ion-icon>
         </ion-avatar>
       </div>
-      <ion-label @dblclick="checkItem(item)" class="title">
+      <ion-label @dblclick="checkItem($event)" class="title">
         {{ item.title }}
       </ion-label>
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
@@ -64,7 +65,7 @@ import MenuComponent from "@/components/item/ItemMenu.vue";
 import Menu from "@/mixins/Menu";
 import Alert from "@/mixins/Alert";
 export default {
-  props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode"],
+  props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode", "itemShowMode"],
   emits: ["change-mode"],
   mixins: [Menu, Alert],
   components: {
@@ -122,6 +123,7 @@ export default {
             // REF: same in commentlistitem.vuej
       this.$nextTick(() => {
         const node = this.$el;
+        if( ! node.tagName  ) return;
         let flagged = node.classList.contains( "new");
         if( ! flagged ) {
           let _new = false;
@@ -183,17 +185,25 @@ export default {
       const route = `/app/comments/${this.listId}/${itemId}`;
       this.nav(route);
     },
-    checkItem() {
-      this.item.done = !this.item.done;
-      this.$store
-        .dispatch("updateItem", {
-          listId: this.listId,
-          itemId: this.item._id,
-          item: this.item,
-        })
-        .catch((err) => {
-          this.showError(err);
-        });
+    checkItem( $event ) {
+      const tickbox = $event.target.closest( "ion-item").querySelector( "ion-avatar");
+      const newState = !this.item.done;
+      if( tickbox ) {
+        const mode = ( newState ) ? "add" : "remove";
+        tickbox.classList[ mode ]( "done");
+      }
+      setTimeout( ()=>{
+        this.item.done = newState;
+        this.$store
+          .dispatch("updateItem", {
+            listId: this.listId,
+            itemId: this.item._id,
+            item: this.item,
+          })
+          .catch((err) => {
+            this.showError(err);
+          });
+      }, 125)
     },
   },
 };
@@ -218,22 +228,22 @@ ion-item.new {
 #tickbox {
   width: 35px;
   height: 35px;
-  background: green;
+  background: #efefef;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 #tickbox.done {
-  background: #efefef;
+  background: green;
 }
 #tickbox ion-icon {
-  color:#fff;
+  color:#000;
   font-size:20px;
   font-weight:bold;
   --ionicon-stroke-width: 90px;
 }
 #tickbox.done ion-icon {
-  color:#000;
+  color:#fff;
 }
 .chat-wrapper {
   position:relative;

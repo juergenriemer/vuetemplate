@@ -1,7 +1,7 @@
 <template>
   <ion-app>
     <Socket></Socket>
-    <ion-router-outlet animated="false" />
+    <ion-router-outlet animated="true" />
     <!-- animated geht vielleicht wieder? -->
   </ion-app>
 </template>

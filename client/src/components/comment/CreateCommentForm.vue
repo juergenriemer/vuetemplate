@@ -164,7 +164,7 @@ export default {
         })
         .then((res) => {
           this.reset();
-          this.scrollToBottom();
+          this.scrollToBottom( "CommentsPage" );
         })
         .catch((err) => {
           this.showError(err);

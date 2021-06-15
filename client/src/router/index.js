@@ -3,7 +3,7 @@ self.bus = mitt();
 
 self.$$ = {
   network: "unkown",
-  isWeb: true,
+  isWeb: false,
   appMode: localStorage.getItem("appMode") || "online",
 };
 

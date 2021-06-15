@@ -19,14 +19,22 @@
         :lastSeen="lastSeen"
         :reorderMode="reorderMode"
         :itemInEditMode="itemInEditMode"
+        :itemShowMode="itemShowMode"
         @change-mode="changeMode"
       ></items-list>
       <div v-if="!list2">loading</div>
     </template>
     <template v-slot:footer>
-      <create-item-form
+        <create-item-form
         :listId="list2._id"
+        v-if="!itemInEditMode"
       ></create-item-form>
+      <edit-item-form
+        v-if="itemInEditMode"
+        :listId="list2._id"
+        :itemInEditMode="itemInEditMode"
+        @change-mode="changeMode"
+      ></edit-item-form>
     </template>
   </base-layout>
 </template>
@@ -74,6 +82,7 @@ export default {
       ellipsisVertical,
       itemInEditMode: null,
       itemInCommentMode: null,
+      itemShowMode: false
     };
   },
   /*
@@ -107,13 +116,12 @@ export default {
       const listId = this.$route.params.id;
       const itemId = this.$route.params.itemId;
       if (listId && itemId) {
-        console.log(this.$store.getters.item(listId, itemId));
         return this.$store.getters.item(listId, itemId);
       }
       return {};
     },
     menuData() {
-      return { reorderMode: this.reorderMode, toggleMode: this.toggleMode };
+      return { reorderMode: this.reorderMode, toggleMode: this.toggleMode, itemShowMode : this.itemShowMode };
     },
   },
   methods: {
@@ -145,6 +153,9 @@ export default {
       switch (action) {
         case "reorderMode":
           this.reorderMode = !this.reorderMode;
+          break;
+        case "itemShowMode":
+          this.itemShowMode = !this.itemShowMode;
           break;
         case "toggleMode":
           //this.toggleMode = !this.toggleMode;

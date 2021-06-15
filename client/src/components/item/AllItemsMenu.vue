@@ -6,7 +6,18 @@
       :icon="eyeOff"
       data="showMode"
     />
-    <menu-item v-else label="Show all items" :icon="eye" data="showMode" />
+    <menu-item
+      v-if="data.itemShowMode"
+      label="Show only undone"
+      :icon="eyeOff"
+      data="itemShowMode"
+    />
+    <menu-item
+      v-else
+      label="Show all Items"
+      :icon="eye"
+      data="itemShowMode"
+    />
     <menu-item
       v-if="data.toggleMode"
       label="Mark all items done"
