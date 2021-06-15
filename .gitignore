@@ -7,5 +7,6 @@ build
 npm-debug.log
 .env
 .DS_Store
+/tests/test-files/
 /tests/cypress/screenshots/
 /tests/cypress/videos/
