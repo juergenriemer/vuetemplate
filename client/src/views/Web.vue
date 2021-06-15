@@ -1,9 +1,6 @@
 <template>
-  <div>
-    <div v-if="!isWeb">
-      <component :is="page"></component>
-    </div>
-    <div v-if="isWeb" id="wrapper">
+  <ion-page>
+    <div id="wrapper">
       <div id="backdrop"><div class="logo">LL</div></div>
       <div id="box" class="user" v-if="!app">
         <div class="single column">
@@ -22,7 +19,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </ion-page>
 </template>
 
 <script>
@@ -43,8 +40,6 @@ import ApproveInvites from "../pages/user/ApproveInvites.vue";
 //() => import("@/pages/ListInfoPage.vue"),
 
 const pages = {
-  list: ListsPage,
-  items: ItemsPage,
   comments: CommentsPage,
   info: ListInfoPage,
   members: ListMembersPage,
@@ -57,9 +52,13 @@ const pages = {
   "reset-password-verify": ResetPasswordVerify,
   "approve-invites": ApproveInvites,
 };
+import {
+  IonPage,
+} from "@ionic/vue";
 
 export default {
   components: {
+    IonPage,
     ListsPage,
     ItemsPage,
     CommentsPage,
@@ -80,22 +79,12 @@ export default {
     };
   },
   created() {
-    // if we are in web we need to remove list
-    // and the items vue from pages because we
-    // always show those two panels in web mode
-    if (self.$$.isWeb) {
-      delete pages.list;
-      delete pages.items;
-    }
     if (this.app) {
       this.$store.dispatch("info");
       this.$store.dispatch("fetchLists");
     }
   },
   computed: {
-    isWeb() {
-      return self.$$.isWeb;
-    },
     app() {
       return /^\/app/.test(this.$route.path);
     },
@@ -153,11 +142,12 @@ export default {
   margin-bottom: 40px;
   z-index: 100;
 }
-
+/* single page e.g. user pages */
 #single {
   min-width: 250px;
   max-width: 400px;
 }
+
 @media (min-width: 505px) {
   #single {
     margin-top: 20px !important;
@@ -166,17 +156,6 @@ export default {
   }
 }
 
-.content-area {
-  border:1px solid green !important;
-  --offset-bottom: 58px;
-  --offset-bottom: 88px;
-}
-
-.WebPage {
-  height: calc(100vh - 125px);
-}
-
-
 /* min width for outer box _NOT_ for phones */
 @media (min-width: 400px) {
   #box.app {
@@ -184,7 +163,6 @@ export default {
     min-width: 500px;
     max-width: 1200px;
   }
-
   #box.user {
     min-width: 400px;
     min-width: 400px;
@@ -205,25 +183,39 @@ export default {
 }
 
 @media (min-width: 400px) {
-
-.WebPage {
-  height: calc(100vh - 165px);
-}
-
-  #box.user {
-    margin-top: 20px !important;
+  .WebPage {
+    xborder:10px solid pink;
+    height: calc(100vh - 125px);
+  }
+  .content-area {
+    --offset-bottom: 58px;
+  }
+  #box.app {
+    xborder:10px solid red;
+    margin-top: 0px !important;
     margin: 0 auto;
-    height: calc(100vh - 40px);
+    height: calc(100vh);
   }
 }
+
+/* large normal view */
 @media (min-width: 1225px) {
   #box.app {
+    xborder:10px solid blue;
     margin-top: 20px !important;
     margin: 0 auto;
     height: calc(100vh - 40px);
   }
+  .content-area {
+    --offset-bottom: 58px;
+  }
+  .WebPage {
+    xborder:10px solid green;
+    height: calc(100vh - 167px);
+  }
 }
 
+/* hide middle column at certain width if right column is displayed only */
 @media (max-width: 800px) {
   .right.column:not(.hide) ~ .middle.column {
     display: none;
