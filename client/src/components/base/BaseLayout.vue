@@ -20,7 +20,6 @@
     </ion-header>
     <ion-content
       class="content-area"
-      style="--offset-bottom: 58px"
     >
       <slot class="scroller" name="content" />
     </ion-content>
@@ -44,7 +43,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import WebPage from "./MyPage.vue";
-const Page = window.isWeb ? WebPage : IonPage;
+const Page = self.$$.isWeb ? WebPage : IonPage;
 
 export default {
   props: ["pageTitle", "pageId", "link", "pageDefaultBackLink"],
@@ -65,13 +64,13 @@ export default {
   },
   computed: {
     icon() {
-      return self.isWeb ? this.close : this.arrowBack;
+      return self.$$.isWeb ? this.close : this.arrowBack;
     },
   },
   methods: {
     back(path) {
       let link = path || `/app/list`;
-      if (self.isWeb) {
+      if (self.$$.isWeb) {
         const listId = this.$route.params.id;
         if (listId) link = `/app/items/${listId}`;
       }

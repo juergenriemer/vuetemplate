@@ -117,9 +117,12 @@ export default {
         const field = form.querySelector(`[hasFocus] input`);
         field && field.focus();
       };
-      form && setTimeout(focus, 99);
+      this.$nextTick(() => {
+        focus();
+      });
+      //form && setTimeout(focus, 99);
       // second one because ionic blurs my item edit focus.. need to check
-      form && setTimeout(focus, 999);
+      //form && setTimeout(focus, 999);
     },
   },
   /*

@@ -28,6 +28,7 @@
 <script>
 import ListsPage from "../pages/app/ListsPage.vue";
 import ItemsPage from "../pages/app/ItemsPage.vue";
+import CommentsPage from "../pages/app/CommentsPage.vue";
 import ListInfoPage from "../pages/app/ListInfoPage.vue";
 import ListMembersPage from "../pages/app/ListMembersPage.vue";
 import AddListPage from "../pages/app/AddListPage.vue";
@@ -44,6 +45,7 @@ import ApproveInvites from "../pages/user/ApproveInvites.vue";
 const pages = {
   list: ListsPage,
   items: ItemsPage,
+  comments: CommentsPage,
   info: ListInfoPage,
   members: ListMembersPage,
   add: AddListPage,
@@ -60,6 +62,7 @@ export default {
   components: {
     ListsPage,
     ItemsPage,
+    CommentsPage,
     AddListPage,
     EditListPage,
     ListInfoPage,
@@ -76,15 +79,11 @@ export default {
       infoComponent: null,
     };
   },
-  updated() {
-    console.log("updated");
-  },
   created() {
-    console.log("created");
     // if we are in web we need to remove list
     // and the items vue from pages because we
     // always show those two panels in web mode
-    if (self.isWeb) {
+    if (self.$$.isWeb) {
       delete pages.list;
       delete pages.items;
     }
@@ -95,12 +94,15 @@ export default {
   },
   computed: {
     isWeb() {
-      return self.isWeb;
+      return self.$$.isWeb;
     },
     app() {
       return /^\/app/.test(this.$route.path);
     },
     page() {
+      if( /^\/app\/comments/.test( this.$route.path )) {
+        return pages[ 'comments' ];
+      }
       return pages[this.$route.params.page];
     },
     listId() {
@@ -163,6 +165,18 @@ export default {
     height: calc(100vh - 40px);
   }
 }
+
+.content-area {
+  border:1px solid green !important;
+  --offset-bottom: 58px;
+  --offset-bottom: 88px;
+}
+
+.WebPage {
+  height: calc(100vh - 125px);
+}
+
+
 /* min width for outer box _NOT_ for phones */
 @media (min-width: 400px) {
   #box.app {
@@ -191,6 +205,11 @@ export default {
 }
 
 @media (min-width: 400px) {
+
+.WebPage {
+  height: calc(100vh - 165px);
+}
+
   #box.user {
     margin-top: 20px !important;
     margin: 0 auto;
@@ -228,10 +247,12 @@ export default {
   flex: 3;
 }
 .middle.column {
+  border-left: 1px dashed #c0c0c0 !important;
   order: 2;
   flex: 8;
 }
 .right.column {
+  border-left: 1px dashed #c0c0c0 !important;
   order: 3;
   flex: 8;
 }

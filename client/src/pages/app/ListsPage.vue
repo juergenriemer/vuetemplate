@@ -9,7 +9,7 @@
       ></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="nav(addLink)">
+      <ion-button color="dark" @click="nav(addLink)">
         <ion-icon slot="icon-only" :icon="add"></ion-icon>
       </ion-button>
     </template>
@@ -41,16 +41,18 @@ export default {
   data() {
     return { add };
   },
+  /*
   mounted() {
-    this.saw();
+        this.saw();
   },
   watch : {
     '$route': function( to, from ) {
       if( /^.app.list/.test( to.path)){
-        this.saw();
+           this.saw();
       }
     }
   },
+  */
   computed: {
     initials() {
       let user = this.$store.getters.user;

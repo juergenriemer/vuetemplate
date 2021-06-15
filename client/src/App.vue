@@ -1,7 +1,8 @@
 <template>
   <ion-app>
-    <socket v-if="app" />
+    <Socket></Socket>
     <ion-router-outlet animated="false" />
+    <!-- animated geht vielleicht wieder? -->
   </ion-app>
 </template>
 
@@ -18,14 +19,7 @@ O socket message not sent if user gets back online after other user already got 
 O Prevent deletion of items if now allowed also in offline mode
 X toggle all does not account for inital state (e.g. all done)
 */
-import mitt from "mitt";
-window.bus = mitt();
-
-window.$$ = {
-  network : "unkown"
-  , appMode : localStorage.getItem( "appMode") || "online"
-};
-window.isWeb = false;
+window.isWeb = true;
 window.networkStatus = "unknown";
 window.initialDataLoad = false;
 window.appConnectionMode = "online";
@@ -50,14 +44,19 @@ window.checkNeedForSync = () => {
   else return false;
 }
 window.onerror = (a, b, c) => {
-  alert(a);
+  console.warn( "********************")
+  console.warn( a,b,c)
+  console.warn( "********************")
+  return true;
 };
+/*
 window.console.warn = (a) => {
   //alert(a);
 };
 window.console.log = (a) => {
   //alert(a);
 };
+ */
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import Socket from "./Socket.vue";
 import { defineComponent } from "vue";
@@ -79,74 +78,5 @@ export default defineComponent({
 });
 </script>
 <style>
-/* BaseLayout.vue */
-ion-header .header-icon {
-  padding-right: 8px;
-}
-ion-header ion-title {
-  padding-right: 0px;
-}
-/* item checkboxes */
-.checkbox {
-  background: #c0c0c0;
-  font-size: 2em;
-  max-width: 40px;
-  min-width: 40px;
-}
 
-.checkbox.done {
-  background: red;
-  color: white;
-}
-.checkbox [role="img"] {
-  margin-left: 5px;
-  margin-top: 5px;
-  width: 30px;
-  height: 30px;
-}
-
-.title {
-  padding-left: 10px;
-}
-
-form#bottom-input,
-form#bottom-input ion-toolbar {
-  background: #efefef;
-  display: flex;
-  --min-height: 30px !important;
-  --background: #efefef;
-}
-form#bottom-input ion-buttons {
-  margin-bottom: 3px;
-  align-self: flex-end;
-}
-form#bottom-input ion-fab {
-  align-self: flex-end;
-  margin-bottom: -8px;
-}
-form#bottom-input input {
-  background: white;
-  border-radius: 5px;
-}
-.textarea {
-  border-radius: 15px;
-  background: white;
-  max-height: 90px;
-  overflow: auto;
-}
-::-webkit-scrollbar {
-  background-color: #696969;
-  width: 8px;
-  height: 8px;
-}
-/* https://npm.io/package/ion-custom-scrollbar */
-::-webkit-scrollbar-thumb {
-  background: #c0c0c0;
-}
-::-webkit-scrollbar-track {
-  background: #e0e0e0;
-}
-.sc-ion-popover-md-h {
-  --width:auto !important;
-}
 </style>

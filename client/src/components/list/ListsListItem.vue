@@ -1,8 +1,9 @@
 <template>
   <ion-item @click="nav(`/app/items/${list._id}`)"
       lines="full"
+      class="highlight"
       detail="false"
-    button="true">
+      button="true">
     <avatar size="medium" :list-title="list.title" :updates=newItemComments></avatar>
     <ion-label class="title">
       {{ list.title }} 

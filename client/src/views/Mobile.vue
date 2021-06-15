@@ -5,13 +5,13 @@
 </template>
 
 <script>
-import ListsPage from "../pages/ListsPage.vue";
-import ItemsPage from "../pages/ItemsPage.vue";
-import ListInfoPage from "../pages/ListInfoPage.vue";
-import ListMembersPage from "../pages/ListMembersPage.vue";
-import LoginPage from "../pages/LoginPage.vue";
-import AddListPage from "../pages/AddListPage.vue";
-import EditListPage from "../pages/EditListPage.vue";
+import ListsPage from "../pages/app/ListsPage.vue";
+import ItemsPage from "../pages/app/ItemsPage.vue";
+import ListInfoPage from "../pages/app/ListInfoPage.vue";
+import ListMembersPage from "../pages/app/ListMembersPage.vue";
+import LoginPage from "../pages/user/Login.vue";
+import AddListPage from "../pages/app/AddListPage.vue";
+import EditListPage from "../pages/app/EditListPage.vue";
 const pages = {
   info: ListInfoPage,
   members: ListMembersPage,

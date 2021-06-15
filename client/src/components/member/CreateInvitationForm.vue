@@ -1,5 +1,7 @@
 <template>
-  <ion-list-header>Invite a friend</ion-list-header>
+  <ion-item-divider>
+    <ion-label>Invite a friend</ion-label>
+  </ion-item-divider>
   <form ref="form" class="ion-padding" @submit.prevent="validate" novalidate>
     <ion-item>
       <ion-label position="floating">Email of friend</ion-label>
@@ -18,6 +20,7 @@ import {
   IonList,
   IonIcon,
   IonItem,
+  IonItemDivider,
   IonLabel,
   IonInput,
   IonButton,
@@ -36,6 +39,7 @@ export default {
     IonList,
     IonIcon,
     IonItem,
+    IonItemDivider,
     IonLabel,
     IonInput,
     IonButton,
@@ -45,6 +49,7 @@ export default {
       const serverErrors = {
         "user-already-member": "This user is already a member.",
         "user-already-invited": "This user is already invited.",
+        "wrong-role": "It seems you no longer have the right to share.",
       };
       return this.$store
         .dispatch("invite", {

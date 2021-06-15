@@ -8,7 +8,6 @@
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
-          size="medium"
         ></ion-icon>
       </ion-button>
     </template>
@@ -27,14 +26,7 @@
     <template v-slot:footer>
       <create-item-form
         :listId="list2._id"
-        v-if="!itemInEditMode"
       ></create-item-form>
-      <edit-item-form
-        v-if="itemInEditMode"
-        :listId="list2._id"
-        :itemInEditMode="itemInEditMode"
-        @change-mode="changeMode"
-      ></edit-item-form>
     </template>
   </base-layout>
 </template>
@@ -84,6 +76,7 @@ export default {
       itemInCommentMode: null,
     };
   },
+  /*
   mounted() {
     this.saw();
   },
@@ -94,12 +87,13 @@ export default {
       }
     }
   },
+   */
   computed: {
     toggleMode() {
       return this.list2.items.filter( itm => itm.done ).length !== this.list2.items.length;
     },
     link() {
-      return self.isWeb ? "" : "/app/list";
+      return self.$$.isWeb ? "" : "/app/list";
     },
     // REF: move to baselayout.. same in ResetPassword.vue
     list2() {

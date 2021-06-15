@@ -1,24 +1,21 @@
 <template>
-  <div>
     <ion-item
-      style="--padding-bottom: 6px; --padding-top: 6px"
       lines="full"
       class="highlight"
       detail="false"
-      button="true"
-    >
-      <ion-avatar id="check-outer"
-          aria-label="item-status"
-          :class="item.done ? 'done' : ''"
-      >
-        <ion-icon 
-          @click="checkItem(item._id)"
-          id="check-inner" :icon="checkmark"></ion-icon>
-      </ion-avatar>
+      button="true">
+      <div>
+        <ion-avatar id="tickbox"
+            aria-label="item-status"
+            :class="item.done ? 'done' : ''">
+          <ion-icon 
+            @click="checkItem(item._id)"
+            id="check-inner" :icon="checkmark"></ion-icon>
+        </ion-avatar>
+      </div>
       <ion-label @dblclick="checkItem(item)" class="title">
         {{ item.title }}
       </ion-label>
-
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
       <ion-buttons v-if="!reorderMode" slot="end">
         <ion-button color="dark"
@@ -32,11 +29,11 @@
             aria-label="item-menu"
           @click="showMenu($event)">
           <ion-icon 
+          size="small"
             slot="icon-only" :icon="ellipsisVertical"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-item>
-  </div>
 </template>
 
 <script>
@@ -124,15 +121,13 @@ export default {
     highlight() {
             // REF: same in commentlistitem.vuej
       this.$nextTick(() => {
-        const node = this.$el.querySelector( ".highlight");
+        const node = this.$el;
         let flagged = node.classList.contains( "new");
         if( ! flagged ) {
           let _new = false;
           const userId = this.$store.getters.userId;
             // REF: same in itemlistitem.vuej
           let user = this.item.lastSeen.find( elem => elem.userId == userId );
-          console.log( this.item.lastAction )
-          console.log( user.seen)
           if( ! user ) _new = true;
           else if( this.item.lastAction > user.seen ) _new = true;
           if( _new ) {
@@ -204,6 +199,7 @@ export default {
 };
 </script>
 <style>
+
 .comment-mode {
   --background: primary;
   background: #c0c0c0;
@@ -214,27 +210,29 @@ export default {
 .title {
   margin-left: 0px;
   padding: 0px;
-  font-size: 1.4em !important;
+  font-size: 1.3em !important;
 }
 ion-item.new {
     --ion-item-background:lightyellow !important;
 }
-#check-outer {
+#tickbox {
+  width: 35px;
+  height: 35px;
   background: green;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-#check-outer.done {
+#tickbox.done {
   background: #efefef;
 }
-#check-outer #check-inner {
+#tickbox ion-icon {
   color:#fff;
   font-size:20px;
   font-weight:bold;
   --ionicon-stroke-width: 90px;
 }
-#check-outer.done #check-inner {
+#tickbox.done ion-icon {
   color:#000;
 }
 .chat-wrapper {

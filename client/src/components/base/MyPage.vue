@@ -6,9 +6,3 @@
 <script>
 export default {};
 </script>
-<style>
-.WebPage {
-  height: calc(100vh - 190px);
-}
-</style>
-

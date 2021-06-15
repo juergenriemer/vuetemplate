@@ -25,7 +25,8 @@ import "@ionic/vue/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-//Vue.prototype.$dmiep = "ASDF";
+import "./theme/layout.css";
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)

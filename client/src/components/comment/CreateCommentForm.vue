@@ -203,6 +203,7 @@ ion-toolbar.comment-toolbar {
 }
 
 [contenteditable="true"]:empty:before {
+  white-space: nowrap;
   content: attr(data-placeholder);
   pointer-events: none;
   display: block; /* For Firefox */

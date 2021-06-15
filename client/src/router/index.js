@@ -1,3 +1,12 @@
+import mitt from "mitt";
+self.bus = mitt();
+
+self.$$ = {
+  network: "unkown",
+  isWeb: true,
+  appMode: localStorage.getItem("appMode") || "online",
+};
+
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 //import { RouteRecordRaw } from "vue-router";
 import ListsPage from "@/pages/app/ListsPage.vue";
@@ -6,8 +15,9 @@ import Login from "@/pages/user/Login.vue";
 
 import store from "../store";
 import WebView from "../views/Web.vue";
-//import MobileView from "../views/Mobile.vue";
-const View = self.isWeb ? WebView : WebView;
+import MobileView from "../views/Mobile.vue";
+
+const View = self.$$.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
   const loadInitialData =
@@ -38,7 +48,8 @@ const ensureData = (to, next) => {
     next();
   }
 };
-const routes = self.isWeb
+console.log(">>> router: " + self.$$.isWeb);
+const routes = self.$$.isWeb
   ? [
       {
         path: "/",
@@ -53,11 +64,19 @@ const routes = self.isWeb
         component: View,
       },
       {
+        path: "/user/:page/:id",
+        component: View,
+      },
+      {
         path: "/app/:page",
         component: View,
       },
       {
         path: "/app/:page/:id",
+        component: View,
+      },
+      {
+        path: "/app/:page/:id/:itemId",
         component: View,
       },
     ]

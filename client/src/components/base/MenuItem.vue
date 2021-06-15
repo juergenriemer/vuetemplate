@@ -1,5 +1,5 @@
 <template>
-  <ion-item width="300" detail="false" button="true" :data="data">
+  <ion-item @click="click($event)" id="awiegl" width="300" detail="false" button="true" :data="data">
     <ion-label class="title">{{ label }}</ion-label>
     <ion-icon slot="end" class="menu-icon" :icon="icon" size="small"></ion-icon>
   </ion-item>
@@ -13,6 +13,12 @@ export default {
     IonItem,
     IonLabel,
   },
+  methods: {
+    click( evt ){
+      if( evt.target.tagName == "ION-ITEM" )
+        evt.target.querySelector( "ion-icon").click();
+    }
+  }
 };
 </script>
 <style scoped>

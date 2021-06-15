@@ -1,6 +1,8 @@
 <template>
-  <ion-list-header>Current Members</ion-list-header>
   <ion-list>
+    <ion-item-divider>
+      <ion-label>Current Members</ion-label>
+    </ion-item-divider>
     <item
       @toggle-admin="toggleAdmin"
       @unshare="unshare"
@@ -13,14 +15,15 @@
 </template>
 
 <script>
-import { IonListHeader, IonList } from "@ionic/vue";
+import { IonList, IonItemDivider, IonLabel } from "@ionic/vue";
 import Item from "./MembersListItem.vue";
 
 export default {
   emits: ["toggle-admin", "unshare"],
   props: ["items", "admin"],
   components: {
-    IonListHeader,
+    IonItemDivider,
+    IonLabel,
     IonList,
     Item,
   },
