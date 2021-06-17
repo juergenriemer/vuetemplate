@@ -41,7 +41,6 @@ export default {
   data() {
     return { add };
   },
-  /*
   mounted() {
         this.saw();
   },
@@ -52,7 +51,6 @@ export default {
       }
     }
   },
-  */
   computed: {
     initials() {
       let user = this.$store.getters.user;
@@ -70,12 +68,12 @@ export default {
   },
   methods: {
     saw() {
-      try {
+      if( this.lists.length > 0 ){
+        console.log( 'sawLists')
         this.$store
           .dispatch("sawLists")
           .catch((err) => this.showError(err));
       }
-      catch( e ) {  }
     },
     menuAction(action) {
       switch (action) {

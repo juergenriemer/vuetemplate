@@ -9,7 +9,6 @@
       v-for="item in items"
       :key="item._id"
       :item="item"
-      :admin="admin"
     ></item>
   </ion-list>
 </template>
@@ -20,7 +19,7 @@ import Item from "./MembersListItem.vue";
 
 export default {
   emits: ["toggle-admin", "unshare"],
-  props: ["items", "admin"],
+  props: ["items"],
   components: {
     IonItemDivider,
     IonLabel,

@@ -4,7 +4,7 @@
     <ion-label class="title">
       {{ item.name }}
     </ion-label>
-    <ion-buttons v-if="admin && item.role != 'xowner'" slot="end">
+    <ion-buttons v-if="hasMenu" slot="end">
       <ion-button @click="showMenu($event, { item })">
         <ion-icon
           slot="icon-only"
@@ -41,6 +41,24 @@ export default {
     IonIcon,
     IonItem,
     IonLabel,
+  },
+  computed: {
+    hasMenu() {
+      const myId = this.$store.getters.userId;
+      const isMyself = this.item.userId == myId;
+      const isAdmin = this.item.role == "admin" || this.item.role == "owner";
+      const list = this.$store.getters.lists.find( lst => lst._id == this.$route.params.id );
+      const myRole = list.users.find( usr => usr.userId == myId ).role;
+      if( myRole == "user" ) {
+        return false;
+      }
+      if( myRole == "admin" ) {
+        return !isAdmin;
+      }
+      if( myRole == "owner" ){
+        return !isMyself;
+      }
+    },
   },
   methods: {
     menuAction(action) {

@@ -63,12 +63,12 @@ export default {
     };
   },
   mounted() {
-    //    this.saw();
+        this.saw();
   },
   watch : {
     '$route': function( to, from ) {
       if( /^.app.comments/.test( to.path)){
-        //   this.saw();
+           this.saw();
       }
     }
   },

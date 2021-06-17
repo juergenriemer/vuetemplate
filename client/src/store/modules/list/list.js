@@ -78,6 +78,7 @@ const actions = {
   },
 
   async sawList({ commit }, { listId, userId, seen }) {
+    // called after list was higlighted
     commit("sawList", { listId, userId, seen });
   },
 
@@ -152,7 +153,6 @@ const mutations = {
     else list.lastSeen[userIx].seen = seen;
   },
   toggleList: (state, { listId, done, seen, actor }) => {
-    console.log(actor);
     const list = state.lists.find((list) => list._id == listId);
     list.items.forEach((item) => {
       if (item.done !== done) {

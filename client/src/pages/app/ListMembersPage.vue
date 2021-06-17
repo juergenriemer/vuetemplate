@@ -19,7 +19,6 @@
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
         :items="currentList.users"
-        admin="true"
       ></members-list>
     </template>
   </base-layout>

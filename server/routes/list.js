@@ -93,14 +93,24 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
-    List.find({ "users.userId": req.userId })
-      .exec()
+    let log = `GET_LISTS(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > find lists";
+        return List.find({ "users.userId": req.userId });
+      })
       .then((lists) => {
-        res.status(200).json({ lists });
+        log += " > respond";
+        console.log(lists);
+        const data = {
+          lists,
+        };
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 
@@ -118,9 +128,17 @@ router.post(
       .then(() => {
         log += " > prepare data";
         try {
-          const data = (({ title, description }) => ({ title, description }))(
+          const data = (({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }) => ({ title, description, type, uniqueItems, hideDoneItems }))(
             req.body
           );
+          data.uniqueItems = data.uniqueItems == "on";
+          data.hideDoneItems = data.hideDoneItems == "on";
           list = new List(data);
           list._id = new mongoose.mongo.ObjectId();
           list.creatorId = userId;
@@ -216,9 +234,23 @@ router.put(
       .then(() => {
         log += " > prepare data";
         try {
-          update = (({ title, description }) => ({ title, description }))(
-            req.body
-          );
+          update = (({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }) => ({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }))(req.body);
+          update.uniqueItems =
+            update.uniqueItems === true || update.uniqueItems == "on";
+          update.hideDoneItems =
+            update.hideDoneItems === true || update.hideDoneItems == "on";
           update.lastAction = seen;
           update.updatedAt = seen;
           Object.assign(req.list, update);
@@ -269,7 +301,6 @@ router.put(
         log += " > prepare data";
         try {
           const draggedItem = req.list.items.splice(from, 1)[0];
-          console.log(req.list.items);
           req.list.items.splice(to, 0, draggedItem);
           req.list.items[from].lastAction = seen;
           req.list.items[from].lastSeen.find(
@@ -289,8 +320,6 @@ router.put(
         return req.list.save();
       })
       .then((list) => {
-        console.log("adsfasfdasdf");
-        console.log(list.items);
         const data = {
           listId,
           from,

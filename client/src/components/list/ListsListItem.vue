@@ -117,7 +117,7 @@ export default {
             setTimeout( ()=>{
               this.$store
                 .dispatch("sawList", {
-                  listId: this.listId,
+                  listId: this.list._id,
                   userId,
                   seen: this.list.lastAction
                 })

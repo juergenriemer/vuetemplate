@@ -86,7 +86,6 @@ export default {
       itemShowMode: false
     };
   },
-  /*
   mounted() {
     this.saw();
   },
@@ -97,7 +96,6 @@ export default {
       }
     }
   },
-   */
   computed: {
     toggleMode() {
       return this.list2.items.filter( itm => itm.done ).length !== this.list2.items.length;
@@ -136,19 +134,6 @@ export default {
           .catch((err) => this.showError(err));
       }
       catch( e ) { /* swallow */ }
-    },
-    seeList() {
-      const params= this.$route.params;
-      if( params && params.id ){
-        const userId = this.$store.getters.userId;
-        this.lastSeen = this.list2.users.find( usr => usr.userId == userId ).lastSeen;
-        return this.$store
-          .dispatch("sawList", { listId: params.id, userId })
-          .then(() => {
-            //this.nav(`/app/items/${this.list._id}`);
-          })
-          .catch((err) => this.showError(err));
-      }
     },
     menuAction(action) {
       switch (action) {

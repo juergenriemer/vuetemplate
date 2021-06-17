@@ -181,6 +181,7 @@ router.post(
           let approve = invites[lst._id];
           // add to users if approved
           if (approve) {
+            console.log(req.email, req.name, req.short, req.email);
             let role = lst.invitees.find((inv) => inv.email == email).role;
             lst.users.push({
               userId: req.userId,
