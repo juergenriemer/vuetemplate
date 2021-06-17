@@ -14,7 +14,7 @@
       </ion-button>
     </template>
     <template v-slot:content>
-      <lists-list v-if="lists" :lists="lists"></lists-list>
+      <lists-list class="grid" v-if="lists" :lists="lists"></lists-list>
       <div v-if="!lists">loading</div>
     </template>
   </base-layout>

@@ -13,6 +13,7 @@
     </template>
     <template v-slot:content>
       <items-list
+        class="grid"
         v-if="list2"
         :listId="list2._id"
         :items="list2.items"

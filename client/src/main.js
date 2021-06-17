@@ -70,14 +70,10 @@ app.mixin({
       return list.title;
     },
     nav(path) {
-      const x = `/${this.viewMode}${path}`;
-      //router.push({ path: x });
       router.push(path);
-      //window.bus.emit("navigate", data);
     },
     scrollToBottom(pageId) {
       this.$nextTick(() => {
-        console.log(pageId);
         const page = document.querySelector(`#${pageId} ion-content`);
         page && page.scrollToBottom();
       });

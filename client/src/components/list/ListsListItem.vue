@@ -1,28 +1,34 @@
 <template>
-  <ion-item @click="nav(`/app/items/${list._id}`)"
+  <ion-item
+      @click="click($event)"
+      nav="list"
       lines="full"
       class="highlight"
-      detail="false"
-      button="true">
+      style="cursor:pointer"
+      detail="false">
     <avatar size="medium" :list-title="list.title" :updates=newItemComments></avatar>
     <ion-label class="title">
       {{ list.title }} 
     </ion-label>
-    <ion-buttons slot="end">
-      <ion-button @click="showMenu($event, { list })">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="small"
-        ></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <div>
+      <ion-buttons slot="end">
+        <div symbol nav="info" v-if="list.users.length > 1">
+          <ion-button>
+            <ion-icon :icon="people"></ion-icon>
+          </ion-button>
+          <ion-icon star :icon="star" :class="role"></ion-icon>
+        </div>
+        <ion-button @click="showMenu($event, { list })">
+          <ion-icon :icon="ellipsisVertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
   </ion-item>
 </template>
 
 <script>
 import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
-import { ellipsisVertical } from "ionicons/icons";
+import { ellipsisVertical, people, star } from "ionicons/icons";
 import Avatar from "@/components/base/Avatar.vue";
 import MenuComponent from "@/components/list/ListMenu.vue";
 import Menu from "@/mixins/Menu";
@@ -34,6 +40,8 @@ export default {
   mixins: [Menu, Alert],
   data() {
     return {
+      star,
+      people,
       ellipsisVertical,
       updates : 0,
       newItemComments : 0
@@ -66,6 +74,9 @@ export default {
     }
   },
   computed: {
+    role() {
+      return this.list.users.find( usr => usr.userId == this.$store.getters.userId ).role;
+    },
     listUpdated() {
       return this.list.updatedAt;
     },
@@ -78,6 +89,17 @@ export default {
     },
   },
   methods: {
+    click( evt ){
+      const nav = evt.target.closest( "[nav]");
+      if( nav ){
+          let path = `/app/items/${this.list._id}`;
+          if( nav.getAttribute( "nav") == "info" ) {
+            const type = ( this.role == 'admin' || this.role == "owner") ? "members" : "info";
+            path = `/app/${type}/${this.list._id}`;
+          }
+          this.nav( path )
+      }
+    },
     highlight() {
             // REF: same in commentlistitem.vuej
       this.$nextTick(() => {
@@ -159,5 +181,26 @@ export default {
 <style>
 .title {
   font-size: 1.3em;
+}
+[symbol] {
+  position: relative;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction:column;
+}
+[symbol] [star] {
+  display:none;
+  position:absolute;
+  top:-3px;
+  text-shadow: 4px 4px 10px -6px #000000;
+}
+[symbol] [star].owner{
+  display:block;
+  color: goldenrod;
+}
+[symbol] [star].admin {
+  display:block;
+  color: green;
 }
 </style>

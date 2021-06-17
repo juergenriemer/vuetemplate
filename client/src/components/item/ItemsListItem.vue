@@ -1,15 +1,15 @@
 <template>
     <ion-item
-      v-if="!item.done || itemShowMode"
+      v-show="!item.done || itemShowMode"
       lines="full"
       class="highlight"
-      detail="false"
-      button="false">
+      detail="false">
       <div>
         <ion-avatar id="tickbox"
             aria-label="item-status"
             :class="item.done ? 'done' : ''">
           <ion-icon 
+            style="cursor:pointer"
             @click="checkItem($event)"
             id="check-inner" :icon="checkmark"></ion-icon>
         </ion-avatar>
@@ -18,22 +18,23 @@
         {{ item.title }}
       </ion-label>
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
-      <ion-buttons v-if="!reorderMode" slot="end">
-        <ion-button color="dark"
-          aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
-          <div class="chat-wrapper">
-            <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
-            <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
-          </div>
-        </ion-button>
-        <ion-button color="dark"
-            aria-label="item-menu"
-          @click="showMenu($event)">
-          <ion-icon 
-          size="small"
-            slot="icon-only" :icon="ellipsisVertical"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+      <div>
+        <ion-buttons v-if="!reorderMode" slot="end">
+          <ion-button
+            aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
+            <div class="notification">
+              <ion-button>
+                <ion-icon :icon="chatboxEllipses"></ion-icon>
+              </ion-button>
+              <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
+            </div>
+          </ion-button>
+          <ion-button aria-label="item-menu" @click="showMenu($event)">
+            <ion-icon :icon="ellipsisVertical"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </div>
+
     </ion-item>
 </template>
 
@@ -158,7 +159,7 @@ export default {
         if( ! user ) count++;
         else if( cmt.lastAction > user.seen ) count++;
       })
-      this.newComments = count;
+      this.newComments = ( count > 100 ) ? 99 : count;
     },
     menuAction(action) {
       switch (action) {
@@ -245,21 +246,19 @@ ion-item.new {
 #tickbox.done ion-icon {
   color:#fff;
 }
-.chat-wrapper {
+.notification {
   position:relative;
+  /* space damit badge rechts rausschauen kann */
+  margin-right:2px;
 }
-.chat-wrapper ion-badge {
-  --padding-bottom:3px;
-  --padding-top:3px;
-  --padding-left:1px;
-  --padding-right:1px;
-  font-size:10px;
-  z-index:99;
+.notification ion-badge {
+  font-size:8px;
   position:absolute;
   top:0;
-  right:0;
-  margin-top:-4px;
-  margin-right:-5px;
+  right:-2px;
+  --padding-bottom: 2px;
+  --padding-top: 2px;
+  --padding-right: 0px;
+  --padding-left: 0px;
 }
-
 </style>

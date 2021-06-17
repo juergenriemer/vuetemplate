@@ -269,8 +269,8 @@ router.put(
         log += " > prepare data";
         try {
           const draggedItem = req.list.items.splice(from, 1)[0];
+          console.log(req.list.items);
           req.list.items.splice(to, 0, draggedItem);
-          console.log(from, to);
           req.list.items[from].lastAction = seen;
           req.list.items[from].lastSeen.find(
             (usr) => usr.userId == userId
@@ -289,6 +289,8 @@ router.put(
         return req.list.save();
       })
       .then((list) => {
+        console.log("adsfasfdasdf");
+        console.log(list.items);
         const data = {
           listId,
           from,

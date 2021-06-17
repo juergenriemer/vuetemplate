@@ -1,7 +1,5 @@
 <template>
-  <page
-      :id="pageId"
-    >
+  <page :id="pageId">
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -18,10 +16,8 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content
-      class="content-area"
-    >
-      <slot class="scroller" name="content" />
+    <ion-content class="content-area">
+      <slot name="content" />
     </ion-content>
     <IonFooter v-if="$slots.footer">
       <slot name="footer" />

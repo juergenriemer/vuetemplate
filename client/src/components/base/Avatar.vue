@@ -14,7 +14,7 @@
 <script>
 import { IonAvatar, IonIcon, IonBadge } from "@ionic/vue";
 import { toSvg } from "jdenticon";
-import { star, build } from "ionicons/icons";
+import { star } from "ionicons/icons";
 
 export default {
   // types: list-title, initials, logo
@@ -25,7 +25,7 @@ export default {
     IonBadge,
   },
   data() {
-    return { star, build };
+    return { star };
   },
   methods: {
     content(){
