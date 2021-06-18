@@ -84,6 +84,10 @@ export default {
         .then(() => {
           this.nav(`/app/items/${this.list._id}`);
         })
+        .then(()=>{
+          // used to retoggle showitemmode in ItemsPage
+          window.bus.emit("list-settings-change");
+        })
         .catch((err) => this.showError(err));
     },
   },

@@ -11,11 +11,13 @@
     <template v-slot:content>
       <invitation-form :listId="currentList._id"></invitation-form>
       <invitees-list
+        class="grid"
         v-if="invitees && invitees.length"
         @uninvite="uninvite"
         :items="invitees"
       ></invitees-list>
       <members-list
+        class="grid"
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
         :items="currentList.users"

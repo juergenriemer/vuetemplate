@@ -4,7 +4,18 @@
   --inner-padding-end: 8px !important;
 }
 */
-grid ion-button,
+.grid ion-item ion-label {
+  padding: 0px;
+  padding-left: 10px;
+  margin-left: 0px;
+  font-size: 1.3em !important;
+}
+.grid ion-item {
+  --padding-start: 10px !important;
+}
+.grid ion-item ion-buttons {
+  margin: 0px;
+}
 .grid ion-button {
   --padding-start: 0px;
   --padding-end: 0px;
@@ -17,10 +28,6 @@ ion-header .header-icon {
 }
 ion-header ion-title {
   padding-right: 0px;
-}
-
-.title {
-  padding-left: 10px;
 }
 
 form#bottom-input,

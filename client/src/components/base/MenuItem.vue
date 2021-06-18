@@ -1,6 +1,6 @@
 <template>
   <ion-item @click="click($event)" id="awiegl" width="300" detail="false" button="true" :data="data">
-    <ion-label class="title">{{ label }}</ion-label>
+    <ion-label class="menu-title">{{ label }}</ion-label>
     <ion-icon slot="end" class="menu-icon" :icon="icon" size="small"></ion-icon>
   </ion-item>
 </template>
@@ -22,7 +22,7 @@ export default {
 };
 </script>
 <style scoped>
-.title {
+.menu-title {
   font-size: 1.2em !important;
 }
 .menu-icon {

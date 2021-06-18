@@ -7,7 +7,7 @@
       style="cursor:pointer"
       detail="false">
     <avatar size="medium" :list-title="list.title" :updates=newItemComments></avatar>
-    <ion-label class="title">
+    <ion-label>
       {{ list.title }} 
     </ion-label>
     <div>
@@ -179,9 +179,7 @@ export default {
 };
 </script>
 <style>
-.title {
-  font-size: 1.3em;
-}
+
 [symbol] {
   position: relative;
   display:flex;

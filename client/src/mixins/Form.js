@@ -74,9 +74,11 @@ export default {
         this.sending = true;
         setTimeout(() => {
           this.form = this.getFormData();
-          this.submit().finally(() => {
-            this.sending = false;
-          });
+          const submit = this.submit();
+          if (submit && submit.finally)
+            submit.finally(() => {
+              this.sending = false;
+            });
         }, 0);
       }
     },

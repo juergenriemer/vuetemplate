@@ -236,7 +236,7 @@ export default {
 }
 .left.column {
   order: 1;
-  flex: 3;
+  flex: 8;
 }
 .middle.column {
   border-left: 1px dashed #c0c0c0 !important;

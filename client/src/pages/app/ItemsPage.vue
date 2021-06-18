@@ -27,12 +27,20 @@
     </template>
     <template v-slot:footer>
         <create-item-form
-        :listId="list2._id"
+          @duplicate="showDuplicateInfo"
+          @toggleItemShowMode="itemShowMode = !itemShowMode"
+          :hiddenItems="hiddenItems"
+        :itemShowMode="itemShowMode"
+        :list="list2"
         v-if="!itemInEditMode"
       ></create-item-form>
       <edit-item-form
         v-if="itemInEditMode"
-        :listId="list2._id"
+          @duplicate="showDuplicateInfo"
+          @toggleItemShowMode="itemShowMode = !itemShowMode"
+          :hiddenItems="hiddenItems"
+        :itemShowMode="itemShowMode"
+        :list="list2"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></edit-item-form>
@@ -50,7 +58,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ellipsisVertical } from "ionicons/icons";
-
+import { alertController } from "@ionic/core";
 import ItemsList from "@/components/item/ItemsList.vue";
 import CreateItemForm from "@/components/item/CreateItemForm.vue";
 import EditItemForm from "@/components/item/EditItemForm.vue";
@@ -76,6 +84,7 @@ export default {
   },
   data() {
     return {
+      duplicateInfo : false,
       edit: {},
       actionItem: {},
       lastSeen:null,
@@ -83,11 +92,15 @@ export default {
       ellipsisVertical,
       itemInEditMode: null,
       itemInCommentMode: null,
-      itemShowMode: false
+      itemShowMode: null,
     };
   },
   mounted() {
     this.saw();
+    this.setShowItemMode();
+    window.bus.on("list-settings-change", () => {
+      this.setShowItemMode();
+    });
   },
   watch : {
     '$route': function( to, from ) {
@@ -97,6 +110,12 @@ export default {
     }
   },
   computed: {
+    hiddenItems(){
+      if( this.list2.hideDoneItems ) {
+        return this.list2.items.filter( itm => itm.done ).length;
+      }
+      return false;
+    },
     toggleMode() {
       return this.list2.items.filter( itm => itm.done ).length !== this.list2.items.length;
     },
@@ -124,6 +143,11 @@ export default {
     },
   },
   methods: {
+    setShowItemMode() {
+
+      this.itemShowMode = ! this.list2.hideDoneItems;
+      console.log( 123, this.itemShowMode )
+    },
     saw() {
       console.log( ">> saw items")
       try {
@@ -166,6 +190,31 @@ export default {
           this.itemInCommentMode = item;
           break;
       }
+    },
+    async showDuplicateInfo() {
+      alertController
+        .create({
+          header: "Item alreay exists",
+          message: `<p>Your list is set to prevent duplicates.</p>
+          <p>If you want to allow duplicates please edit this list.</p>
+          `,
+          buttons: [
+            {
+              text: "EDIT LIST",
+              handler: () => {
+                this.nav( `/app/edit/${this.list._id}`)
+              },
+            },
+            {
+              text: "CANCEL",
+              handler: () => {},
+            },
+          ],
+        })
+        .then((res) => {
+          this.duplicateInfo = res;
+          this.duplicateInfo.present();
+        });
     },
   },
 };

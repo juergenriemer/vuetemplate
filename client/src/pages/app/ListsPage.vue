@@ -2,7 +2,6 @@
   <base-layout page-title="Listle" page-id="ListsPage">
     <template v-slot:title>
       <avatar
-        class="personalAvatar"
         size="large"
         :initials="initials"
         @click="showMenu($event)"
@@ -121,9 +120,3 @@ export default {
   },
 };
 </script>
-<style>
-.personalAvatar {
-  margin-left:0.5em;
-    cursor: pointer;
-  }
-</style>

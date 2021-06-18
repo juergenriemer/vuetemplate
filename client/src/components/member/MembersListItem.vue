@@ -1,16 +1,12 @@
 <template>
   <ion-item>
     <avatar size="medium" :role="item.role" :initials="item.short"></avatar>
-    <ion-label class="title">
+    <ion-label>
       {{ item.name }}
     </ion-label>
     <ion-buttons v-if="hasMenu" slot="end">
-      <ion-button @click="showMenu($event, { item })">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="small"
-        ></ion-icon>
+      <ion-button @click="showMenu($event, {item})">
+        <ion-icon :icon="ellipsisVertical"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-item>
@@ -93,3 +89,5 @@ export default {
   },
 };
 </script>
+<style>
+</style>

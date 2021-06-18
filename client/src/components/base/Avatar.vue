@@ -73,6 +73,7 @@ box-shadow: 4px 4px 10px -6px #000000;
 }
 
 .avatar-wrapper {
+  cursor:pointer;
   position:relative;
 }
 

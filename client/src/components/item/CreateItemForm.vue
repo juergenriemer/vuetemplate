@@ -14,6 +14,14 @@
         type="text"
         rules="required"
       ></ion-input>
+      <ion-buttons class="hidden-buttons" slot="start" v-if="hiddenItems">
+        <ion-button v-if="itemShowMode" @click="$emit('toggleItemShowMode')">
+          <ion-icon :icon="eyeOff"></ion-icon>
+        </ion-button>
+        <ion-button v-else @click="$emit('toggleItemShowMode')">
+          <ion-icon :icon="eye"></ion-icon>
+        </ion-button>
+      </ion-buttons>
       <ion-buttons slot="end">
         <ion-button @click="stopCreating">
           <ion-icon :icon="close" size="medium"></ion-icon>
@@ -39,12 +47,12 @@ import {
   IonIcon,
 } from "@ionic/vue";
 
-import { camera, send, close } from "ionicons/icons";
+import { camera, send, close, eye, eyeOff } from "ionicons/icons";
 import Form from "@/mixins/Form";
 import Data from "@/mixins/Data";
 export default {
-  props: ["listId"],
-  emits: ["save-item"],
+  props: ["list", "itemShowMode", "hiddenItems"],
+  emits: ["duplicate","toggleItemShowMode"],
   mixins: [Form, Data],
   components: {
     IonList,
@@ -64,6 +72,8 @@ export default {
       camera,
       send,
       close,
+      eye,
+      eyeOff,
       title: "",
     };
   },
@@ -77,20 +87,50 @@ export default {
       this.input.value = "";
       this.input.blur();
     },
-    async submit() {
-
-      const creatorId = this.$store.getters.user.userId;
-      let item = Object.assign(
-        { _id: this.objectId(), createdAt: new Date(), creatorId, comments: [] },
-        this.form
-      );
-      return this.$store
-        .dispatch("addItem", { listId: this.listId, item })
-        .then((res) => {
-          this.resetForm();
-          setTimeout(() => {
-            this.scrollToBottom("ItemsPage");
-          }, 0);
+    preventDuplicate() {
+      if( this.list.uniqueItems ){
+        const duplicate = this.list.items.find( itm => itm.title.trim() == this.form.title.trim() );
+        if( duplicate ){
+          if( duplicate.done ) {
+            console.log( 'update')
+            duplicate.done = false;
+            this.$store
+              .dispatch("updateItem", {
+                listId: this.list._id,
+                itemId: duplicate._id,
+                item: duplicate
+              })
+              .catch((err) => {
+                this.showError(err);
+              });
+          }
+          else {
+            this.$emit( "duplicate");
+          }
+          return true;
+        }
+      }
+      return false;
+    },
+    submit() {
+      Promise.resolve()
+        .then( ()=>{
+          if( ! this.preventDuplicate() ) {
+            const creatorId = this.$store.getters.user.userId;
+            let item = Object.assign(
+              { _id: this.objectId(), createdAt: new Date(), creatorId, comments: [] },
+              this.form
+            );
+            return this.$store
+              .dispatch("addItem", { listId: this.list._id, item })
+              .then((res) => {
+                this.resetForm();
+                setTimeout(() => {
+                  this.scrollToBottom("ItemsPage");
+                }, 0);
+              } );
+          }
+          else return true;
         })
         .catch((err) => {
           this.showError(err);
@@ -103,3 +143,8 @@ export default {
   },
 };
 </script>
+<style>
+.hidden-buttons ion-button {
+  --padding-start:0px;
+}
+</style>

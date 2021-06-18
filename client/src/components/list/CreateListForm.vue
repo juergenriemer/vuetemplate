@@ -18,7 +18,7 @@
       </ion-item>
       <ion-item>
         <ion-label>List type</ion-label>
-        <ion-select name="type" value="grab">
+        <ion-select name="type" value="check">
           <ion-select-option value="check">Check-Listle</ion-select-option>
           <ion-select-option value="grab">Grab-Listle</ion-select-option>
           <ion-select-option value="vote">Vote-Listle</ion-select-option>
@@ -58,7 +58,6 @@ import {
 
 export default {
   mixins: [Form, Data],
-  emits: ["save-list"],
   components: {
     FormError,
     IonList,

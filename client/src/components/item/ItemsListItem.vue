@@ -14,7 +14,7 @@
             id="check-inner" :icon="checkmark"></ion-icon>
         </ion-avatar>
       </div>
-      <ion-label @dblclick="checkItem($event)" class="title">
+      <ion-label @dblclick="checkItem($event)">
         {{ item.title }}
       </ion-label>
       <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
@@ -70,7 +70,6 @@ export default {
   emits: ["change-mode"],
   mixins: [Menu, Alert],
   components: {
-    //   CommentsList,
     MenuComponent,
     IonReorder,
     IonToolbar,
@@ -217,11 +216,6 @@ export default {
 }
 .jdicon {
   padding: 4px;
-}
-.title {
-  margin-left: 0px;
-  padding: 0px;
-  font-size: 1.3em !important;
 }
 ion-item.new {
     --ion-item-background:lightyellow !important;

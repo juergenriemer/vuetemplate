@@ -1,16 +1,12 @@
 <template>
   <ion-item>
     <avatar size="medium" :initials="item.short"></avatar>
-    <ion-label class="title">
+    <ion-label>
       {{ item.name }}
     </ion-label>
     <ion-buttons slot="end">
       <ion-button @click="showMenu($event)">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="small"
-        ></ion-icon>
+        <ion-icon :icon="ellipsisVertical"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-item>
