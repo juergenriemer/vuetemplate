@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const ItemSchema = require("./Item");
+var ItemSchema = require("./Item");
 
 const ListSchema = new mongoose.Schema(
   {

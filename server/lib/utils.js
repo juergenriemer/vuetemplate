@@ -122,7 +122,6 @@ function broadcast(req, list, data) {
         // don't emit to myself
         if (usr !== data.csrf) {
           io.emit(usr, data);
-          console.log("notify", user.userId, data.type);
         }
       });
     }
@@ -132,7 +131,6 @@ function notifySingleUser(req, userId, data) {
   const io = req.app.get("io");
   if (users[userId]) {
     users[userId].forEach((usr) => {
-      console.log("notifySingle", userId, data.type);
       io.emit(usr, data);
     });
   }

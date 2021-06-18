@@ -101,7 +101,6 @@ router.get(
       })
       .then((lists) => {
         log += " > respond";
-        console.log(lists);
         const data = {
           lists,
         };

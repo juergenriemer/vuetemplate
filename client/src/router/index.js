@@ -3,10 +3,21 @@ self.bus = mitt();
 
 self.$$ = {
   network: "unkown",
-  isWeb: true,
   appMode: localStorage.getItem("appMode") || "online",
 };
-
+const setView = () => {
+  const width = window.innerWidth;
+  self.$$.isWeb = width > 420;
+};
+setView();
+const updateView = () => {
+  const prev = self.$$.isWeb;
+  setView();
+  if (prev != self.$$.isWeb) self.location.reload();
+};
+window.addEventListener("resize", (evt) => {
+  updateView();
+});
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 //import { RouteRecordRaw } from "vue-router";
 import ListsPage from "@/pages/app/ListsPage.vue";

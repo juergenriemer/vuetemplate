@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const CommentSchema = require("./Comment");
+var CommentSchema = require("./Comment");
 
 const ItemSchema = new mongoose.Schema(
   {
@@ -32,4 +32,4 @@ const ItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-mongoose.model("Item", ItemSchema);
+module.exports = ItemSchema;
