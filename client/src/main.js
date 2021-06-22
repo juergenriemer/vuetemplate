@@ -75,6 +75,8 @@ app.mixin({
     scrollToBottom(pageId) {
       this.$nextTick(() => {
         const page = document.querySelector(`#${pageId} ion-content`);
+        console.log(pageId);
+        console.log(">>", page);
         page && page.scrollToBottom();
       });
     },

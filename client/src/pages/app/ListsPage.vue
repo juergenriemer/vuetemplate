@@ -4,6 +4,7 @@
       <avatar
         size="large"
         :initials="initials"
+        :picture="picture"
         @click="showMenu($event)"
       ></avatar>
     </template>
@@ -51,6 +52,11 @@ export default {
     }
   },
   computed: {
+    picture() {
+      let user = this.$store.getters.user;
+      const picture = ( user && user.picture ) ? user.picture : "";
+      return ( user && user.picture ) ? user.picture : "";
+    },
     initials() {
       let user = this.$store.getters.user;
       return user ? user.short : "";
@@ -68,7 +74,6 @@ export default {
   methods: {
     saw() {
       if( this.lists.length > 0 ){
-        console.log( 'sawLists')
         this.$store
           .dispatch("sawLists")
           .catch((err) => this.showError(err));

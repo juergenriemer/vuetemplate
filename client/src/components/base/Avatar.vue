@@ -1,8 +1,10 @@
 <template>
   <div class="avatar-wrapper">
     <ion-avatar id="avatar" :class="size" :style="{ background: color() }">
-      <div v-html="content()"></div>
+      <img v-if="picture" :src="picture" />
+      <div v-else v-html="content()"></div>
       <ion-icon
+style="color: #fff; text-shadow:3px 3px 3px rgba(0,0,0,1);"
         v-if="role == 'owner' || role == 'admin'"
         :class="role"
         :icon="star"
@@ -18,7 +20,7 @@ import { star } from "ionicons/icons";
 
 export default {
   // types: list-title, initials, logo
-  props: ["size", "role", "initials", "listTitle", "logo", "updates"],
+  props: ["size", "role", "initials", "listTitle", "logo", "updates", "picture"],
   components: {
     IonAvatar,
     IonIcon,
@@ -30,6 +32,7 @@ export default {
   methods: {
     content(){
       if( this.listTitle) return toSvg(this.listTitle, 40);
+      else if( this.picture ) return `<img src='${this.picture}' />`;
       else if( this.initials) return this.initials
       else if( this.logo) return "Li"
     },
@@ -108,6 +111,7 @@ box-shadow: 4px 4px 10px -6px #000000;
 #avatar .admin,
 #avatar .owner {
   position: absolute;
+  left:-10px !important;
   color: goldenrod;
   width: 100%;
   top: -8px;

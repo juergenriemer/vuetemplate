@@ -144,12 +144,9 @@ export default {
   },
   methods: {
     setShowItemMode() {
-
       this.itemShowMode = ! this.list2.hideDoneItems;
-      console.log( 123, this.itemShowMode )
     },
     saw() {
-      console.log( ">> saw items")
       try {
         const listId = this.$route.params.id;
         const userId = this.$store.getters.userId;
@@ -202,7 +199,7 @@ export default {
             {
               text: "EDIT LIST",
               handler: () => {
-                this.nav( `/app/edit/${this.list._id}`)
+                this.nav( `/app/edit/${this.list2._id}`)
               },
             },
             {

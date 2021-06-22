@@ -55,6 +55,9 @@ base-layout(page-title="Register", page-id="Register")
         ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
         button.ion-hide(type="submit", :disabled="disabled")
 
+        div
+          | --- or ---
+          a(href="http://localhost:3003/users/auth/google") Google
       info-sheet(type="error", v-if="status == 'is-registered'")
         template(v-slot:content)
           p
@@ -108,7 +111,12 @@ export default {
   data: () => ({
     showInfoSheet: false,
   }),
-  methods: {
+  methods: { 
+    test() {
+        this.$store.dispatch( "info").then( res =>{
+          console.log( res )
+        });
+    },
     async submit() {
       return this.$store
         .dispatch("registerUser", this.form)

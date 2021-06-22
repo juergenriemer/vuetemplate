@@ -16,8 +16,26 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: "String",
   },
+  locale: {
+    type: "String",
+    default: "en",
+  },
+  picture: {
+    type: "String",
+  },
+  provider: {
+    type: "String",
+  },
+  providerId: {
+    type: "String",
+  },
+  isLocked: {
+    type: "Boolean",
+    default: false,
+  },
   is_verified: {
     type: "Boolean",
+    default: false,
   },
   hash: {
     type: "String",
@@ -25,7 +43,7 @@ const UserSchema = new mongoose.Schema({
   salt: {
     type: "String",
   },
-  failedLogin: Number,
+  failedLogin: { type: Number, default: 0 },
   failedLoginDate: Date,
 });
 mongoose.model("User", UserSchema);

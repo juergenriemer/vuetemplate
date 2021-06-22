@@ -229,7 +229,7 @@ ion-item.new {
   align-items: center;
 }
 #tickbox.done {
-  background: green;
+  background: #2dd36f;
 }
 #tickbox ion-icon {
   color:#000;

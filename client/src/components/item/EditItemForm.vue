@@ -103,18 +103,17 @@ export default {
       return false;
     },
     submit() {
-      Promise.resolve()
-        .then( ()=>{
-          if( ! this.preventDuplicate() ) {
-            let item = Object.assign(this.itemInEditMode, this.form);
-            return this.$store
-              .dispatch("updateItem", {
-                listId: this.list._id,
-                itemId: item._id,
-                item,
-              });
-          }
-          else return Promise.resolve();
+      if( this.preventDuplicate() ) {
+          this.sending = false;
+          this.formFocus();
+          return;
+      }
+      let item = Object.assign(this.itemInEditMode, this.form);
+      return this.$store
+        .dispatch("updateItem", {
+          listId: this.list._id,
+          itemId: item._id,
+          item,
         })
         .then((res) => {
           this.origTitle = this.itemInEditMode.title;

@@ -113,24 +113,23 @@ export default {
       return false;
     },
     submit() {
-      Promise.resolve()
-        .then( ()=>{
-          if( ! this.preventDuplicate() ) {
-            const creatorId = this.$store.getters.user.userId;
-            let item = Object.assign(
-              { _id: this.objectId(), createdAt: new Date(), creatorId, comments: [] },
-              this.form
-            );
-            return this.$store
-              .dispatch("addItem", { listId: this.list._id, item })
-              .then((res) => {
-                this.resetForm();
-                setTimeout(() => {
-                  this.scrollToBottom("ItemsPage");
-                }, 0);
-              } );
-          }
-          else return true;
+      if( this.preventDuplicate() ) {
+          this.sending = false;
+          this.formFocus();
+          return;
+      }
+      const creatorId = this.$store.getters.user.userId;
+      let item = Object.assign(
+        { _id: this.objectId(), createdAt: new Date(), creatorId, comments: [] },
+        this.form
+      );
+      return this.$store
+        .dispatch("addItem", { listId: this.list._id, item })
+        .then((res) => {
+          this.resetForm();
+          setTimeout(() => {
+            this.scrollToBottom("ItemsPage");
+          }, 0);
         })
         .catch((err) => {
           this.showError(err);

@@ -90,7 +90,7 @@ router.put(
 // get all lists a user can see
 router.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(["jwt", "google"], { session: false }),
   userInfo,
   (req, res, next) => {
     let log = `GET_LISTS(${JSON.stringify(req.params)})::`;
@@ -147,6 +147,7 @@ router.post(
               email: req.email,
               name: req.name,
               short: req.short,
+              picture: req.picture,
               role: "owner",
             },
           ];
@@ -173,7 +174,8 @@ router.post(
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 

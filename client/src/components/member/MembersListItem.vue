@@ -1,6 +1,6 @@
 <template>
   <ion-item>
-    <avatar size="medium" :role="item.role" :initials="item.short"></avatar>
+    <avatar size="medium" :picture="item.picture" :initials="item.short"></avatar>
     <ion-label>
       {{ item.name }}
     </ion-label>

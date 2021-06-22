@@ -174,6 +174,10 @@ const routes = self.$$.isWeb
         path: "/user/delete-verify/:id",
         component: () => import("@/pages/user/DeleteVerify.vue"),
       },
+      {
+        path: "/user/social/:id",
+        component: () => import("@/pages/user/Social.vue"),
+      },
     ];
 
 const router = createRouter({

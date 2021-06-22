@@ -39,6 +39,7 @@ const ListSchema = new mongoose.Schema(
         email: String,
         name: String,
         short: String,
+        picture: String,
         role: String,
       },
     ],

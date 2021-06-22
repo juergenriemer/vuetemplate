@@ -7,15 +7,15 @@
           <component :is="page"></component>
         </div>
       </div>
-      <div id="box" class="app" v-if="app">
+      <div id="box" class="xxapp" v-if="app">
         <div class="left column">
           <lists-page></lists-page>
         </div>
-        <div class="right column" v-if="page">
+        <div id="CommentsPage" class="right column" v-if="page">
           <component :is="page"></component>
         </div>
-        <div class="middle column" v-if="listId">
-          <items-page></items-page>
+        <div id="ItemsPage" class="middle column" v-if="listId">
+          <items-page ></items-page>
         </div>
       </div>
     </div>
@@ -36,6 +36,7 @@ import RegisterVerify from "../pages/user/RegisterVerify.vue";
 import ResetPassword from "../pages/user/ResetPassword.vue";
 import ResetPasswordVerify from "../pages/user/ResetPasswordVerify.vue";
 import ApproveInvites from "../pages/user/ApproveInvites.vue";
+import Social from "../pages/user/Social.vue";
 
 //() => import("@/pages/ListInfoPage.vue"),
 
@@ -51,6 +52,7 @@ const pages = {
   "reset-password": ResetPassword,
   "reset-password-verify": ResetPasswordVerify,
   "approve-invites": ApproveInvites,
+  "social": Social,
 };
 import {
   IonPage,
@@ -103,8 +105,14 @@ export default {
 };
 </script>
 <style>
+/* ionic changes */
+.content-area {
+  --offset-bottom: 58px;
+}
 #wrapper {
   border: 1px solid transparent;
+  xbackground-image: url("../theme/leather.png");
+  xbackground-repeat:repeat;
 }
 #info {
   font-weight: bold;
@@ -117,8 +125,12 @@ export default {
   position: fixed;
   width: 100%;
   height: 130px;
-  background: #ff5f49;
+  xbackground-size:cover;
+  box-shadow:inset 0 0 0 2000px rgba(255, 125, 0, 0.2);
+  background-image: url("../theme/leather.png");
+  background-repeat:repeat;
   z-index: -1;
+  box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
 }
 #backdrop .logo {
   padding: 1em;
@@ -133,14 +145,6 @@ export default {
   box-shadow: 0 2px 2px 0 #c0c0c0, 2px 5px 5px 0 #c0c0c0;
 }
 
-/* IONIC CHANGES */
-/* IONIC CHANGES */
-  .content-area {
-    --offset-bottom: 58px;
-  }
-/* IONIC CHANGES */
-/* IONIC CHANGES */
-
 /* IPAD issues */
 /* 100vh doen't work in ipad */
 .is-safari #box {
@@ -151,34 +155,13 @@ export default {
   margin-bottom: 40px;
   z-index: 100;
 }
-/* single page e.g. user pages */
-#single {
-  min-width: 250px;
-  max-width: 400px;
-}
 
-@media (min-width: 505px) {
-  #single {
-    margin-top: 20px !important;
-    margin: 0 auto;
-    height: calc(100vh - 40px);
-  }
-}
-
-/* min width for outer box _NOT_ for phones */
+/* small view */
 @media (min-width: 400px) {
-  #box.app {
+  #box {
     min-width: 640px;
     min-width: 500px;
     max-width: 1200px;
-  }
-  #box.user {
-    min-width: 400px;
-    min-width: 400px;
-    max-width: 400px;
-  }
-  .single.column {
-    min-width: 250px;
   }
   .left.column {
     min-width: 250px;
@@ -189,13 +172,10 @@ export default {
   .right.column {
     min-width: 250px;
   }
-}
-
-@media (min-width: 400px) {
   .WebPage {
     height: calc(100vh - 125px);
   }
-  #box.app {
+  #box {
     margin-top: 0px !important;
     margin: 0 auto;
     height: calc(100vh);
@@ -204,13 +184,12 @@ export default {
 
 /* large normal view */
 @media (min-width: 1225px) {
-  #box.app {
+  #box {
     margin-top: 20px !important;
     margin: 0 auto;
     height: calc(100vh - 40px);
   }
   .WebPage {
-    border:10px solid blue;
     height: calc(100vh - 167px);
   }
 }
@@ -221,6 +200,7 @@ export default {
     display: none;
   }
 }
+
 .column {
   display: flex;
   flex-direction: column;
@@ -228,11 +208,12 @@ export default {
   align-items: stretch;
   background: #fff;
 }
+
+#box.user {
+  max-width:400px
+}
 .single.column {
   flex: 1;
-  xmax-width: 250px;
-  xjustify-self: center;
-  xalign-self: center;
 }
 .left.column {
   order: 1;

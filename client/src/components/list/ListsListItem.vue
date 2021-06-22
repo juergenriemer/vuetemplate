@@ -1,4 +1,7 @@
 <template>
+  <div style="position:relative">
+  <ion-progress-bar color="success" 
+    style="position:absolute;bottom:0px;z-index:100" :value="progress"></ion-progress-bar>
   <ion-item
       @click="click($event)"
       nav="list"
@@ -24,10 +27,11 @@
       </ion-buttons>
     </div>
   </ion-item>
+</div>
 </template>
 
 <script>
-import { IonButton, IonButtons, IonIcon, IonItem, IonLabel } from "@ionic/vue";
+import { IonButton, IonButtons, IonIcon, IonItem, IonLabel, IonProgressBar } from "@ionic/vue";
 import { ellipsisVertical, people, star } from "ionicons/icons";
 import Avatar from "@/components/base/Avatar.vue";
 import MenuComponent from "@/components/list/ListMenu.vue";
@@ -55,6 +59,7 @@ export default {
     IonIcon,
     IonItem,
     IonLabel,
+    IonProgressBar,
   },
   mounted() {
       this.checkUpdates();
@@ -74,6 +79,13 @@ export default {
     }
   },
   computed: {
+    progress() {
+      const total = this.list.items.length;
+      if( !total ) return 0;
+      const done = this.list.items.filter( itm => itm.done ).length;
+      const progress =  done / total;
+      return progress;
+    },
     role() {
       return this.list.users.find( usr => usr.userId == this.$store.getters.userId ).role;
     },
@@ -200,5 +212,18 @@ export default {
 [symbol] [star].admin {
   display:block;
   color: green;
+}
+.progressx {
+  border:1px solid red !important;
+  background:red !important;
+  background-image:
+    linear-gradient( 
+      to right,
+      rgba(0, 255, 0, 0.45), 
+      rgba(0, 255, 0, 0.45) 50%,
+      rgba(0,0,0,0) 50%,
+      rgba(0,0,0,0)
+    ),
+    url('https://placeimg.com/800/150/animals/grayscale') !important;
 }
 </style>

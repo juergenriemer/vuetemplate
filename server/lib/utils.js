@@ -66,9 +66,16 @@ function issueJWT(user) {
   const expiresIn = "1m"; //1d';
   const payload = {
     //sub: _id,
-    sub: { _id, name: user.name, short: user.short, email: user.email },
+    sub: {
+      _id,
+      name: user.name,
+      short: user.short,
+      email: user.email,
+      picture: user.picture,
+    },
     iat: Date.now(),
   };
+  console.log("issue", user.name, user.picture);
   const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
     expiresIn: expiresIn,
     algorithm: "RS256",
@@ -90,6 +97,7 @@ const clientToken = (user) => {
       name: user.name,
       short: user.short,
       email: user.email,
+      picture: user.picture,
     },
     token: token.token,
     expiresIn: token.expires,

@@ -1,7 +1,7 @@
 <template>
   <ion-list>
     <ion-item-divider>
-      <ion-label>Current Members</ion-label>
+      <ion-label>{{header}}</ion-label>
     </ion-item-divider>
     <item
       @toggle-admin="toggleAdmin"
@@ -19,7 +19,7 @@ import Item from "./MembersListItem.vue";
 
 export default {
   emits: ["toggle-admin", "unshare"],
-  props: ["items"],
+  props: ["items", "header"],
   components: {
     IonItemDivider,
     IonLabel,

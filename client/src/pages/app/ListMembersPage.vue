@@ -17,10 +17,27 @@
         :items="invitees"
       ></invitees-list>
       <members-list
+        header="Owner"
         class="grid"
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
-        :items="currentList.users"
+        :items="owner"
+      ></members-list>
+      <members-list
+        v-if="admins.length > 0"
+        header="Administrators"
+        class="grid"
+        @unshare="unshare"
+        @toggle-admin="toggleAdmin"
+        :items="admins"
+      ></members-list>
+      <members-list
+        v-if="users.length > 0"
+        header="Users"
+        class="grid"
+        @unshare="unshare"
+        @toggle-admin="toggleAdmin"
+        :items="users"
       ></members-list>
     </template>
   </base-layout>
@@ -49,6 +66,15 @@ export default {
     };
   },
   computed: {
+    owner() {
+      return this.currentList.users.filter( usr => usr.role == "owner")
+    },
+    admins() {
+      return this.currentList.users.filter( usr => usr.role == "admin")
+    },
+    users() {
+      return this.currentList.users.filter( usr => usr.role == "user")
+    },
     invitees() {
       return this.currentList ? this.currentList.invitees : null;
     },

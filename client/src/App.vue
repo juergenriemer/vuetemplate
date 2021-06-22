@@ -43,12 +43,14 @@ window.checkNeedForSync = () => {
   }
   else return false;
 }
+/*
 window.onerror = (a, b, c) => {
   console.warn( "********************")
   console.warn( a,b,c)
   console.warn( "********************")
   return true;
 };
+ */
 /*
 window.console.warn = (a) => {
   //alert(a);

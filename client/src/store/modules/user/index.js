@@ -66,6 +66,18 @@ const actions = {
       });
   },
 
+  async social({ commit }, token) {
+    return http()
+      .get(`${root}/social/${token}`)
+      .then((res) => {
+        if (res && res.data) {
+          commit("fetchUser", res.data.user);
+          commit("setToken", res.data.token);
+        }
+        return res;
+      });
+  },
+
   async info({ commit, getters }) {
     if (wire(arguments)) {
       return http()
@@ -74,7 +86,6 @@ const actions = {
           const user = res.data.user;
           const tzo = res.data.tzo + new Date().getTimezoneOffset();
           window.tzo = tzo * -1;
-          console.warn("server tzo: " + tzo + " -> client: " + window.tzo);
           commit("fetchUser", { user });
           return res;
         });
