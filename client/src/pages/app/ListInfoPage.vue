@@ -9,24 +9,47 @@
       </div>
     </template>
     <template v-slot:content>
-      <ion-list lines="none">
-        <ion-list-header> Information </ion-list-header>
-        <ion-item lines="none"
-          >Title: <b>{{ currentList.title }}</b></ion-item
-        >
+      <ion-list>
+        <ion-item-divider>
+          <ion-label>About</ion-label>
+        </ion-item-divider>
+        <ion-item lines="none">
+          <b>{{currentList.title}}</b>
+        </ion-item>
         <ion-item lines="none" v-if="currentList.description">
-          Description:{{ currentList.description }}</ion-item
-        >
-        <ion-item>Created: {{ ago(currentList.createdAt) }} ago</ion-item>
-        <ion-item>Created by: {{ owner() }}</ion-item>
-        <ion-item>List type: Checklist</ion-item>
-        <members-list :items="currentList.users"></members-list>
+          <i>{{currentList.description}}</i>
+        </ion-item>
+        <ion-item lines="none">
+            This list is a {{types[currentList.type]}} created by {{owner[0].name}} {{ ago(currentList.createdAt) }} ago.
+        </ion-item>
+      <members-list
+        header="Owner"
+        class="grid"
+        :items="owner"
+        menu=false
+      ></members-list>
+      <members-list
+        v-if="admins.length > 0"
+        header="Administrators"
+        class="grid"
+        :items="admins"
+        menu=false
+      ></members-list>
+      <members-list
+        v-if="users.length > 0"
+        header="Users"
+        class="grid"
+        :items="users"
+        menu=false
+      ></members-list>
+
+
       </ion-list>
     </template>
   </base-layout>
 </template>
 <script>
-import { IonListHeader, IonList, IonItem, IonLabel, IonIcon } from "@ionic/vue";
+import { IonListHeader, IonList, IonItem, IonLabel, IonIcon, IonItemDivider } from "@ionic/vue";
 import Avatar from "@/components/base/Avatar.vue";
 import MembersList from "@/components/member/MembersList.vue";
 import { informationCircle } from "ionicons/icons";
@@ -42,18 +65,29 @@ export default {
     IonItem,
     IonLabel,
     IonIcon,
+    IonItemDivider,
   },
   data() {
-    return { list: this.currentList, informationCircle };
+    return { list: this.currentList, informationCircle
+    , types : {
+      'check' : 'Check-Listle'
+      , 'vote' : 'Vote-Listle'
+      , 'grab' : 'Grab-Listle'
+    }
+    };
+  },
+  computed: {
+    owner() {
+      return this.currentList.users.filter( usr => usr.role == "owner")
+    },
+    admins() {
+      return this.currentList.users.filter( usr => usr.role == "admin")
+    },
+    users() {
+      return this.currentList.users.filter( usr => usr.role == "user")
+    },
   },
   methods: {
-    owner() {
-      let user;
-      if (this.currentList.users) {
-        user = this.currentList.users.find((usr) => usr.role == "owner");
-      }
-      return user && user.name ? user.name : "n/a";
-    },
   },
 };
 </script>

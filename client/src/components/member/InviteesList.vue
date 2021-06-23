@@ -2,12 +2,13 @@
   <div v-if="items">
     <ion-list>
       <ion-item-divider>
-        <ion-label>Pending Invitations</ion-label>
+        <ion-label>{{header}}</ion-label>
       </ion-item-divider>
       <item
         @uninvite="uninvite"
         v-for="item in items"
         :item="item"
+        :menu="menu"
       ></item>
     </ion-list>
   </div>
@@ -19,7 +20,7 @@ import Item from "./InviteesListItem.vue";
 
 export default {
   emits: ["uninvite"],
-  props: ["items"],
+  props: ["items", "header", "menu"],
   components: {
     IonItemDivider,
     IonLabel,

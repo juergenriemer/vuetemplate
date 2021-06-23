@@ -22,7 +22,7 @@ import Menu from "@/mixins/Menu";
 
 export default {
   emits: ["unshare", "toggle-admin"],
-  props: ["item", "admin"],
+  props: ["item", "admin", "menu"],
   mixins: [Menu],
   data() {
     return {
@@ -40,6 +40,7 @@ export default {
   },
   computed: {
     hasMenu() {
+      if( this.menu == 'false' ) return false;
       const myId = this.$store.getters.userId;
       const isMyself = this.item.userId == myId;
       const isAdmin = this.item.role == "admin" || this.item.role == "owner";

@@ -11,10 +11,12 @@
     <template v-slot:content>
       <invitation-form :listId="currentList._id"></invitation-form>
       <invitees-list
+        header="Pending Invitations"
         class="grid"
         v-if="invitees && invitees.length"
         @uninvite="uninvite"
         :items="invitees"
+        menu=true
       ></invitees-list>
       <members-list
         header="Owner"
@@ -22,6 +24,7 @@
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
         :items="owner"
+        menu=true
       ></members-list>
       <members-list
         v-if="admins.length > 0"
@@ -30,6 +33,7 @@
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
         :items="admins"
+        menu=true
       ></members-list>
       <members-list
         v-if="users.length > 0"
@@ -38,6 +42,7 @@
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
         :items="users"
+        menu=true
       ></members-list>
     </template>
   </base-layout>

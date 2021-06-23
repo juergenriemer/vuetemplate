@@ -1,10 +1,10 @@
 <template>
   <ion-item>
-    <avatar size="medium" :initials="item.short"></avatar>
+    <avatar size="medium" :picture="item.picture" :initials="item.short"></avatar>
     <ion-label>
       {{ item.name }}
     </ion-label>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" v-if="menu=='true'">
       <ion-button @click="showMenu($event)">
         <ion-icon :icon="ellipsisVertical"></ion-icon>
       </ion-button>
@@ -22,7 +22,7 @@ import Menu from "@/mixins/Menu";
 
 export default {
   emits: ["uninvite"],
-  props: ["item"],
+  props: ["item", "menu"],
   mixins: [Menu],
   data() {
     return {
