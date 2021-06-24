@@ -98,7 +98,7 @@ export default {
   computed: {
     // REF: move to baselayout.. same in ItemsPage.vue
     link() {
-      return self.isWeb ? "" : "/app/list";
+      return self.$$.isWeb ? "" : "/app/list";
     },
   },
   methods: {

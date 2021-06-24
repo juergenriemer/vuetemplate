@@ -1,8 +1,8 @@
 <template>
   <ion-list lines="none" @click="action">
     <menu-item label="List Info" :icon="informationCircle" data="info" />
-    <menu-item label="Share List" :icon="shareSocial" data="members" />
-    <menu-item v-if="owner" label="Edit List" :icon="create" data="edit" />
+    <menu-item v-if="admin" label="Share List" :icon="shareSocial" data="members" />
+    <menu-item v-if="admin" label="Edit List" :icon="create" data="edit" />
     <menu-item v-if="owner" label="Delete List" :icon="trash" data="delete" />
     <menu-item
       v-if="!owner"
@@ -28,9 +28,10 @@ export default {
   },
   computed: {
     owner() {
-      const ownerId = this.data.list.users.find((usr) => usr.role == "owner")
-        .userId;
-      return ownerId == this.myId();
+      return this.data.list.users.find((usr) => usr.role == "owner" && usr.userId == this.myId() );
+    },
+    admin() {
+      return this.owner || this.data.list.users.find((usr) => usr.role == "admin" && usr.userId == this.myId() );
     },
   },
   data() {

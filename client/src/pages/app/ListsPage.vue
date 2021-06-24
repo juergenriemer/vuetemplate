@@ -2,19 +2,19 @@
   <base-layout page-title="Listle" page-id="ListsPage">
     <template v-slot:title>
       <avatar
-        class="personalAvatar"
         size="large"
         :initials="initials"
+        :picture="picture"
         @click="showMenu($event)"
       ></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="nav(addLink)">
+      <ion-button color="dark" @click="nav(addLink)">
         <ion-icon slot="icon-only" :icon="add"></ion-icon>
       </ion-button>
     </template>
     <template v-slot:content>
-      <lists-list v-if="lists" :lists="lists"></lists-list>
+      <lists-list class="grid" v-if="lists" :lists="lists"></lists-list>
       <div v-if="!lists">loading</div>
     </template>
   </base-layout>
@@ -42,16 +42,21 @@ export default {
     return { add };
   },
   mounted() {
-    this.saw();
+        this.saw();
   },
   watch : {
     '$route': function( to, from ) {
       if( /^.app.list/.test( to.path)){
-        this.saw();
+           this.saw();
       }
     }
   },
   computed: {
+    picture() {
+      let user = this.$store.getters.user;
+      const picture = ( user && user.picture ) ? user.picture : "";
+      return ( user && user.picture ) ? user.picture : "";
+    },
     initials() {
       let user = this.$store.getters.user;
       return user ? user.short : "";
@@ -68,13 +73,11 @@ export default {
   },
   methods: {
     saw() {
-      console.log( ">> saw list")
-      try {
+      if( this.lists.length > 0 ){
         this.$store
           .dispatch("sawLists")
           .catch((err) => this.showError(err));
       }
-      catch( e ) {  }
     },
     menuAction(action) {
       switch (action) {
@@ -114,14 +117,11 @@ export default {
           link += listId ? `/${listId}` : ``;
           this.nav(link);
           break;
+        case "reload":
+          self.location.reload();
+          break;
       }
     },
   },
 };
 </script>
-<style>
-.personalAvatar {
-  margin-left:0.5em;
-    cursor: pointer;
-  }
-</style>

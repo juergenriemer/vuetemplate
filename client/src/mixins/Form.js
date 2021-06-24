@@ -74,9 +74,11 @@ export default {
         this.sending = true;
         setTimeout(() => {
           this.form = this.getFormData();
-          this.submit().finally(() => {
-            this.sending = false;
-          });
+          const submit = this.submit();
+          if (submit && submit.finally)
+            submit.finally(() => {
+              this.sending = false;
+            });
         }, 0);
       }
     },
@@ -117,9 +119,12 @@ export default {
         const field = form.querySelector(`[hasFocus] input`);
         field && field.focus();
       };
-      form && setTimeout(focus, 99);
+      this.$nextTick(() => {
+        focus();
+      });
+      //form && setTimeout(focus, 99);
       // second one because ionic blurs my item edit focus.. need to check
-      form && setTimeout(focus, 999);
+      //form && setTimeout(focus, 999);
     },
   },
   /*

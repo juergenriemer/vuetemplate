@@ -11,15 +11,38 @@
     <template v-slot:content>
       <invitation-form :listId="currentList._id"></invitation-form>
       <invitees-list
+        header="Pending Invitations"
+        class="grid"
         v-if="invitees && invitees.length"
         @uninvite="uninvite"
         :items="invitees"
+        menu=true
       ></invitees-list>
       <members-list
+        header="Owner"
+        class="grid"
         @unshare="unshare"
         @toggle-admin="toggleAdmin"
-        :items="currentList.users"
-        admin="true"
+        :items="owner"
+        menu=true
+      ></members-list>
+      <members-list
+        v-if="admins.length > 0"
+        header="Administrators"
+        class="grid"
+        @unshare="unshare"
+        @toggle-admin="toggleAdmin"
+        :items="admins"
+        menu=true
+      ></members-list>
+      <members-list
+        v-if="users.length > 0"
+        header="Users"
+        class="grid"
+        @unshare="unshare"
+        @toggle-admin="toggleAdmin"
+        :items="users"
+        menu=true
       ></members-list>
     </template>
   </base-layout>
@@ -48,6 +71,15 @@ export default {
     };
   },
   computed: {
+    owner() {
+      return this.currentList.users.filter( usr => usr.role == "owner")
+    },
+    admins() {
+      return this.currentList.users.filter( usr => usr.role == "admin")
+    },
+    users() {
+      return this.currentList.users.filter( usr => usr.role == "user")
+    },
     invitees() {
       return this.currentList ? this.currentList.invitees : null;
     },

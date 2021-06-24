@@ -106,6 +106,7 @@ router.get(
             userId: existingUser.userId,
             name: existingUser.name,
             short: existingUser.short,
+            picture: existingUser.picture,
             role: roles[role],
           };
         }
@@ -115,17 +116,27 @@ router.get(
       })
       .then((list) => {
         log += " > notify_single_user";
-        console.log(existingUser);
-        if (existingUser)
+        if (existingUser) {
+          const owner = req.list.users.find((usr) => usr.role == "owner");
+          const url = `/app/approve-invites`;
           utils.notifySingleUser(req, existingUser._id, {
             type: "info",
             data: {
-              message: "You have been invited!",
+              event: "invite",
+              button: {
+                text: "APPROVE",
+                url,
+              },
+              message: te.xt("info_invite", lang, {
+                listName: req.list.title,
+                userName: owner.name,
+              }),
             },
           });
+        }
       })
       .then(() => {
-        res.status(200).json();
+        res.status(200).json({ invitee });
       })
       .catch((err) => {
         next(err);
@@ -140,38 +151,83 @@ router.post(
   userInfo,
   (req, res, next) => {
     // REF!!! test if user can add him to list other than the ones invited!!!
-    let invites = req.body;
-    User.findById(req.userId)
-      .exec()
-      .then((user) => user.email)
-      .then((email) => {
-        let listIds = Object.keys(invites);
-        List.find({ _id: { $in: listIds } })
-          .exec()
-          .then((lists) => {
-            lists.forEach((lst) => {
-              let approve = invites[lst._id];
-              // add to users if approved
-              if (approve) {
-                let role = lst.invitees.find((inv) => inv.email == email).role;
-                lst.users.push({
-                  userId: req.userId,
-                  email: req.email,
-                  name: req.name,
-                  short: req.short,
-                  role,
-                });
-                lst.lastSeen.push({ userId: req.userId, seen: new Date() });
-              }
-              // and remove from invitees
-              lst.invitees = lst.invitees.filter((inv) => inv.email != email);
-              lst.save();
-            });
-          })
-          .then(() => res.status(200).json())
-          .catch((error) => res.status(500).json(error));
+    let log = `APPROVE_INVITATIONS(${JSON.stringify(req.params)})::`;
+    const seen = new Date();
+    const userId = req.userId;
+    let invites, email;
+    let notifiedOwners = {};
+    Promise.resolve()
+      .then(() => {
+        log += " > prepare data";
+        try {
+          invites = req.body;
+          return true;
+        } catch (err) {
+          throw new Error(err);
+        }
       })
-      .catch((error) => res.status(500).json(error));
+      .then(() => {
+        log += " > look up user";
+        return User.findById(req.userId);
+      })
+      .then((user) => {
+        log += " > load lists";
+        email = user.email;
+        let listIds = Object.keys(invites);
+        return List.find({ _id: { $in: listIds } });
+      })
+      .then((lists) => {
+        log += " > update lists";
+        lists.forEach((lst) => {
+          let approve = invites[lst._id];
+          // add to users if approved
+          if (approve) {
+            let role = lst.invitees.find((inv) => inv.email == email).role;
+            lst.users.push({
+              userId: req.userId,
+              email: req.email,
+              name: req.name,
+              short: req.short,
+              picture: req.picture,
+              role,
+            });
+            lst.lastSeen.push({ userId, seen });
+          }
+          // and remove from invitees
+          lst.invitees = lst.invitees.filter((inv) => inv.email != email);
+          log += " > save list id: " + lst._id;
+          console.log(123, lst);
+          lst.save();
+          const text = approve
+            ? "info_approve_inivitation"
+            : "info_decline_inivitation";
+          if (!notifiedOwners[lst.creatorId]) {
+            notifiedOwners[lst.creatorId] = true;
+            const url = `/app/members/${lst._id}`;
+            utils.notifySingleUser(req, lst.creatorId, {
+              type: "info",
+              data: {
+                event: "approveInvitations",
+                button: {
+                  text: "MEMBERSHIPS",
+                  url,
+                },
+                message: te.xt(text, lang, {
+                  listName: lst.title,
+                  userName: req.name,
+                }),
+              },
+            });
+          }
+        });
+      })
+      .then(() => {
+        res.status(200).json();
+      })
+      .catch((err) => {
+        next(err);
+      })
+      .finally((_) => console.log(log));
   }
 );
 //
@@ -196,18 +252,28 @@ router.put(
       })
       .then((list) => {
         log += " > broadcast";
-        utils.broadcast(req, list, {
-          type: "leaveList",
+        const owner = req.list.users.find((usr) => usr.role == "owner");
+        const url = `/app/members/${req.list._id}`;
+        utils.notifySingleUser(req, owner.userId, {
+          type: "info",
           data: {
-            listId,
-            userId: req.userId,
+            event: "leave_list",
+            button: {
+              text: "MEMBERSHIPS",
+              url,
+            },
+            message: te.xt("info_leave_list", lang, {
+              listName: req.list.title,
+              userName: req.name,
+            }),
           },
         });
         res.status(200).json();
       })
       .catch((err) => {
-        next(new ApiError(501, log, err));
-      });
+        next(err);
+      })
+      .finally((_) => console.log(log));
   }
 );
 
@@ -272,9 +338,23 @@ router.delete(
       },
     });
     req.list.users = req.list.users.filter((usr) => usr.userId != userId);
+    // also remove user from lastSeen object
+    req.list.lastSeen = req.list.lastSeen.filter((usr) => usr.userId != userId);
     req.list
       .save()
       .then((found) => {
+        const admin = req.list.users.find((usr) => usr.userId == req.userId);
+        utils.notifySingleUser(req, userId, {
+          type: "info",
+          data: {
+            event: "unshare",
+            listId: req.list._id,
+            message: te.xt("info_unshare", lang, {
+              listName: req.list.title,
+              userName: admin.name,
+            }),
+          },
+        });
         res.status(200).json();
       })
       .catch((error) => {

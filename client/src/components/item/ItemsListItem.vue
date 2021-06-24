@@ -1,42 +1,41 @@
 <template>
-  <div>
     <ion-item
-      style="--padding-bottom: 6px; --padding-top: 6px"
+      v-show="!item.done || itemShowMode"
       lines="full"
       class="highlight"
-      detail="false"
-      button="true"
-    >
-      <ion-label @dblclick="checkItem(item)" class="title">
-        {{ item.title }} {{ item.lastAction}}
-      </ion-label>
-      <ion-buttons slot="start">
-        <ion-button
-          aria-label="item-status"
-          :class="item.done ? 'done2' : 'undone2'"
-          @click="checkItem(item._id)"
-        >
-          <ion-icon slot="icon-only" :icon="checkmark"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-
-      <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
-      <ion-buttons v-if="!reorderMode" slot="end">
-        <ion-button aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
-          <div class="chat-wrapper">
-            <ion-icon slot="icon-only" :icon="chatboxEllipses"></ion-icon>
-            <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
-          </div>
-        </ion-button>
-        <ion-button 
-            aria-label="item-menu"
-          @click="showMenu($event)">
+      detail="false">
+      <div>
+        <ion-avatar id="tickbox"
+            aria-label="item-status"
+            :class="item.done ? 'done' : ''">
           <ion-icon 
-            slot="icon-only" :icon="ellipsisVertical"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+            style="cursor:pointer"
+            @click="checkItem($event)"
+            id="check-inner" :icon="checkmark"></ion-icon>
+        </ion-avatar>
+      </div>
+      <ion-label @dblclick="checkItem($event)">
+        {{ item.title }}
+      </ion-label>
+      <ion-reorder v-if="reorderMode" slot="end"></ion-reorder>
+      <div>
+        <ion-buttons v-if="!reorderMode" slot="end">
+          <ion-button
+            aria-label="comments" @click="loadComments(item._id)" v-if="item.comments.length">
+            <div class="notification">
+              <ion-button>
+                <ion-icon :icon="chatboxEllipses"></ion-icon>
+              </ion-button>
+              <ion-badge v-if="newComments" color="danger">{{newComments}}</ion-badge>
+            </div>
+          </ion-button>
+          <ion-button aria-label="item-menu" @click="showMenu($event)">
+            <ion-icon :icon="ellipsisVertical"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </div>
+
     </ion-item>
-  </div>
 </template>
 
 <script>
@@ -67,11 +66,10 @@ import MenuComponent from "@/components/item/ItemMenu.vue";
 import Menu from "@/mixins/Menu";
 import Alert from "@/mixins/Alert";
 export default {
-  props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode"],
+  props: ["lastSeen", "listId", "item", "reorderMode", "itemInCommentMode", "itemShowMode"],
   emits: ["change-mode"],
   mixins: [Menu, Alert],
   components: {
-    //   CommentsList,
     MenuComponent,
     IonReorder,
     IonToolbar,
@@ -117,22 +115,21 @@ export default {
   },
   computed: {
     itemUpdated() {
-      return this.item.lastAction;
+      return this.item.updatedAt;
     },
   },
   methods: {
     highlight() {
             // REF: same in commentlistitem.vuej
       this.$nextTick(() => {
-        const node = this.$el.querySelector( ".highlight");
+        const node = this.$el;
+        if( ! node.tagName  ) return;
         let flagged = node.classList.contains( "new");
         if( ! flagged ) {
           let _new = false;
           const userId = this.$store.getters.userId;
             // REF: same in itemlistitem.vuej
           let user = this.item.lastSeen.find( elem => elem.userId == userId );
-          console.log( this.item.lastAction )
-          console.log( user.seen)
           if( ! user ) _new = true;
           else if( this.item.lastAction > user.seen ) _new = true;
           if( _new ) {
@@ -161,7 +158,7 @@ export default {
         if( ! user ) count++;
         else if( cmt.lastAction > user.seen ) count++;
       })
-      this.newComments = count;
+      this.newComments = ( count > 100 ) ? 99 : count;
     },
     menuAction(action) {
       switch (action) {
@@ -188,22 +185,31 @@ export default {
       const route = `/app/comments/${this.listId}/${itemId}`;
       this.nav(route);
     },
-    checkItem() {
-      this.item.done = !this.item.done;
-      this.$store
-        .dispatch("updateItem", {
-          listId: this.listId,
-          itemId: this.item._id,
-          item: this.item,
-        })
-        .catch((err) => {
-          this.showError(err);
-        });
+    checkItem( $event ) {
+      const tickbox = $event.target.closest( "ion-item").querySelector( "ion-avatar");
+      const newState = !this.item.done;
+      if( tickbox ) {
+        const mode = ( newState ) ? "add" : "remove";
+        tickbox.classList[ mode ]( "done");
+      }
+      setTimeout( ()=>{
+        this.item.done = newState;
+        this.$store
+          .dispatch("updateItem", {
+            listId: this.listId,
+            itemId: this.item._id,
+            item: this.item,
+          })
+          .catch((err) => {
+            this.showError(err);
+          });
+      }, 125)
     },
   },
 };
 </script>
 <style>
+
 .comment-mode {
   --background: primary;
   background: #c0c0c0;
@@ -211,38 +217,42 @@ export default {
 .jdicon {
   padding: 4px;
 }
-.title {
-  margin-left: 0px;
-  padding: 0px;
-  font-size: 1.4em !important;
-}
 ion-item.new {
     --ion-item-background:lightyellow !important;
 }
-.undone2 {
-  color: #444;
-  --background: whitesmoke !important;
+#tickbox {
+  width: 35px;
+  height: 35px;
+  background: #efefef;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#tickbox.done {
+  background: #2dd36f;
+}
+#tickbox ion-icon {
+  color:#000;
+  font-size:20px;
+  font-weight:bold;
   --ionicon-stroke-width: 90px;
 }
-.done2 {
-  color: #fff;
-  --background: green !important;
-  --ionicon-stroke-width: 90px;
+#tickbox.done ion-icon {
+  color:#fff;
 }
-.chat-wrapper {
+.notification {
   position:relative;
+  /* space damit badge rechts rausschauen kann */
+  margin-right:2px;
 }
-.chat-wrapper ion-badge {
-  --padding-bottom:3px;
-  --padding-top:3px;
-  --padding-left:1px;
-  --padding-right:1px;
-  font-size:10px;
-  z-index:99;
+.notification ion-badge {
+  font-size:8px;
   position:absolute;
   top:0;
-  right:0;
-  margin-top:-4px;
-  margin-right:-5px;
+  right:-2px;
+  --padding-bottom: 2px;
+  --padding-top: 2px;
+  --padding-right: 0px;
+  --padding-left: 0px;
 }
 </style>

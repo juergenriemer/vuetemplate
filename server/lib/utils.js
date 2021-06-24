@@ -66,9 +66,16 @@ function issueJWT(user) {
   const expiresIn = "1m"; //1d';
   const payload = {
     //sub: _id,
-    sub: { _id, name: user.name, short: user.short, email: user.email },
+    sub: {
+      _id,
+      name: user.name,
+      short: user.short,
+      email: user.email,
+      picture: user.picture,
+    },
     iat: Date.now(),
   };
+  console.log("issue", user.name, user.picture);
   const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {
     expiresIn: expiresIn,
     algorithm: "RS256",
@@ -90,6 +97,7 @@ const clientToken = (user) => {
       name: user.name,
       short: user.short,
       email: user.email,
+      picture: user.picture,
     },
     token: token.token,
     expiresIn: token.expires,
@@ -122,7 +130,6 @@ function broadcast(req, list, data) {
         // don't emit to myself
         if (usr !== data.csrf) {
           io.emit(usr, data);
-          console.log("notify", user.userId, data.type);
         }
       });
     }
@@ -132,7 +139,6 @@ function notifySingleUser(req, userId, data) {
   const io = req.app.get("io");
   if (users[userId]) {
     users[userId].forEach((usr) => {
-      console.log("notifySingle", userId, data.type);
       io.emit(usr, data);
     });
   }

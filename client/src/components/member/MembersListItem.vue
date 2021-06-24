@@ -1,16 +1,12 @@
 <template>
   <ion-item>
-    <avatar size="medium" :role="item.role" :initials="item.short"></avatar>
-    <ion-label class="title">
+    <avatar size="medium" :picture="item.picture" :initials="item.short"></avatar>
+    <ion-label>
       {{ item.name }}
     </ion-label>
-    <ion-buttons v-if="admin && item.role != 'xowner'" slot="end">
-      <ion-button @click="showMenu($event, { item })">
-        <ion-icon
-          slot="icon-only"
-          :icon="ellipsisVertical"
-          size="small"
-        ></ion-icon>
+    <ion-buttons v-if="hasMenu" slot="end">
+      <ion-button @click="showMenu($event, {item})">
+        <ion-icon :icon="ellipsisVertical"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-item>
@@ -26,7 +22,7 @@ import Menu from "@/mixins/Menu";
 
 export default {
   emits: ["unshare", "toggle-admin"],
-  props: ["item", "admin"],
+  props: ["item", "admin", "menu"],
   mixins: [Menu],
   data() {
     return {
@@ -41,6 +37,25 @@ export default {
     IonIcon,
     IonItem,
     IonLabel,
+  },
+  computed: {
+    hasMenu() {
+      if( this.menu == 'false' ) return false;
+      const myId = this.$store.getters.userId;
+      const isMyself = this.item.userId == myId;
+      const isAdmin = this.item.role == "admin" || this.item.role == "owner";
+      const list = this.$store.getters.lists.find( lst => lst._id == this.$route.params.id );
+      const myRole = list.users.find( usr => usr.userId == myId ).role;
+      if( myRole == "user" ) {
+        return false;
+      }
+      if( myRole == "admin" ) {
+        return !isAdmin;
+      }
+      if( myRole == "owner" ){
+        return !isMyself;
+      }
+    },
   },
   methods: {
     menuAction(action) {
@@ -75,3 +90,5 @@ export default {
   },
 };
 </script>
+<style>
+</style>

@@ -1,26 +1,29 @@
 <template>
   <div v-if="items">
-    <ion-list-header>Pending invitations</ion-list-header>
     <ion-list>
+      <ion-item-divider>
+        <ion-label>{{header}}</ion-label>
+      </ion-item-divider>
       <item
         @uninvite="uninvite"
         v-for="item in items"
-        :key="item._id"
         :item="item"
+        :menu="menu"
       ></item>
     </ion-list>
   </div>
 </template>
 
 <script>
-import { IonListHeader, IonList } from "@ionic/vue";
+import { IonItemDivider, IonLabel, IonList } from "@ionic/vue";
 import Item from "./InviteesListItem.vue";
 
 export default {
   emits: ["uninvite"],
-  props: ["items"],
+  props: ["items", "header", "menu"],
   components: {
-    IonListHeader,
+    IonItemDivider,
+    IonLabel,
     IonList,
     Item,
   },

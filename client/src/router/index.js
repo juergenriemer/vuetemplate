@@ -1,3 +1,23 @@
+import mitt from "mitt";
+self.bus = mitt();
+
+self.$$ = {
+  network: "unkown",
+  appMode: localStorage.getItem("appMode") || "online",
+};
+const setView = () => {
+  const width = window.innerWidth;
+  self.$$.isWeb = width > 420;
+};
+setView();
+const updateView = () => {
+  const prev = self.$$.isWeb;
+  setView();
+  if (prev != self.$$.isWeb) self.location.reload();
+};
+window.addEventListener("resize", (evt) => {
+  updateView();
+});
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 //import { RouteRecordRaw } from "vue-router";
 import ListsPage from "@/pages/app/ListsPage.vue";
@@ -6,20 +26,19 @@ import Login from "@/pages/user/Login.vue";
 
 import store from "../store";
 import WebView from "../views/Web.vue";
-//import MobileView from "../views/Mobile.vue";
-const View = self.isWeb ? WebView : WebView;
+import MobileView from "../views/Mobile.vue";
+
+const View = self.$$.isWeb ? WebView : WebView;
 
 const ensureData = (to, next) => {
   const loadInitialData =
     window.$$.appMode == "online" &&
     !window.initialDataLoad &&
     !window.checkNeedForSync();
-  console.warn("init load? " + loadInitialData);
   if (loadInitialData) {
     store
       .dispatch("info")
       .then(() => {
-        console.warn("!!!!!!!!!!!!!!!!!!!!!LOOOOOOOADED");
         return store.dispatch("fetchLists");
       })
       .then((res) => {
@@ -29,7 +48,6 @@ const ensureData = (to, next) => {
       .catch((err) => {
         if (err && err.message) {
           if (err.message == "network-error") {
-            console.log("offline");
             window.$$.network = "offline";
             window.bus.emit("network-status");
           }
@@ -41,7 +59,8 @@ const ensureData = (to, next) => {
     next();
   }
 };
-const routes = self.isWeb
+console.log(">>> router: " + self.$$.isWeb);
+const routes = self.$$.isWeb
   ? [
       {
         path: "/",
@@ -56,11 +75,19 @@ const routes = self.isWeb
         component: View,
       },
       {
+        path: "/user/:page/:id",
+        component: View,
+      },
+      {
         path: "/app/:page",
         component: View,
       },
       {
         path: "/app/:page/:id",
+        component: View,
+      },
+      {
+        path: "/app/:page/:id/:itemId",
         component: View,
       },
     ]
@@ -146,6 +173,10 @@ const routes = self.isWeb
       {
         path: "/user/delete-verify/:id",
         component: () => import("@/pages/user/DeleteVerify.vue"),
+      },
+      {
+        path: "/user/social/:id",
+        component: () => import("@/pages/user/Social.vue"),
       },
     ];
 

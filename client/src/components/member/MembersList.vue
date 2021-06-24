@@ -1,28 +1,39 @@
 <template>
-  <ion-list-header>Current Members</ion-list-header>
   <ion-list>
+    <ion-item-divider>
+      <ion-label>{{header}}</ion-label>
+      <!-- remove star for now, perhaps I also remove from everywhere -->
+      <!--ion-icon slot="start" :icon="star" size="small"></ion-icon-->
+    </ion-item-divider>
     <item
       @toggle-admin="toggleAdmin"
       @unshare="unshare"
       v-for="item in items"
       :key="item._id"
       :item="item"
-      :admin="admin"
+      :menu="menu"
     ></item>
   </ion-list>
 </template>
 
 <script>
-import { IonListHeader, IonList } from "@ionic/vue";
+import { IonList, IonItemDivider, IonLabel, IonIcon } from "@ionic/vue";
 import Item from "./MembersListItem.vue";
+import { star } from "ionicons/icons";
 
 export default {
   emits: ["toggle-admin", "unshare"],
-  props: ["items", "admin"],
+  props: ["items", "header", "menu"],
   components: {
-    IonListHeader,
+    IonItemDivider,
+    IonLabel,
     IonList,
     Item,
+  },
+  data() {
+      return {
+        star,
+      };
   },
   methods: {
     unshare(itemId) {

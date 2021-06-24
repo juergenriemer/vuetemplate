@@ -1,14 +1,8 @@
 <template>
-  <div class="WebPage">
-    <slot />
-  </div>
+  <slot :id="id"/>
 </template>
 <script>
-export default {};
+export default {
+  props: [ "id"]
+};
 </script>
-<style>
-.WebPage {
-  height: calc(100vh - 190px);
-}
-</style>
-

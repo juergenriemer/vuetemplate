@@ -65,6 +65,13 @@ export default {
     invites: [],
     mail,
   }),
+  watch : {
+    '$route': function( to, from ) {
+      if( /^.app.approve-invites/.test( to.path)){
+        this.getListInvites();
+      }
+    }
+  },
   created() {
     this.getListInvites();
   },
@@ -103,7 +110,8 @@ export default {
           lists: this.invites.filter((inv) => this.approves[inv._id]),
         })
         .then((res) => {
-          this.nav(`/app/items${pathAdd}`);
+          if( pathAdd ) this.nav(`/app/items${pathAdd}`);
+          else this.nav( '/app/list')
         })
         .catch((err) => {
           alert(err);

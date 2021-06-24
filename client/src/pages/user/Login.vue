@@ -35,11 +35,16 @@ base-layout(page-title="Login")
           form-error(:error="errors.password")
         ion-button.btn-login(type="submit", expand="block", :disabled="disabled") LOGIN
         button.ion-hide(type="submit", :disabled="disabled")
+        p
+          | --- or login with ---
+          a(href="http://localhost:3003/users/google/auth") Login with Google
+          a(href="http://localhost:3003/users/facebook/auth") Login with Facebook
         ul
           li
             a(href="/user/register") Register with Listle
           li
             a(href="/user/reset-password") Reset my Password
+
       info-sheet(type="error", v-if="status == 'wrong-creds'")
         template(v-slot:content)
           p

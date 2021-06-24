@@ -21,8 +21,7 @@ const actions = {
       return http()
         .post(`${root}`, list)
         .then((res) => {
-          const list = res.data.list;
-          commit("addList", { list });
+          commit("addList", res.data);
           return res;
         });
     if (self.$$.network !== "online") list.offline = true;
@@ -79,6 +78,7 @@ const actions = {
   },
 
   async sawList({ commit }, { listId, userId, seen }) {
+    // called after list was higlighted
     commit("sawList", { listId, userId, seen });
   },
 
@@ -138,9 +138,9 @@ const mutations = {
     const listIx = state.lists.findIndex((lst) => lst._id == listId);
     Object.assign(state.lists[listIx], list);
   },
-  deleteList: (state, { listId }) =>
-    (state.lists = state.lists.filter((lst) => lst._id !== listId)),
-
+  deleteList: (state, { listId }) => {
+    state.lists = state.lists.filter((lst) => lst._id !== listId);
+  },
   sawLists: (state, { userId, seen }) => {
     state.lists.forEach((lst) => {
       lst.lastSeen.find((usr) => usr.userId == userId).seen = seen;
@@ -158,6 +158,7 @@ const mutations = {
       if (item.done !== done) {
         if (!actor) {
           item.lastAction = seen;
+          item.updatedAt = seen;
           list.updatedAt = seen;
         }
         item.done = done;
@@ -176,6 +177,8 @@ const mutations = {
     if (!actor) {
       list.items[from].lastAction = seen;
       list.items[to].lastAction = seen;
+      item.items[from].updatedAt = seen;
+      item.items[to].updatedAt = seen;
       list.updatedAt = seen;
     }
   },

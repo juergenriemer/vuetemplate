@@ -63,19 +63,19 @@ export default {
     };
   },
   mounted() {
-    this.saw();
+        this.saw();
   },
   watch : {
     '$route': function( to, from ) {
       if( /^.app.comments/.test( to.path)){
-        this.saw();
+           this.saw();
       }
     }
   },
   computed: {
     // REF: move to baselayout.. same in ResetPassword.vue
     link() {
-      const lnk = self.isWeb ? "" : `/app/items/${this.currentList._id}`;
+      const lnk = self.$$.isWeb ? "/app/list" : `/app/items/${this.currentList._id}`;
       return lnk;
     },
   },
@@ -91,8 +91,7 @@ export default {
           .dispatch("sawComments", { listId, itemId, userId })
           .catch((err) => this.showError(err));
       }
-      catch( e ) { /* swallow */ }
-
+      catch( e ) { console.log("???") /* swallow */ }
       }, 1000)
     },
     changeMode({ mode, item }) {

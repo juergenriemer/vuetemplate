@@ -85,6 +85,7 @@ const mutations = {
   },
   invite: (state, { listId, invitee }) => {
     const list = state.lists.find((list) => list._id == listId);
+    console.log(invitee);
     list.invitees.push(invitee);
   },
   unshare: (state, { listId, userId }) => {

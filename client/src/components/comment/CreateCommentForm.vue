@@ -164,7 +164,7 @@ export default {
         })
         .then((res) => {
           this.reset();
-          this.scrollToBottom();
+          this.scrollToBottom( "CommentsPage" );
         })
         .catch((err) => {
           this.showError(err);
@@ -203,6 +203,7 @@ ion-toolbar.comment-toolbar {
 }
 
 [contenteditable="true"]:empty:before {
+  white-space: nowrap;
   content: attr(data-placeholder);
   pointer-events: none;
   display: block; /* For Firefox */

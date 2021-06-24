@@ -16,6 +16,22 @@
         <ion-label position="floating">Description</ion-label>
         <ion-textarea name="description" rows="5"></ion-textarea>
       </ion-item>
+      <ion-item>
+        <ion-label>List type</ion-label>
+        <ion-select name="type" value="check">
+          <ion-select-option value="check">Check-Listle</ion-select-option>
+          <ion-select-option value="grab">Grab-Listle</ion-select-option>
+          <ion-select-option value="vote">Vote-Listle</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Prevent duplicate items</ion-label>
+        <ion-checkbox checked slot="start" name="uniqueItems"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Hide done items</ion-label>
+        <ion-checkbox checked slot="start" name="hideDoneItems"></ion-checkbox>
+      </ion-item>
     </ion-list>
     <ion-button class="btn-app-add" :disabled="disabled" type="submit" expand="block"
       >Save</ion-button
@@ -35,11 +51,13 @@ import {
   IonTextarea,
   IonButton,
   IonIcon,
+  IonSelect,
+  IonSelectOption,
+  IonCheckbox
 } from "@ionic/vue";
 
 export default {
   mixins: [Form, Data],
-  emits: ["save-list"],
   components: {
     FormError,
     IonList,
@@ -49,6 +67,9 @@ export default {
     IonTextarea,
     IonButton,
     IonIcon,
+    IonSelect, 
+    IonSelectOption, 
+    IonCheckbox
   },
   methods: {
     async submit() {

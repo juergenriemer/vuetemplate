@@ -20,6 +20,23 @@
           v-model="list.description"
         ></ion-textarea>
       </ion-item>
+      <ion-item>
+        <ion-label>List type</ion-label>
+        <ion-select name="type" v-model="list.type">
+          <ion-select-option value="check">Check-Listle</ion-select-option>
+          <ion-select-option value="grab">Grab-Listle</ion-select-option>
+          <ion-select-option value="vote">Vote-Listle</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Prevent duplicate items</ion-label>
+        <ion-checkbox v-model="list.uniqueItems" slot="start" name="uniqueItems"></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Hide done items</ion-label>
+        <ion-checkbox v-model="list.hideDoneItems" slot="start" name="hideDoneItems"></ion-checkbox>
+      </ion-item>
+
     </ion-list>
     <ion-button class="btn-app-edit" :disabled="disabled" type="submit" expand="block"
       >Save</ion-button
@@ -38,6 +55,9 @@ import {
   IonTextarea,
   IonButton,
   IonIcon,
+    IonSelect, 
+    IonSelectOption, 
+    IonCheckbox
 } from "@ionic/vue";
 
 export default {
@@ -52,6 +72,9 @@ export default {
     IonTextarea,
     IonButton,
     IonIcon,
+    IonSelect, 
+    IonSelectOption, 
+    IonCheckbox
   },
   methods: {
     submit() {
@@ -60,6 +83,10 @@ export default {
         .dispatch("updateList", { listId: list._id, list })
         .then(() => {
           this.nav(`/app/items/${this.list._id}`);
+        })
+        .then(()=>{
+          // used to retoggle showitemmode in ItemsPage
+          window.bus.emit("list-settings-change");
         })
         .catch((err) => this.showError(err));
     },

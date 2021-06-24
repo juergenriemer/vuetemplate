@@ -4,34 +4,43 @@
       <avatar size="large" :list-title="list2.title"></avatar>
     </template>
     <template v-slot:actions-end>
-      <ion-button @click="showMenu($event, menuData)">
+      <ion-button color="dark" @click="showMenu($event, menuData)">
         <ion-icon
           slot="icon-only"
           :icon="ellipsisVertical"
-          size="medium"
         ></ion-icon>
       </ion-button>
     </template>
     <template v-slot:content>
       <items-list
+        class="grid"
         v-if="list2"
         :listId="list2._id"
         :items="list2.items"
         :lastSeen="lastSeen"
         :reorderMode="reorderMode"
         :itemInEditMode="itemInEditMode"
+        :itemShowMode="itemShowMode"
         @change-mode="changeMode"
       ></items-list>
       <div v-if="!list2">loading</div>
     </template>
     <template v-slot:footer>
-      <create-item-form
-        :listId="list2._id"
+        <create-item-form
+          @duplicate="showDuplicateInfo"
+          @toggleItemShowMode="itemShowMode = !itemShowMode"
+          :hiddenItems="hiddenItems"
+        :itemShowMode="itemShowMode"
+        :list="list2"
         v-if="!itemInEditMode"
       ></create-item-form>
       <edit-item-form
         v-if="itemInEditMode"
-        :listId="list2._id"
+          @duplicate="showDuplicateInfo"
+          @toggleItemShowMode="itemShowMode = !itemShowMode"
+          :hiddenItems="hiddenItems"
+        :itemShowMode="itemShowMode"
+        :list="list2"
         :itemInEditMode="itemInEditMode"
         @change-mode="changeMode"
       ></edit-item-form>
@@ -49,7 +58,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ellipsisVertical } from "ionicons/icons";
-
+import { alertController } from "@ionic/core";
 import ItemsList from "@/components/item/ItemsList.vue";
 import CreateItemForm from "@/components/item/CreateItemForm.vue";
 import EditItemForm from "@/components/item/EditItemForm.vue";
@@ -75,6 +84,7 @@ export default {
   },
   data() {
     return {
+      duplicateInfo : false,
       edit: {},
       actionItem: {},
       lastSeen:null,
@@ -82,10 +92,15 @@ export default {
       ellipsisVertical,
       itemInEditMode: null,
       itemInCommentMode: null,
+      itemShowMode: null,
     };
   },
   mounted() {
     this.saw();
+    this.setShowItemMode();
+    window.bus.on("list-settings-change", () => {
+      this.setShowItemMode();
+    });
   },
   watch : {
     '$route': function( to, from ) {
@@ -95,11 +110,17 @@ export default {
     }
   },
   computed: {
+    hiddenItems(){
+      if( this.list2.hideDoneItems ) {
+        return this.list2.items.filter( itm => itm.done ).length;
+      }
+      return false;
+    },
     toggleMode() {
       return this.list2.items.filter( itm => itm.done ).length !== this.list2.items.length;
     },
     link() {
-      return self.isWeb ? "" : "/app/list";
+      return self.$$.isWeb ? "" : "/app/list";
     },
     // REF: move to baselayout.. same in ResetPassword.vue
     list2() {
@@ -113,18 +134,19 @@ export default {
       const listId = this.$route.params.id;
       const itemId = this.$route.params.itemId;
       if (listId && itemId) {
-        console.log(this.$store.getters.item(listId, itemId));
         return this.$store.getters.item(listId, itemId);
       }
       return {};
     },
     menuData() {
-      return { reorderMode: this.reorderMode, toggleMode: this.toggleMode };
+      return { reorderMode: this.reorderMode, toggleMode: this.toggleMode, itemShowMode : this.itemShowMode };
     },
   },
   methods: {
+    setShowItemMode() {
+      this.itemShowMode = ! this.list2.hideDoneItems;
+    },
     saw() {
-      console.log( ">> saw items")
       try {
         const listId = this.$route.params.id;
         const userId = this.$store.getters.userId;
@@ -134,23 +156,13 @@ export default {
       }
       catch( e ) { /* swallow */ }
     },
-    seeList() {
-      const params= this.$route.params;
-      if( params && params.id ){
-        const userId = this.$store.getters.userId;
-        this.lastSeen = this.list2.users.find( usr => usr.userId == userId ).lastSeen;
-        return this.$store
-          .dispatch("sawList", { listId: params.id, userId })
-          .then(() => {
-            //this.nav(`/app/items/${this.list._id}`);
-          })
-          .catch((err) => this.showError(err));
-      }
-    },
     menuAction(action) {
       switch (action) {
         case "reorderMode":
           this.reorderMode = !this.reorderMode;
+          break;
+        case "itemShowMode":
+          this.itemShowMode = !this.itemShowMode;
           break;
         case "toggleMode":
           //this.toggleMode = !this.toggleMode;
@@ -175,6 +187,31 @@ export default {
           this.itemInCommentMode = item;
           break;
       }
+    },
+    async showDuplicateInfo() {
+      alertController
+        .create({
+          header: "Item alreay exists",
+          message: `<p>Your list is set to prevent duplicates.</p>
+          <p>If you want to allow duplicates please edit this list.</p>
+          `,
+          buttons: [
+            {
+              text: "EDIT LIST",
+              handler: () => {
+                this.nav( `/app/edit/${this.list2._id}`)
+              },
+            },
+            {
+              text: "CANCEL",
+              handler: () => {},
+            },
+          ],
+        })
+        .then((res) => {
+          this.duplicateInfo = res;
+          this.duplicateInfo.present();
+        });
     },
   },
 };

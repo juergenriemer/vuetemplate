@@ -13,6 +13,7 @@ module.exports = function (req, res, next) {
         req.name = info.name;
         req.short = info.short;
         req.email = info.email;
+        req.picture = info.picture;
         next();
       } else {
         res.send(401, "not-authorized"); // user not found

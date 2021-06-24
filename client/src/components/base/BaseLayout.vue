@@ -1,11 +1,9 @@
 <template>
-  <page
-      :id="pageId"
-    >
+  <page :id="pageId">
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button class="btn-base-back" @click="back(link)" v-if="link">
+          <ion-button color="dark" class="btn-base-back" @click="back(link)" v-if="link">
             <ion-icon slot="icon-only" :icon="icon" size="large"></ion-icon>
           </ion-button>
           <slot name="title"></slot>
@@ -18,11 +16,8 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content
-      class="content-area"
-      style="--offset-bottom: 58px"
-    >
-      <slot class="scroller" name="content" />
+    <ion-content class="content-area">
+      <slot name="content" />
     </ion-content>
     <IonFooter v-if="$slots.footer">
       <slot name="footer" />
@@ -44,7 +39,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import WebPage from "./MyPage.vue";
-const Page = window.isWeb ? WebPage : IonPage;
+const Page = self.$$.isWeb ? WebPage : IonPage;
 
 export default {
   props: ["pageTitle", "pageId", "link", "pageDefaultBackLink"],
@@ -65,13 +60,13 @@ export default {
   },
   computed: {
     icon() {
-      return self.isWeb ? this.close : this.arrowBack;
+      return self.$$.isWeb ? this.close : this.arrowBack;
     },
   },
   methods: {
     back(path) {
       let link = path || `/app/list`;
-      if (self.isWeb) {
+      if (self.$$.isWeb) {
         const listId = this.$route.params.id;
         if (listId) link = `/app/items/${listId}`;
       }

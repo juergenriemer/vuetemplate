@@ -57,7 +57,6 @@ router.put(
   validateIds,
   userInfo,
   role("user"),
-  //updateLastSeen,
   (req, res, next) => {
     const seen = new Date();
     const { listId, itemId } = req.params;
@@ -71,8 +70,6 @@ router.put(
     if (userIx == -1) item.lastSeen.push({ userId, seen });
     else item.lastSeen[userIx].seen = seen;
     req.list.items[itemIx] = item;
-    console.log(item.lastSeen);
-    console.log(item.lastAction);
     let log = `ITEM_UPDATE(${JSON.stringify(req.params)})::`;
     Promise.resolve()
       .then(() => {

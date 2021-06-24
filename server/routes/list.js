@@ -90,17 +90,26 @@ router.put(
 // get all lists a user can see
 router.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(["jwt", "google"], { session: false }),
   userInfo,
   (req, res, next) => {
-    List.find({ "users.userId": req.userId })
-      .exec()
+    let log = `GET_LISTS(${JSON.stringify(req.params)})::`;
+    Promise.resolve()
+      .then(() => {
+        log += " > find lists";
+        return List.find({ "users.userId": req.userId });
+      })
       .then((lists) => {
-        res.status(200).json({ lists });
+        log += " > respond";
+        const data = {
+          lists,
+        };
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 
@@ -110,37 +119,63 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   userInfo,
   (req, res, next) => {
+    let log = `LIST_CREATE(${JSON.stringify(req.params)})::`;
     const seen = new Date();
-    const data = (({ title }) => ({ title }))(req.body);
     const userId = req.userId;
-    let list = new List(data);
-    list._id = new mongoose.mongo.ObjectId();
-    list.creatorId = req.userId;
-    list.users = [
-      {
-        userId,
-        email: req.email,
-        name: req.name,
-        short: req.short,
-        role: "owner",
-      },
-    ];
-    list.lastAction = seen;
-    list.lastSeen = [{ userId, seen }];
-    list
-      .save()
+    let list;
+    Promise.resolve()
+      .then(() => {
+        log += " > prepare data";
+        try {
+          const data = (({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }) => ({ title, description, type, uniqueItems, hideDoneItems }))(
+            req.body
+          );
+          data.uniqueItems = data.uniqueItems == "on";
+          data.hideDoneItems = data.hideDoneItems == "on";
+          list = new List(data);
+          list._id = new mongoose.mongo.ObjectId();
+          list.creatorId = userId;
+          list.users = [
+            {
+              userId,
+              email: req.email,
+              name: req.name,
+              short: req.short,
+              picture: req.picture,
+              role: "owner",
+            },
+          ];
+          list.lastAction = seen;
+          list.lastSeen = [{ userId, seen }];
+          return true;
+        } catch (err) {
+          throw new Error(err);
+        }
+      })
+      .then(() => {
+        log += " > save list";
+        return list.save();
+      })
       .then((list) => {
+        log += " > broadcast";
+        const data = {
+          list,
+        };
         utils.broadcast(req, list, {
           type: "addList",
-          data: {
-            list,
-          },
         });
-        res.status(200).json({ list });
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 
@@ -191,27 +226,62 @@ router.put(
   validateIds,
   role("owner"),
   (req, res, next) => {
+    let log = `LIST_UPDATE(${JSON.stringify(req.params)})::`;
+    const seen = new Date();
+    const userId = req.userId;
     const { listId } = req.params;
-    const update = (({ title, description }) => ({ title, description }))(
-      req.body
-    );
-    Object.assign(req.list, update);
-    req.list
-      .save()
+    let update;
+    Promise.resolve()
+      .then(() => {
+        log += " > prepare data";
+        try {
+          update = (({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }) => ({
+            title,
+            description,
+            type,
+            uniqueItems,
+            hideDoneItems,
+          }))(req.body);
+          update.uniqueItems =
+            update.uniqueItems === true || update.uniqueItems == "on";
+          update.hideDoneItems =
+            update.hideDoneItems === true || update.hideDoneItems == "on";
+          update.lastAction = seen;
+          update.updatedAt = seen;
+          Object.assign(req.list, update);
+          req.list.lastSeen.find((usr) => usr.userId == userId).seen = seen;
+          return true;
+        } catch (err) {
+          throw new Error(err);
+        }
+      })
+      .then(() => {
+        log += " > save list";
+        return req.list.save();
+      })
       .then((list) => {
-        Object.assign(update, { updatedAt: list.updatedAt });
+        log += " > broadcast";
+        data = {
+          listId,
+          list: update,
+          seen,
+        };
         utils.broadcast(req, list, {
           type: "updateList",
-          data: {
-            listId,
-            list: update,
-          },
+          data,
         });
-        res.status(200).json();
+        res.status(200).json(data);
       })
       .catch((err) => {
         next(err);
-      });
+      })
+      .finally((_) => console.log(log));
   }
 );
 
@@ -233,7 +303,6 @@ router.put(
         try {
           const draggedItem = req.list.items.splice(from, 1)[0];
           req.list.items.splice(to, 0, draggedItem);
-          console.log(from, to);
           req.list.items[from].lastAction = seen;
           req.list.items[from].lastSeen.find(
             (usr) => usr.userId == userId

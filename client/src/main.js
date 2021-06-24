@@ -25,7 +25,8 @@ import "@ionic/vue/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-//Vue.prototype.$dmiep = "ASDF";
+import "./theme/layout.css";
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
@@ -52,7 +53,6 @@ app.mixin({
       const listId = this.$route.params.id;
       const itemId = this.$route.params.itemId;
       if (listId && itemId) {
-        console.log(this.$store.getters.item(listId, itemId));
         return this.$store.getters.item(listId, itemId);
       }
       return {};
@@ -70,14 +70,14 @@ app.mixin({
       return list.title;
     },
     nav(path) {
-      const x = `/${this.viewMode}${path}`;
-      //router.push({ path: x });
       router.push(path);
-      //window.bus.emit("navigate", data);
     },
-    scrollToBottom() {
+    scrollToBottom(pageId) {
       this.$nextTick(() => {
-        document.querySelector(".content-area").scrollToBottom();
+        const page = document.querySelector(`#${pageId} ion-content`);
+        console.log(pageId);
+        console.log(">>", page);
+        page && page.scrollToBottom();
       });
     },
     showError(err) {
