@@ -36,7 +36,7 @@ import RegisterVerify from "../pages/user/RegisterVerify.vue";
 import ResetPassword from "../pages/user/ResetPassword.vue";
 import ResetPasswordVerify from "../pages/user/ResetPasswordVerify.vue";
 import ApproveInvites from "../pages/user/ApproveInvites.vue";
-import Social from "../pages/user/Social.vue";
+import SocialSignIn from "../pages/user/SocialSignIn.vue";
 
 //() => import("@/pages/ListInfoPage.vue"),
 
@@ -52,7 +52,7 @@ const pages = {
   "reset-password": ResetPassword,
   "reset-password-verify": ResetPasswordVerify,
   "approve-invites": ApproveInvites,
-  "social": Social,
+  "social-signin": SocialSignIn,
 };
 import {
   IonPage,

@@ -30,18 +30,18 @@ const registerSocial = (socialUser, cb) => {
       return cb(null, user);
     });
 };
-
+const callbackURL = (provider) => {
+  return `http://localhost:3003/users/social/${provider}/request`;
+};
 const keys = {
   GOOGLE: {
     clientID:
       "701401166500-dqgpnoli336lnu5u5jv4vqvs9hiav1pk.apps.googleusercontent.com",
     clientSecret: "ax5InQH4VdCqUr4A5xrw3x2d",
-    callbackURL: "http://localhost:3003/users/google/signin",
   },
   FACEBOOK: {
     clientID: "659724655424382",
     clientSecret: "3a5ba858f94108aac38ab7a516d71727",
-    callbackURL: "http://localhost:3003/users/facebook/signin",
   },
 };
 const options = {
@@ -54,7 +54,7 @@ const facebook = new FacebookStrategy(
   {
     clientID: keys.FACEBOOK.clientID,
     clientSecret: keys.FACEBOOK.clientSecret,
-    callbackURL: keys.FACEBOOK.callbackURL,
+    callbackURL: callbackURL("facebook"),
     profileFields: [
       "id",
       "displayName",
@@ -88,7 +88,7 @@ const google = new GoogleStrategy(
   {
     clientID: keys.GOOGLE.clientID,
     clientSecret: keys.GOOGLE.clientSecret,
-    callbackURL: keys.GOOGLE.callbackURL,
+    callbackURL: callbackURL("google"),
   },
   (accessToken, refreshToken, profile, cb) => {
     const p = profile._json;

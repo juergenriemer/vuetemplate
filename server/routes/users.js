@@ -170,64 +170,6 @@ router.get("/registerVerify/:token", (req, res, next) => {
       next(error);
     });
 });
-passport.serializeUser((user, cb) => {
-  cb(null, user);
-});
-
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
-});
-
-router.get(
-  "/facebook/auth",
-  passport.authenticate("facebook", { scope: "email" })
-);
-
-router.get(
-  "/facebook/signin",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
-  (req, res) => {
-    const token = utils.createToken({ _id: req.user._id }, 1);
-    res.redirect(`http://localhost:8100/user/social/${token}`);
-  }
-);
-
-router.get(
-  "/google/auth",
-  passport.authenticate("google", {
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.profile",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ],
-  })
-);
-
-router.get(
-  "/google/signin",
-  passport.authenticate("google", { failureRedirect: "/login" }),
-  (req, res) => {
-    const token = utils.createToken({ _id: req.user._id }, 1);
-    res.redirect(`http://localhost:8100/user/social/${token}`);
-  }
-);
-
-router.get("/social/:token", (req, res, next) => {
-  const data = utils.validateToken(req.params.token);
-  if (!data) next(new ApiError(422, "token-invalid"));
-  if (new Date(data.expiry) < new Date())
-    next(new ApiError(422, "token-expired"));
-  let userdata = null;
-  User.findOne({ _id: data._id })
-    .exec()
-    .then((user) => {
-      if (!user) throw new ApiError(422, "unkown-user");
-      const token = utils.clientToken(user);
-      res.status(200).json(token);
-    })
-    .catch((error) => {
-      next(error);
-    });
-});
 
 router.get(
   "/info",

@@ -169,6 +169,7 @@ router.post(
         };
         utils.broadcast(req, list, {
           type: "addList",
+          data,
         });
         res.status(200).json(data);
       })
@@ -339,5 +340,5 @@ router.put(
       .finally((_) => console.log(log));
   }
 );
-
+// test
 module.exports = router;

@@ -68,7 +68,7 @@ const actions = {
 
   async social({ commit }, token) {
     return http()
-      .get(`${root}/social/${token}`)
+      .get(`${root}/socialSignIn/${token}`)
       .then((res) => {
         if (res && res.data) {
           commit("fetchUser", res.data.user);

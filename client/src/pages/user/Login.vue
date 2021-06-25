@@ -35,16 +35,8 @@ base-layout(page-title="Login")
           form-error(:error="errors.password")
         ion-button.btn-login(type="submit", expand="block", :disabled="disabled") LOGIN
         button.ion-hide(type="submit", :disabled="disabled")
-        p
-          | --- or login with ---
-          a(href="http://localhost:3003/users/google/auth") Login with Google
-          a(href="http://localhost:3003/users/facebook/auth") Login with Facebook
-        ul
-          li
-            a(href="/user/register") Register with Listle
-          li
-            a(href="/user/reset-password") Reset my Password
-
+        social-menu
+        user-links(page='login')
       info-sheet(type="error", v-if="status == 'wrong-creds'")
         template(v-slot:content)
           p
@@ -100,6 +92,8 @@ import {
 import Avatar from "@/components/base/Avatar.vue";
 import FormError from "@/components/base/FormError.vue";
 import InfoSheet from "@/components/base/InfoSheet.vue";
+import SocialMenu from "@/components/user/SocialMenu.vue";
+import UserLinks from "@/components/user/UserLinks.vue";
 import Form from "@/mixins/Form";
 import { key } from "ionicons/icons";
 
@@ -109,6 +103,8 @@ export default {
     InfoSheet,
     FormError,
     Avatar,
+    SocialMenu,
+    UserLinks,
     IonList,
     IonItem,
     IonLabel,

@@ -53,10 +53,12 @@ http.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (/Network Error/.test(err)) {
+    console.log(err);
+    const status = err && err.response && err.response.status;
+    //if (/Network Error/.test(err)) {
+    if (!status) {
       return Promise.reject({ status: 0, message: "network-error" });
     }
-    const status = err && err.response && err.response.status;
     if (status == 401) {
       self.location.href = "/user/login";
     }
@@ -64,7 +66,6 @@ http.interceptors.response.use(
       err && err.response && err.response.data && err.response.data.uid;
     const message =
       err && err.response && err.response.data && err.response.data.message;
-    //      return Promise.reject(err);
     return Promise.reject({ status, message, uid });
   }
 );

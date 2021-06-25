@@ -2,9 +2,11 @@ import mitt from "mitt";
 self.bus = mitt();
 
 self.$$ = {
+  isWeb: false,
   network: "unkown",
   appMode: localStorage.getItem("appMode") || "online",
 };
+/*
 const setView = () => {
   const width = window.innerWidth;
   self.$$.isWeb = width > 420;
@@ -18,6 +20,7 @@ const updateView = () => {
 window.addEventListener("resize", (evt) => {
   updateView();
 });
+*/
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 //import { RouteRecordRaw } from "vue-router";
 import ListsPage from "@/pages/app/ListsPage.vue";
@@ -175,8 +178,8 @@ const routes = self.$$.isWeb
         component: () => import("@/pages/user/DeleteVerify.vue"),
       },
       {
-        path: "/user/social/:id",
-        component: () => import("@/pages/user/Social.vue"),
+        path: "/socialSignin/:id",
+        component: () => import("@/pages/user/SocialSignIn.vue"),
       },
     ];
 
