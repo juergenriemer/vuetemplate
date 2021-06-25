@@ -52,12 +52,15 @@ base-layout(page-title="Register", page-id="Register")
               :disabled="disabled"
             )
           form-error(:error="errors.retypedPassword",for="retypedPassword")
-        ion-button(type="submit", expand="block", :disabled="disabled") LOGIN
+        .disclaimer
+          | By registering, you confirm that you have read and accepted our Terms of Service and Privacy Policy.
+
+        ion-button(type="submit", expand="block", :disabled="disabled") REGISTER 
         button.ion-hide(type="submit", :disabled="disabled")
 
-        div
-          | --- or ---
-          a(href="http://localhost:3003/users/auth/google") Google
+        social-menu
+        user-links(page='register')
+
       info-sheet(type="error", v-if="status == 'is-registered'")
         template(v-slot:content)
           p
@@ -93,6 +96,8 @@ import {
 import Avatar from "@/components/base/Avatar.vue";
 import FormError from "@/components/base/FormError.vue";
 import InfoSheet from "@/components/base/InfoSheet.vue";
+import SocialMenu from "@/components/user/SocialMenu.vue";
+import UserLinks from "@/components/user/UserLinks.vue";
 import Form from "@/mixins/Form";
 
 export default {
@@ -100,6 +105,8 @@ export default {
   components: {
     InfoSheet,
     FormError,
+    SocialMenu,
+    UserLinks,
     Avatar,
     IonList,
     IonItem,
@@ -141,3 +148,10 @@ export default {
   },
 };
 </script>
+<style>
+.disclaimer {
+  font-size:0.8em;
+  padding:7px;
+  color: #444;
+}
+</style>

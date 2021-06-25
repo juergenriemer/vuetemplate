@@ -43,20 +43,19 @@ window.checkNeedForSync = () => {
   }
   else return false;
 }
-/*
 window.onerror = (a, b, c) => {
-  console.warn( "********************")
-  console.warn( a,b,c)
-  console.warn( "********************")
+  alert("err: " + JSON.stringify(a) );
+  //console.warn( "********************")
+  //console.warn( a,b,c)
+  //console.warn( "********************")
   return true;
 };
- */
 /*
 window.console.warn = (a) => {
-  //alert(a);
+  alert("warn: " + JSON.stringify(a) );
 };
 window.console.log = (a) => {
-  //alert(a);
+  alert("log: " + JSON.stringify(a) );
 };
  */
 import { IonApp, IonRouterOutlet } from "@ionic/vue";

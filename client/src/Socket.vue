@@ -61,9 +61,12 @@ export default {
     setOfflineMode() {
       this.offline = true;
       this.hideAlerts();
-      const offlineSince = localStorage.getItem( "offline-since");
+      const offlineSince = sessionStorage.getItem( "offline-since");
+      alert( offlineSince )
       if( !offlineSince ) {
-        localStorage.setItem("offline-since", this.now());
+        // REF: on login page we need another  essage or at least redirect to 
+        // lists... for registration we need sg completely different
+        sessionStorage.setItem("offline-since", this.now());
       // only show offline info if we first enter offline mode
         this.showOfflineInfo();
       }

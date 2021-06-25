@@ -3,6 +3,7 @@ node_modules
 uploads
 client/ios
 client/android
+client/.gradle
 build
 npm-debug.log
 .env

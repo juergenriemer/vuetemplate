@@ -87,6 +87,8 @@ app.mixin({
           window.bus.emit("network-status");
         }
       }
+      const errorMessage = "Error: " + JSON.stringify(err);
+      alert(errorMessage);
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");
       console.warn(err);
       console.warn("@@@@@@@@@@@@@@@@@@@@@@@");

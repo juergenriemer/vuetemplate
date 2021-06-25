@@ -169,6 +169,7 @@ router.post(
         };
         utils.broadcast(req, list, {
           type: "addList",
+          data,
         });
         res.status(200).json(data);
       })
