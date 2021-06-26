@@ -1,0 +1,226 @@
+<template lang="pug">
+base-layout(page-title="Login")
+  template(v-slot:title)
+    avatar(size="large", logo="Listle")
+  template(v-slot:actions-end)
+    .header-icon
+      ion-icon(:icon="key", size="large")
+  template(v-slot:content)
+    .ion-padding
+      ion-button(expand="block", @click="google") GOOGLE{{test}}
+      form(
+        ref="form",
+        v-if="!showInfoSheet",
+        @submit.prevent="validate",
+        novalidate
+      )
+        ion-list
+          ion-item
+            ion-label(position="floating") E-Mail
+            ion-input(
+              hasFocus
+              name="email",
+              type="email",
+              rules="required,email",
+              :disabled="disabled"
+            )
+          form-error(:error="errors.email")
+          ion-item
+            ion-label(position="floating") Password
+            ion-input(
+              name="password",
+              type="text",
+              rules="password",
+              :disabled="disabled"
+            )
+          form-error(:error="errors.password")
+        ion-button.btn-login(type="submit", expand="block", :disabled="disabled") LOGIN
+        button.ion-hide(type="submit", :disabled="disabled")
+        social-menu
+        user-links(page='login')
+      info-sheet(type="error", v-if="status == 'wrong-creds'")
+        template(v-slot:content)
+          p
+            | Wrong e-mail or password.
+          p
+            | Please try again or if you are having troubles logging consider to reset your password.
+          a(href="/user/login", @click="status = 'idle'")
+            | Try again
+          p
+            a(href="/user/reset-password")
+            | Reset your password
+          p
+            a(href="/user/register")
+            | Register a new account
+
+      info-sheet(type="error", v-if="status == 'in-registration'")
+        template(v-slot:content)
+          p
+            | The account exists already but was not yet verified.
+          p
+            | In case you did not receive an e-mail we can send it again.
+            a(href="/user/resend-verification")
+            | Resend registration verification
+
+      info-sheet(type="error", v-if="status == 'login-locked'")
+        template(v-slot:content)
+          p
+            | You exeeded the maximum amount of tries.
+          p
+            | Please wait a minute and try again or request a new password.
+            a(href="/user/login", @click="status = 'idle'")
+            | Try again
+          p
+            a(href="/user/reset-password")
+            | Request a new password
+
+      info-sheet(type="success", v-if="status == 'OK'")
+        template(v-slot:content)
+          p
+            | Login successful
+          p
+            | Redirecting...
+</template>
+<script>
+import {
+  IonList,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonIcon,
+} from "@ionic/vue";
+import Avatar from "@/components/base/Avatar.vue";
+import FormError from "@/components/base/FormError.vue";
+import InfoSheet from "@/components/base/InfoSheet.vue";
+import SocialMenu from "@/components/user/SocialMenu.vue";
+import UserLinks from "@/components/user/UserLinks.vue";
+import Form from "@/mixins/Form";
+import { key } from "ionicons/icons";
+import { GooglePlus } from '@ionic-native/google-plus';
+
+export default {
+  mixins: [Form],
+  components: {
+    InfoSheet,
+    FormError,
+    Avatar,
+    SocialMenu,
+    UserLinks,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonButton,
+    IonIcon,
+  },
+  data: () => ({
+    key,
+    showInfoSheet: false,
+    showIntro: true,
+    test:"4"
+  }),
+  methods: {
+    async google() {
+          var params = {
+
+      'webClientId': '701401166500-dqgpnoli336lnu5u5jv4vqvs9hiav1pk.apps.googleusercontent.com',
+            //'webClientId':"701401166500-jrn1kj6unct4o5210jm0o55fecniaij8.apps.googleusercontent.com",
+          'offline': true
+      }
+      GooglePlus.login(params)
+      .then(res => {
+        let s = "X";
+        for( var name in res ) {
+          s += name + "\r\n";
+        }
+        alert( s );
+      this.$store
+        .dispatch("mobileSocial", res)
+        .then(() => {
+          this.status = "OK";
+          this.showInfoSheet = true;
+          setTimeout(() => {
+            this.$root.$router.push({
+              path: `/app/list`,
+            });
+            this.status = "idle";
+            this.showInfoSheet = false;
+          }, 500);
+        })
+        .catch((err) => {
+          this.showInfoSheet = true;
+          switch (err.status) {
+            case 422:
+              this.status = err.message;
+              break;
+            default:
+              this.status = "idle";
+              this.showError(err);
+              break;
+          }
+        });
+
+      })
+      .catch(err => {
+        alert('error')
+        alert(err)
+      });
+    },
+    toLogin() {
+      this.showIntro = false;
+    },
+    toRegister() {
+      self.location.href = "/register";
+    },
+    toOffline() {
+      this.offlineUser();
+      setTimeout(() => {
+        this.$root.$router.push({
+          path: `/app/list`,
+        });
+      }, 1500);
+    },
+    async submit() {
+      this.$store
+        .dispatch("login", this.form)
+        .then(() => {
+          this.status = "OK";
+          this.showInfoSheet = true;
+          setTimeout(() => {
+            this.$root.$router.push({
+              path: `/app/list`,
+            });
+            this.status = "idle";
+            this.showInfoSheet = false;
+          }, 500);
+        })
+        .catch((err) => {
+          this.showInfoSheet = true;
+          switch (err.status) {
+            case 422:
+              this.status = err.message;
+              break;
+            default:
+              this.status = "idle";
+              this.showError(err);
+              break;
+          }
+        });
+    },
+  },
+};
+</script>
+<style scoped>
+#first-time li {
+  font-size: 0.8em;
+}
+ul {
+  text-align:center;
+  padding:0;
+}
+li {
+  list-style-type : none;
+  padding-bottom:10px;
+}
+</style>

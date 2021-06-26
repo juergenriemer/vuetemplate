@@ -26,6 +26,7 @@ import { createRouter, createWebHistory } from "@ionic/vue-router";
 import ListsPage from "@/pages/app/ListsPage.vue";
 import ItemsPage from "@/pages/app/ItemsPage.vue";
 import Login from "@/pages/user/Login.vue";
+import Login2 from "@/pages/user/LoginMobile.vue";
 
 import store from "../store";
 import WebView from "../views/Web.vue";
@@ -145,7 +146,7 @@ const routes = self.$$.isWeb
       },
       {
         path: "/user/login",
-        component: Login,
+        component: Login2,
       },
       {
         path: "/user/register",
