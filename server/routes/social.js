@@ -58,6 +58,70 @@ router.get(
   }
 );
 
+router.post("/social/google/mobile", (req, res) => {
+  const social = (({
+    XaccessToken,
+    idToken,
+    email,
+    displayName,
+    familyName,
+    givenName,
+    imageUrl,
+  }) => ({
+    XaccessToken,
+    idToken,
+    email,
+    displayName,
+    familyName,
+    givenName,
+    imageUrl,
+  }))(req.body);
+  console.log(123, social);
+  return Promise.resolve()
+    .then(() => {
+      // add accessToken and check agiainst it? yes!
+      // but this changes from time to time so we cannot
+      // we can for the first time when registering!
+      //
+      return User.findOne({ email: social.email });
+    })
+    .then((user) => {
+      if (!user) {
+        const newUser = new User(socialUser);
+        return newUser.save();
+      } else {
+        return user;
+      }
+    })
+    .then((user) => {
+      const token = utils.clientToken(user);
+      res.status(200).json(token);
+    });
+});
+
+/*
+const registerSocial = (socialUser, cb) => {
+  return Promise.resolve()
+    .then(() => {
+      // add accessToken and check agiainst it? yes!
+      // but this changes from time to time so we cannot
+      //
+      return User.findOne({ email: socialUser.email });
+    })
+    .then((user) => {
+      if (!user) {
+        const newUser = new User(socialUser);
+        return newUser.save();
+      } else {
+        return user;
+      }
+    })
+    .then((user) => {
+      const token = utils.clientToken(user);
+      res.status(200).json(token);
+    });
+};
+*/
 router.get("/socialSignIn/:token", (req, res, next) => {
   const data = utils.validateToken(req.params.token);
   if (!data) next(new ApiError(422, "token-invalid"));

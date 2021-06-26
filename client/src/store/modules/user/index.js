@@ -78,6 +78,18 @@ const actions = {
       });
   },
 
+  async mobileSocial({ commit }, data) {
+    return http()
+      .post(`${root}/social/google/mobile`, data)
+      .then((res) => {
+        if (res && res.data) {
+          commit("fetchUser", res.data.user);
+          commit("setToken", res.data.token);
+        }
+        return res;
+      });
+  },
+
   async info({ commit, getters }) {
     if (wire(arguments)) {
       return http()
