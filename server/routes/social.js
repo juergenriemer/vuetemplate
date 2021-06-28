@@ -77,6 +77,19 @@ router.post("/social/google/mobile", (req, res) => {
     imageUrl,
   }))(req.body);
   console.log(123, social);
+
+    const socialUser = {
+      provider: "google",
+      providerId: social.idToken,
+      picture: social.imageUrl,
+      firstName: social.givenName,
+      lastName: social.familyName,
+      name: social.displayName,
+      email: social.email,
+      short: social.givenName.charAt(0) + social.familyName.charAt(0),
+      locale: 'en',
+    };
+	console.log( 321, socialUser );
   return Promise.resolve()
     .then(() => {
       // add accessToken and check agiainst it? yes!
