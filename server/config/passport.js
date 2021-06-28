@@ -3,6 +3,7 @@ const path = require("path");
 const User = require("mongoose").model("User");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const AppleStrategy = require("passport-apple");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const pathToKey = path.join(__dirname, "..", "id_rsa_pub.pem");
@@ -33,6 +34,7 @@ const registerSocial = (socialUser, cb) => {
 const callbackURL = (provider) => {
   return `http://localhost:3003/users/social/${provider}/request`;
 };
+
 const keys = {
   GOOGLE: {
     clientID:
@@ -44,6 +46,7 @@ const keys = {
     clientSecret: "3a5ba858f94108aac38ab7a516d71727",
   },
 };
+
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: PUB_KEY,
@@ -81,6 +84,37 @@ const facebook = new FacebookStrategy(
       short: p.first_name.charAt(0) + p.last_name.charAt(0),
     };
     registerSocial(user, cb);
+  }
+);
+
+const apple = new AppleStrategy(
+  {
+    clientID: "app.listle.app",
+    teamID: "445TV6E7HN",
+    callbackURL: callbackURL("apple"),
+    keyID: "JWV8V7W88D",
+    privateKeyLocation: fs.readFileSync(
+      path.join(__dirname, "", "AuthKey_JWV8V7W88D.p8")
+    ),
+    passReqToCallback: true,
+  },
+  function (req, accessToken, refreshToken, idToken, profile, cb) {
+    console.log(21123123);
+    console.log("------");
+    console.log(jwt.decode(idToken));
+    console.log("------");
+    console.log(profile);
+    console.log("------");
+
+    // The idToken returned is encoded. You can use the jsonwebtoken library via jwt.decode(idToken)
+    // to access the properties of the decoded idToken properties which contains the user's
+    // identity information.
+    // Here, check if the idToken.sub exists in your database!
+    // idToken should contains email too if user authorized it but will not contain the name
+    // `profile` parameter is REQUIRED for the sake of passport implementation
+    // it should be profile in the future but apple hasn't implemented passing data
+    // in access token yet https://developer.apple.com/documentation/sign_in_with_apple/tokenresponse
+    cb(null, idToken);
   }
 );
 
@@ -122,4 +156,5 @@ module.exports = (passport) => {
   passport.use(strategy);
   passport.use(google);
   passport.use(facebook);
+  passport.use(apple);
 };

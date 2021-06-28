@@ -39,6 +39,19 @@ router.get(
   }
 );
 
+router.get("/social/apple/auth", passport.authenticate("apple"));
+
+router.get(
+  "/social/apple/request",
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  (req, res) => {
+    // write this token into DB and remove in /socal.. to make item
+    // one-time!!! and reduce time to 1 minute
+    const token = utils.createToken({ _id: req.user._id }, 1);
+    res.redirect(`${baseUrl}/user/social-signin/${token}`);
+  }
+);
+
 router.get(
   "/social/google/auth",
   passport.authenticate("google", {
@@ -76,20 +89,17 @@ router.post("/social/google/mobile", (req, res) => {
     givenName,
     imageUrl,
   }))(req.body);
-  console.log(123, social);
-
-    const socialUser = {
-      provider: "google",
-      providerId: social.idToken,
-      picture: social.imageUrl,
-      firstName: social.givenName,
-      lastName: social.familyName,
-      name: social.displayName,
-      email: social.email,
-      short: social.givenName.charAt(0) + social.familyName.charAt(0),
-      locale: 'en',
-    };
-	console.log( 321, socialUser );
+  const socialUser = {
+    provider: "google",
+    providerId: social.idToken,
+    picture: social.imageUrl,
+    firstName: social.givenName,
+    lastName: social.familyName,
+    name: social.displayName,
+    email: social.email,
+    short: social.givenName.charAt(0) + social.familyName.charAt(0),
+    locale: "en",
+  };
   return Promise.resolve()
     .then(() => {
       // add accessToken and check agiainst it? yes!
