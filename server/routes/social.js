@@ -32,6 +32,9 @@ router.get(
   "/social/facebook/request",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   (req, res) => {
+   console.log( ">>>>>>>>>>" );
+	 console.log( res.user );
+   console.log( ">>>>>>>>>>" );
     // write this token into DB and remove in /socal.. to make item
     // one-time!!! and reduce time to 1 minute
     const token = utils.createToken({ _id: req.user._id }, 1);
@@ -41,9 +44,9 @@ router.get(
 
 router.get("/social/apple/auth", passport.authenticate("apple"));
 
-router.get(
+router.post(
   "/social/apple/request",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  passport.authenticate("apple", { failureRedirect: "/login" }),
   (req, res) => {
     // write this token into DB and remove in /socal.. to make item
     // one-time!!! and reduce time to 1 minute

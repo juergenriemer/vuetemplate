@@ -1,9 +1,12 @@
+require("dotenv").config();
+const clientUrl = process.env.CLIENT_HOST;
+const serverUrl = process.env.SERVER_HOST;
 const fs = require("fs");
 const path = require("path");
 const User = require("mongoose").model("User");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const AppleStrategy = require("passport-apple");
+const AppleStrategy = require("@nicokaiser/passport-apple");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const pathToKey = path.join(__dirname, "..", "id_rsa_pub.pem");
@@ -12,12 +15,13 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf8");
 const utils = require("../lib/utils");
 
 const registerSocial = (socialUser, cb) => {
+	console.log( 123, socialUser );
   return Promise.resolve()
     .then(() => {
       // add accessToken and check agiainst it? yes!
       // but this changes from time to time so we cannot
       //
-      return User.findOne({ email: socialUser.email });
+      return User.findOne({ providerId : socialUser.providerId });
     })
     .then((user) => {
       if (!user) {
@@ -32,7 +36,7 @@ const registerSocial = (socialUser, cb) => {
     });
 };
 const callbackURL = (provider) => {
-  return `http://localhost:3003/users/social/${provider}/request`;
+  return `${serverUrl}/users/social/${provider}/request`;
 };
 
 const keys = {
@@ -68,6 +72,7 @@ const facebook = new FacebookStrategy(
     ],
   },
   (accessToken, refreshToken, profile, cb) => {
+	  console.log( 123132, profile );
     const p = profile._json;
     const picture =
       p.picture && p.picture.data && p.picture.data.url
@@ -83,38 +88,35 @@ const facebook = new FacebookStrategy(
       email: p.email,
       short: p.first_name.charAt(0) + p.last_name.charAt(0),
     };
+	  console.log( user );
     registerSocial(user, cb);
   }
 );
-
 const apple = new AppleStrategy(
   {
-    clientID: "app.listle.app",
+    clientID: "app.listle.app.web",
     teamID: "445TV6E7HN",
     callbackURL: callbackURL("apple"),
-    keyID: "JWV8V7W88D",
-    privateKeyLocation: fs.readFileSync(
-      path.join(__dirname, "", "AuthKey_JWV8V7W88D.p8")
-    ),
-    passReqToCallback: true,
+  keyID: "Z7L8567766",
+	key: fs.readFileSync(path.join(__dirname, 'AuthKey_Z7L8567766.p8')),
+	scope: ['name', 'email']
   },
-  function (req, accessToken, refreshToken, idToken, profile, cb) {
-    console.log(21123123);
-    console.log("------");
-    console.log(jwt.decode(idToken));
-    console.log("------");
-    console.log(profile);
-    console.log("------");
-
-    // The idToken returned is encoded. You can use the jsonwebtoken library via jwt.decode(idToken)
-    // to access the properties of the decoded idToken properties which contains the user's
-    // identity information.
-    // Here, check if the idToken.sub exists in your database!
-    // idToken should contains email too if user authorized it but will not contain the name
-    // `profile` parameter is REQUIRED for the sake of passport implementation
-    // it should be profile in the future but apple hasn't implemented passing data
-    // in access token yet https://developer.apple.com/documentation/sign_in_with_apple/tokenresponse
-    cb(null, idToken);
+	(accessToken, refreshToken, profile, done) => {
+		const p = profile;
+		const firstName = ( p.name && p.name.firstName ) ? p.name.firstName : "Listle";
+		const lastName = ( p.name && p.name.lastName ) ? p.name.lastName : "User";
+		const email = ( p.email ) ? p.email : "";
+	    const user = {
+	      provider: "apple",
+	      providerId: p.id,
+	      firstName,
+	      lastName,
+	    email,
+	      name: `${firstName} ${lastName}`,
+	      short: firstName.charAt(0) + lastName.charAt(0),
+	    };
+		console.log( user );
+	    registerSocial(user, done);
   }
 );
 
