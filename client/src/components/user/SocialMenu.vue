@@ -8,6 +8,9 @@
       <ion-button @click="social('facebook')">
         <ion-icon slot='icon-only' :icon='logoFacebook' />
       </ion-button>
+      <ion-button @click="social('apple')">
+        <ion-icon slot='icon-only' :icon='logoApple' />
+      </ion-button>
     </ion-buttons>
   </div>
 </template>
@@ -33,7 +36,7 @@
 </style>
 <script>
 import { IonButtons, IonButton, IonIcon } from "@ionic/vue";
-import { logoGoogle, logoFacebook } from "ionicons/icons";
+import { logoGoogle, logoFacebook, logoApple } from "ionicons/icons";
 export default {
   props: [],
   components: {
@@ -42,7 +45,7 @@ export default {
     IonIcon,
   },
   data() {
-    return { logoGoogle, logoFacebook }
+    return { logoGoogle, logoFacebook, logoApple }
   },
   methods: {
     social( provider ){

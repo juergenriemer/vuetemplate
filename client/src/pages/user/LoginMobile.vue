@@ -7,7 +7,6 @@ base-layout(page-title="Login")
       ion-icon(:icon="key", size="large")
   template(v-slot:content)
     .ion-padding
-      ion-button(expand="block", @click="google") GOOGLE{{test}}
       form(
         ref="form",
         v-if="!showInfoSheet",
@@ -80,6 +79,8 @@ base-layout(page-title="Login")
             | Login successful
           p
             | Redirecting...
+      ion-button(expand="block", @click="google") GOOGLE{{test}}
+      ion-button(expand="block", @click="apple") APPLE{{test}}
 </template>
 <script>
 import {
@@ -97,8 +98,9 @@ import SocialMenu from "@/components/user/SocialMenu.vue";
 import UserLinks from "@/components/user/UserLinks.vue";
 import Form from "@/mixins/Form";
 import { key } from "ionicons/icons";
-import { GooglePlus } from '@ionic-native/google-plus';
-
+//import { GooglePlus } from '@ionic-native/google-plus';
+//import { SignInWithApple } from '@ionic-native/sign-in-with-apple';
+import { SignInWithApple, AppleSignInResponse, AppleSignInErrorResponse, ASAuthorizationAppleIDRequest } from '@ionic-native/sign-in-with-apple';
 export default {
   mixins: [Form],
   components: {
@@ -121,13 +123,36 @@ export default {
     test:"4"
   }),
   methods: {
+    async apple() {
+      const params = {
+        'webClientId': '',
+        'offline': true
+      };
+      SignInWithApple
+        .signin({
+          requestedScopes: [
+            ASAuthorizationAppleIDRequest.ASAuthorizationScopeFullName,
+            ASAuthorizationAppleIDRequest.ASAuthorizationScopeEmail
+          ]
+        })
+        .then((res) => {
+          console.log("Apple login success:- " + res);
+          let s = "X";
+          for( var name in res ) {
+            s += name + "\r\n";
+          }
+          alert( s )
+        })
+        .catch((error) => {
+          alert( 'error', error)
+          console.error(error);
+        });
+    },
     async google() {
-          var params = {
-
-      'webClientId': '701401166500-dqgpnoli336lnu5u5jv4vqvs9hiav1pk.apps.googleusercontent.com',
-            //'webClientId':"701401166500-jrn1kj6unct4o5210jm0o55fecniaij8.apps.googleusercontent.com",
-          'offline': true
-      }
+      const params = {
+        'webClientId': '701401166500-dqgpnoli336lnu5u5jv4vqvs9hiav1pk.apps.googleusercontent.com',
+        'offline': true
+      };
       GooglePlus.login(params)
       .then(res => {
         let s = "X";
@@ -160,7 +185,6 @@ export default {
               break;
           }
         });
-
       })
       .catch(err => {
         alert('error')

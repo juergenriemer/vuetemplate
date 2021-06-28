@@ -179,7 +179,7 @@ const routes = self.$$.isWeb
         component: () => import("@/pages/user/DeleteVerify.vue"),
       },
       {
-        path: "/socialSignin/:id",
+        path: "/user/social-signin/:id",
         component: () => import("@/pages/user/SocialSignIn.vue"),
       },
     ];
