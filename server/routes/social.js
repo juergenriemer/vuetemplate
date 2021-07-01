@@ -32,9 +32,9 @@ router.get(
   "/social/facebook/request",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   (req, res) => {
-   console.log( ">>>>>>>>>>" );
-	 console.log( res.user );
-   console.log( ">>>>>>>>>>" );
+    console.log(">>>>>>>>>>");
+    console.log(res.user);
+    console.log(">>>>>>>>>>");
     // write this token into DB and remove in /socal.. to make item
     // one-time!!! and reduce time to 1 minute
     const token = utils.createToken({ _id: req.user._id }, 1);
@@ -74,80 +74,73 @@ router.get(
   }
 );
 
-router.post("/social/google/mobile", (req, res) => {
-  const social = (({
-    XaccessToken,
-    idToken,
-    email,
-    displayName,
-    familyName,
-    givenName,
-    imageUrl,
-  }) => ({
-    XaccessToken,
-    idToken,
-    email,
-    displayName,
-    familyName,
-    givenName,
-    imageUrl,
-  }))(req.body);
-  const socialUser = {
-    provider: "google",
-    providerId: social.idToken,
-    picture: social.imageUrl,
-    firstName: social.givenName,
-    lastName: social.familyName,
-    name: social.displayName,
-    email: social.email,
-    short: social.givenName.charAt(0) + social.familyName.charAt(0),
-    locale: "en",
-  };
+const createAndOrAuthenticate = (req, userData, log) => {
   return Promise.resolve()
     .then(() => {
       // add accessToken and check agiainst it? yes!
       // but this changes from time to time so we cannot
       // we can for the first time when registering!
-      //
-      return User.findOne({ email: social.email });
+      log += " > find_by_id";
+      return User.findOne({ providerId: newUser.providerId });
     })
     .then((user) => {
       if (!user) {
-        const newUser = new User(socialUser);
+        log += " > create_user";
+        const newUser = new User(userData);
         return newUser.save();
       } else {
+        log += " > return_user";
         return user;
       }
     })
     .then((user) => {
+      log += "> return_token";
       const token = utils.clientToken(user);
       res.status(200).json(token);
+    })
+    .catch((err) => {
+      next(err);
+    })
+    .finally((_) => console.log(log));
+};
+
+router.post("/social/google/mobile", (req, res) => {
+  let log = `MOBILE_SIGNIN(${JSON.stringify(req.body)})::`;
+  return Promise.resolve()
+    .then(() => {
+      log += " > prepare data";
+      try {
+        const userData = {
+          provider: "google",
+          providerId: req.body.idToken,
+          picture: req.body.imageUrl,
+          firstName: reg.body.givenName,
+          lastName: req.body.familyName,
+          name: req.body.displayName,
+          email: req.body.email,
+        };
+        return userData;
+      } catch (err) {
+        throw new Error(err);
+      }
+    })
+    .then((userData) => {
+      log += " > create_authentictate";
+      return createAndOrAuthenticate(req, userData, log);
     });
 });
 
-/*
-const registerSocial = (socialUser, cb) => {
-  return Promise.resolve()
-    .then(() => {
-      // add accessToken and check agiainst it? yes!
-      // but this changes from time to time so we cannot
-      //
-      return User.findOne({ email: socialUser.email });
-    })
-    .then((user) => {
-      if (!user) {
-        const newUser = new User(socialUser);
-        return newUser.save();
-      } else {
-        return user;
-      }
-    })
-    .then((user) => {
-      const token = utils.clientToken(user);
-      res.status(200).json(token);
-    });
-};
-*/
+router.post("/social/apple/mobile", (req, res) => {
+  const userData = {
+    provider: "apple",
+    providerId: req.body.user,
+    firstName: reg.body.givenName,
+    lastName: req.body.familyName,
+    email: req.body.email,
+  };
+  return createAndOrAuthenticate(req, userData);
+});
+
 router.get("/socialSignIn/:token", (req, res, next) => {
   const data = utils.validateToken(req.params.token);
   if (!data) next(new ApiError(422, "token-invalid"));

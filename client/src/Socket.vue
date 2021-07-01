@@ -62,7 +62,6 @@ export default {
       this.offline = true;
       this.hideAlerts();
       const offlineSince = sessionStorage.getItem( "offline-since");
-      alert( offlineSince )
       if( !offlineSince ) {
         // REF: on login page we need another  essage or at least redirect to 
         // lists... for registration we need sg completely different

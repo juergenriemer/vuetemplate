@@ -81,6 +81,7 @@ base-layout(page-title="Login")
             | Redirecting...
       ion-button(expand="block", @click="google") GOOGLE{{test}}
       ion-button(expand="block", @click="apple") APPLE{{test}}
+      ion-button(expand="block", @click="facebook") FACEBOOK{{test}}
 </template>
 <script>
 import {
@@ -98,9 +99,13 @@ import SocialMenu from "@/components/user/SocialMenu.vue";
 import UserLinks from "@/components/user/UserLinks.vue";
 import Form from "@/mixins/Form";
 import { key } from "ionicons/icons";
-//import { GooglePlus } from '@ionic-native/google-plus';
 //import { SignInWithApple } from '@ionic-native/sign-in-with-apple';
-import { SignInWithApple, AppleSignInResponse, AppleSignInErrorResponse, ASAuthorizationAppleIDRequest } from '@ionic-native/sign-in-with-apple';
+//import { SignInWithApple, AppleSignInResponse, AppleSignInErrorResponse, ASAuthorizationAppleIDRequest } from '@ionic-native/sign-in-with-apple';
+import { Plugins } from '@capacitor/core';
+const { SignInWithApple } = Plugins;
+//import { GooglePlus } from '@ionic-native/google-plus';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
+
 export default {
   mixins: [Form],
   components: {
@@ -120,46 +125,76 @@ export default {
     key,
     showInfoSheet: false,
     showIntro: true,
-    test:"4"
+    test:"7"
   }),
   methods: {
-    async apple() {
-      const params = {
-        'webClientId': '',
-        'offline': true
-      };
-      SignInWithApple
-        .signin({
-          requestedScopes: [
-            ASAuthorizationAppleIDRequest.ASAuthorizationScopeFullName,
-            ASAuthorizationAppleIDRequest.ASAuthorizationScopeEmail
-          ]
+    mobileSocialSignIn( userData ){
+      return this.$store
+        .dispatch("mobileSocial", userData)
+        .then(() => {
+          this.status = "OK";
+          this.showInfoSheet = true;
+          setTimeout(() => {
+            this.$root.$router.push({
+              path: `/app/list`,
+            });
+            this.status = "idle";
+            this.showInfoSheet = false;
+          }, 500);
         })
-        .then((res) => {
-          console.log("Apple login success:- " + res);
-          let s = "X";
-          for( var name in res ) {
-            s += name + "\r\n";
+        .catch((err) => {
+          this.showInfoSheet = true;
+          switch (err.status) {
+            case 422:
+              this.status = err.message;
+              break;
+            default:
+              this.status = "idle";
+              this.showError(err);
+              break;
           }
-          alert( s )
+        });
+    },
+    pluginError() {
+      alert( 'Plugin Error' )
+    },
+    async facebook() {
+      alert( 123)
+      Facebook.login(['public_profile', 'user_friends', 'email'])
+        .then((userData) => {
+          console.log('Logged into Facebook!', userData)
         })
-        .catch((error) => {
-          alert( 'error', error)
-          console.error(error);
+        .catch(e => console.log('Error logging into Facebook', e));
+    },
+    async apple() {
+      SignInWithApple.Authorize()
+        .then(async (res) => {
+          if (res.response && res.response.identityToken) {
+            const userData = res.respone;
+            userData.provider = "apple";
+            return this.mobileSocialSignIn( userData );
+          }
+        })
+        .catch(err => {
+          this.pluginError("apple");
         });
     },
     async google() {
-      const params = {
+      GooglePlus.login({
         'webClientId': '701401166500-dqgpnoli336lnu5u5jv4vqvs9hiav1pk.apps.googleusercontent.com',
         'offline': true
-      };
-      GooglePlus.login(params)
-      .then(res => {
-        let s = "X";
-        for( var name in res ) {
-          s += name + "\r\n";
-        }
-        alert( s );
+      })
+        .then(async (userData) => {
+            userData.provider = "google";
+            return this.mobileSocialSignIn( userData );
+        })
+        .catch(err => {
+          this.pluginError("google");
+        });
+    },
+      /*
+  GooglePlus.login(params)
+    .then(res => {
       this.$store
         .dispatch("mobileSocial", res)
         .then(() => {
@@ -191,6 +226,7 @@ export default {
         alert(err)
       });
     },
+       */
     toLogin() {
       this.showIntro = false;
     },

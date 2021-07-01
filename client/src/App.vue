@@ -13,7 +13,7 @@ use "android" as password and take SHA1 that shows up for google dev page
 keytool -list -v \
 -alias androiddebugkey -keystore ~/.android/debug.keystore
 
-ionic build ; npx cap copy android ; npx cap open anroid
+ionic build ; npx cap copy android ; npx cap open android
 
 */
 // global functions
